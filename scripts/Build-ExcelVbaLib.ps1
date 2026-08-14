@@ -50,16 +50,43 @@ function Get-ImportFiles {
     return $files
 }
 
+function Get-ThisWorkbookCode {
+    param([string]$EventsPath)
+    $code = [System.IO.File]::ReadAllText($EventsPath)
+    if ($code.Length -gt 0 -and [int][char]$code[0] -eq 0xFEFF) {
+        $code = $code.Substring(1)
+    }
+    $out = New-Object System.Collections.Generic.List[string]
+    $inHeader = $false
+    foreach ($line in ($code -split "`r?`n")) {
+        if ($line -match '^VERSION\s+\d') { $inHeader = $true; continue }
+        if ($inHeader -and $line -match '^(BEGIN|END)\b') {
+            if ($line -match '^END\b') { $inHeader = $false }
+            continue
+        }
+        if ($line -match '^Attribute\s+VB_') { continue }
+        $out.Add($line)
+    }
+    return ($out -join "`r`n").Trim() + "`r`n"
+}
+
 function Set-ThisWorkbookEvents {
     param($Workbook, [string]$EventsPath)
     if (-not (Test-Path $EventsPath)) { return }
-    $code = Get-Content -LiteralPath $EventsPath -Raw
+    $code = Get-ThisWorkbookCode $EventsPath
     $cm = $Workbook.VBProject.VBComponents.Item("ThisWorkbook").CodeModule
     if ($cm.CountOfLines -gt 0) {
         $cm.DeleteLines(1, $cm.CountOfLines)
     }
     $cm.AddFromString($code)
-    Write-Host "Wrote ThisWorkbook Open/BeforeClose events."
+    $foundOpen = $false
+    for ($i = 1; $i -le $cm.CountOfLines; $i++) {
+        if ($cm.Lines($i, 1) -match "Sub Workbook_Open") { $foundOpen = $true; break }
+    }
+    if (-not $foundOpen) {
+        throw "ThisWorkbook is missing Workbook_Open after inject."
+    }
+    Write-Host "Wrote ThisWorkbook Open/AddinInstall/BeforeClose events."
 }
 
 $toImport = Get-ImportFiles

@@ -1,21 +1,65 @@
 Attribute VB_Name = "modAddinMenu"
 Option Explicit
 
-' Add-in menu (Auto_Open / Auto_Close). Lives in the same .xlam as Api/Internal
-' so OnAction names resolve without importing modules into the caller workbook.
+' Add-in menu. Lives in the same .xlam as Api/Internal so OnAction names resolve
+' without importing modules into the caller workbook.
+'
+' Excel does not run Auto_Open for an .xlam loaded as an add-in. Workbook_Open
+' schedules InstallExcelVbaLibMenu via Application.OnTime (that name is not
+' suppressed). Auto_Open remains as a manual entry point.
 
 Private Const TagMenu As String = "ExcelVbaLibMenu"
+Private Const MaxRetry As Long = 8
+Private retryCount As Long
 
 Public Sub Auto_Open()
-    Call RemoveMenu
-    Call BuildMenu
+    Call InstallExcelVbaLibMenu
 End Sub
 
 Public Sub Auto_Close()
+    Call RemoveExcelVbaLibMenu
+End Sub
+
+' Must stay Public: Application.OnTime looks this up by name in the add-in.
+Public Sub InstallExcelVbaLibMenu()
+    On Error GoTo NeedRetry
+    Call RemoveMenu
+    If Not TryBuildMenu() Then GoTo NeedRetry
+    retryCount = 0
+    Exit Sub
+NeedRetry:
+    retryCount = retryCount + 1
+    If retryCount > MaxRetry Then
+        retryCount = 0
+        Exit Sub
+    End If
+    On Error Resume Next
+    Application.OnTime Now + TimeSerial(0, 0, 1), MenuProc("InstallExcelVbaLibMenu")
+    On Error GoTo 0
+End Sub
+
+Public Sub RemoveExcelVbaLibMenu()
+    retryCount = 0
     Call RemoveMenu
 End Sub
 
-Private Sub BuildMenu()
+' Run the installer when Excel is idle. CommandBars are often missing inside Workbook_Open.
+Public Sub ScheduleMenuInstall()
+    On Error Resume Next
+    Application.OnTime Now, MenuProc("InstallExcelVbaLibMenu")
+    If Err.Number <> 0 Then
+        Err.Clear
+        Call InstallExcelVbaLibMenu
+    End If
+    On Error GoTo 0
+End Sub
+
+Private Function MenuProc(ByVal proc As String) As String
+    MenuProc = "'" & ThisWorkbook.Name & "'!" & proc
+End Function
+
+Private Function TryBuildMenu() As Boolean
+    Dim bar As CommandBar
     Dim pop As CommandBarPopup
     Dim tmpl As CommandBarPopup
     Dim ben As CommandBarPopup
@@ -24,10 +68,14 @@ Private Sub BuildMenu()
     Dim dist As CommandBarPopup
 
     On Error Resume Next
-    Set pop = Application.CommandBars("Worksheet Menu Bar").Controls.Add( _
-        Type:=msoControlPopup, Temporary:=True)
+    Set bar = Application.CommandBars("Worksheet Menu Bar")
     On Error GoTo 0
-    If pop Is Nothing Then Exit Sub
+    If bar Is Nothing Then Exit Function
+
+    On Error Resume Next
+    Set pop = bar.Controls.Add(Type:=msoControlPopup, Temporary:=True)
+    On Error GoTo 0
+    If pop Is Nothing Then Exit Function
 
     pop.Caption = "&Excel VBA Lib"
     pop.Tag = TagMenu
@@ -72,7 +120,9 @@ Private Sub BuildMenu()
     Call AddButton(tmpl, "Assumptions", "CreateAssumptionsTemplate")
     Call AddButton(tmpl, "Questions", "CreateQuestionsTemplate")
     Call AddButton(tmpl, "Python packages", "ImportPythonPackages")
-End Sub
+
+    TryBuildMenu = True
+End Function
 
 Private Function AddSubmenu(ByVal Parent As CommandBarPopup, ByVal Caption As String) As CommandBarPopup
     Dim pop As CommandBarPopup

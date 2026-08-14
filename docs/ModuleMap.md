@@ -40,7 +40,7 @@ source/Internal/
 
 source/Menus/
 ├── modAddinMenu.bas
-└── ThisWorkbook.cls      ← Workbook_Open / BeforeClose (injected, not imported)
+└── ThisWorkbook.cls      ← Workbook_Open / AddinInstall / BeforeClose (injected, not imported)
 ```
 
 ### Later Personal packs

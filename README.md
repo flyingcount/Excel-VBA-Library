@@ -19,7 +19,8 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 │   ├── PersonalInventory.md
 │   └── InfrastructureCatalog.md
 ├── scripts/
-│   └── Build-ExcelVbaLib.ps1  ← rebuild build/ExcelVbaLib.xlam from the source snapshot
+│   ├── Build-ExcelVbaLib.ps1      ← rebuild build/ExcelVbaLib.xlam from the source snapshot
+│   └── Inject-ThisWorkbook.ps1    ← write Workbook_Open into a loaded add-in (no full rebuild)
 ├── source/                  ← snapshot of modules already in the add-in (see source/README.md)
 │   ├── Api/
 │   ├── Internal/
@@ -39,7 +40,14 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    ```
 
 3. Excel → Options → Add-ins → Excel Add-ins → Browse → `build/ExcelVbaLib.xlam`.
-4. Run tools from the **Excel VBA Lib** menu, or:
+4. Restart Excel. **Excel VBA Lib** should appear on the **Add-ins** ribbon tab without running `Auto_Open`. If it does not, with Excel open:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts/Inject-ThisWorkbook.ps1
+   ```
+
+   Then quit Excel fully and start it again.
+5. Run tools from that menu, or:
 
    ```vb
    Application.Run "BenfordAnalysisFirstDigit", Range("A2:A50")

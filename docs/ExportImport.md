@@ -37,7 +37,15 @@ Caller workbooks should **load `ExcelVbaLib.xlam`**, not import Benford (or othe
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
 
-The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), compiles, and writes `build/ExcelVbaLib.xlam`. After that, grow the library in the add-in itself.
+The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), compiles, and writes `build/ExcelVbaLib.xlam`. After that, grow the library in the add-in itself.
+
+To refresh ThisWorkbook + the menu module in an already-loaded add-in (no full rebuild):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Inject-ThisWorkbook.ps1
+```
+
+Then restart Excel so `Workbook_Open` runs on a cold start.
 
 ### Load and run
 

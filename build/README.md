@@ -24,7 +24,15 @@ Binary `.xlam` files are gitignored.
 2. Browse to `build/ExcelVbaLib.xlam` → OK
 3. Leave **ExcelVbaLib** checked
 
-The **Excel VBA Lib** menu is built in `Workbook_Open` (add-ins do not run `Auto_Open` at startup).
+The **Excel VBA Lib** menu is scheduled from `Workbook_Open` / `Workbook_AddinInstall` (`InstallExcelVbaLibMenu`). Add-ins do not run `Auto_Open` at startup, and Excel also skips an explicit `Call Auto_Open` from the add-in.
+
+If the menu is missing after a source change, with Excel open and the add-in loaded:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Inject-ThisWorkbook.ps1
+```
+
+Then restart Excel once. Do **not** put the `.xlam` in XLSTART; load it via **Excel Add-ins**.
 
 Do **not** import `modApiBenford` into the caller workbook. The add-in already contains the full call graph.
 
