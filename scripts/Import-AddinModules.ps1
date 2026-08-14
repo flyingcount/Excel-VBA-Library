@@ -4,8 +4,8 @@
 # Targets the add-in file (not "whatever ExcelVbaLib.xlam is loaded").
 # Pass -XlamPath when the file is not build\ExcelVbaLib.xlam under the repo.
 #
-#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
-#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -XlamPath "C:\path\to\build\ExcelVbaLib.xlam"
+#   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+#   & "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\scripts\Import-AddinModules.ps1" -XlamPath "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\build\ExcelVbaLib.xlam"
 #
 # Other modules (Internal first when they depend on each other):
 #   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -Modules modInternalBenford,modApiBenford
@@ -113,18 +113,22 @@ Open Excel with that add-in loaded, or pass -XlamPath, or build it first:
 
 try {
     $addinWb = Get-OpenWorkbookByPath -Excel $excel -TargetPath $XlamPath
-    if ($null -eq $addinWb) {
-        if (-not (Test-Path -LiteralPath $XlamPath)) {
-            throw "Add-in not open and file not found: $XlamPath"
-        }
+    if ($null -eq $addinWb -and (Test-Path -LiteralPath $XlamPath)) {
         Write-Host "Opening $XlamPath"
-        $addinWb = $excel.Workbooks.Open($XlamPath)
+        try {
+            $addinWb = $excel.Workbooks.Open($XlamPath)
+        } catch {
+            Write-Warning "Open failed: $($_.Exception.Message)"
+        }
     }
     if ($null -eq $addinWb) {
         try { $addinWb = $excel.Workbooks.Item("ExcelVbaLib.xlam") } catch { $addinWb = $null }
         if ($null -ne $addinWb) {
             Write-Warning "Path match failed; updating open workbook $($addinWb.FullName)"
         }
+    }
+    if ($null -eq $addinWb) {
+        throw "Could not open $XlamPath. Quit Excel completely and retry, or load ExcelVbaLib.xlam first."
     }
 
     try {

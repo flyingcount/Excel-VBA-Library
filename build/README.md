@@ -23,14 +23,13 @@ powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 
 Requires **Trust access to the VBA project object model** (see [docs/ExportImport.md](../docs/ExportImport.md)).
 
-**Update the existing add-in (PowerShell + Excel, no Python):**
+**Update the existing add-in (PowerShell + Excel, no Python).**  
+Use full paths. `.\scripts\...` only works if your prompt is already the repo folder, not `C:\windows\System32`. Do not use `cd /d` (cmd.exe).
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\scripts\Update-Existing-Addin.ps1
+& "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\scripts\Import-AddinModules.ps1" -XlamPath "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\build\ExcelVbaLib.xlam"
 ```
-
-That patches `build\ExcelVbaLib.xlam` in place. Do not use `cd /d` (that is cmd.exe, not PowerShell). Quit Excel first, or leave it open with the add-in loaded so COM can save it. Requires **Trust access to the VBA project object model**.
 
 **The add-in is the library.** After a rebuild, grow it in the VBE of `ExcelVbaLib.xlam` or edit `source/` and run `Build-ExcelVbaLib.py` again.
 

@@ -1,9 +1,8 @@
-# Update the existing ExcelVbaLib.xlam in this repo using Excel (no Python).
-# PowerShell only — do not use cmd "cd /d".
+# Update the existing ExcelVbaLib.xlam using Excel (no Python).
+# Run from any folder in PowerShell (not cmd, not C:\windows\System32 relative paths):
 #
-# From this repo in PowerShell:
 #   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-#   .\scripts\Update-Existing-Addin.ps1
+#   & "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\scripts\Update-Existing-Addin.ps1"
 #
 # Requires: Excel, and Trust access to the VBA project object model.
 
