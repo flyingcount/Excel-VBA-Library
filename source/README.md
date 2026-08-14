@@ -11,3 +11,9 @@ To rebuild the current add-in from this snapshot:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
+
+To replace Data modules in a loaded add-in (`modInternalData`, then `modApiData`):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
+```
