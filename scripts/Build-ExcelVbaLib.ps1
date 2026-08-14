@@ -40,10 +40,26 @@ function Get-ImportFiles {
         foreach ($ext in $extensions) {
             Get-ChildItem -Path $root -Recurse -File -Filter $ext -ErrorAction SilentlyContinue |
                 Sort-Object FullName |
-                ForEach-Object { $files.Add($_.FullName) }
+                ForEach-Object {
+                    # ThisWorkbook is the add-in document module; inject later, do not Import.
+                    if ($_.BaseName -eq "ThisWorkbook") { return }
+                    $files.Add($_.FullName)
+                }
         }
     }
     return $files
+}
+
+function Set-ThisWorkbookEvents {
+    param($Workbook, [string]$EventsPath)
+    if (-not (Test-Path $EventsPath)) { return }
+    $code = Get-Content -LiteralPath $EventsPath -Raw
+    $cm = $Workbook.VBProject.VBComponents.Item("ThisWorkbook").CodeModule
+    if ($cm.CountOfLines -gt 0) {
+        $cm.DeleteLines(1, $cm.CountOfLines)
+    }
+    $cm.AddFromString($code)
+    Write-Host "Wrote ThisWorkbook Open/BeforeClose events."
 }
 
 $toImport = Get-ImportFiles
@@ -93,6 +109,8 @@ Then close Excel and re-run this script.
         Write-Host "Importing $file"
         [void]$wb.VBProject.VBComponents.Import($file)
     }
+
+    Set-ThisWorkbookEvents -Workbook $wb -EventsPath (Join-Path $RepoRoot "source\Menus\ThisWorkbook.cls")
 
     # Compile VBA project (command bar control 578). VBE must be reachable.
     try {

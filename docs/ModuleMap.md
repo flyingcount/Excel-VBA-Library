@@ -22,6 +22,7 @@ source/Api/
 ├── modApiDates.bas       ← CreateDateTable
 ├── modApiBenford.bas     ← Benford / last-two-digit analyses
 ├── modApiWorksheetTemplates.bas ← Links, Actions, Force Field, Assumptions, Questions, Notes workbook
+├── modApiSampling.bas    ← ExtractSample (Menu4)
 └── modApiUi.bas
 
 source/Internal/
@@ -32,10 +33,12 @@ source/Internal/
 ├── modInternalNamedRanges.bas
 ├── modInternalText.bas
 ├── modInternalError.bas
-└── modInternalWorksheetTemplates.bas
+├── modInternalWorksheetTemplates.bas
+└── modInternalSampling.bas
 
 source/Menus/
-└── modAddinMenu.bas
+├── modAddinMenu.bas
+└── ThisWorkbook.cls      ← Workbook_Open / BeforeClose (injected, not imported)
 ```
 
 ### Later Personal packs
@@ -46,6 +49,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 |------|--------|
 | Benford | In the add-in (`modApiBenford` + `modInternalBenford`) |
 | Worksheet templates | In the add-in (`modApiWorksheetTemplates`) — Personal `Custom_Menu26_wkshtTmplt` |
+| Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
 | Matrices | Later — `Custom_Menu13_*`, `Fn_Matrices*` |
 | Editing / ranges | Later |
@@ -84,6 +88,14 @@ Each analysis accepts an optional `Range`; if omitted, an InputBox prompts (same
 | `CreateNotesWorkbook` | `modApiWorksheetTemplates` | New workbook + Index |
 | `ImportPythonPackages` | `modApiWorksheetTemplates` | Python packages |
 | `HyperLinkText` | `modApiWorksheetTemplates` | UDF used on the Links sheet |
+
+### Sampling public surface
+
+| Public procedure | Module | Sheet |
+|------------------|--------|--------|
+| `ExtractSample` | `modApiSampling` | Sample |
+
+Random sample of input rows (percent of row count), with or without replacement.
 
 ## Dependency direction (keep this)
 

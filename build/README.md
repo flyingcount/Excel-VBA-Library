@@ -24,13 +24,15 @@ Binary `.xlam` files are gitignored.
 2. Browse to `build/ExcelVbaLib.xlam` → OK
 3. Leave **ExcelVbaLib** checked
 
+The **Excel VBA Lib** menu is built in `Workbook_Open` (add-ins do not run `Auto_Open` at startup).
+
 Do **not** import `modApiBenford` into the caller workbook. The add-in already contains the full call graph.
 
 ## Run Benford
 
 Put numbers in a range, then either:
 
-- Menu **Excel VBA Lib** → **Benford: First digit** (prompts for a range), or
+- Menu **Excel VBA Lib** → **Benford** → **First digit** (prompts for a range), or
 - Immediate window / another macro:
 
 ```vb

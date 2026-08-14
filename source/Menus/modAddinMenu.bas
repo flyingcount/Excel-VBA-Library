@@ -18,6 +18,8 @@ End Sub
 Private Sub BuildMenu()
     Dim pop As CommandBarPopup
     Dim tmpl As CommandBarPopup
+    Dim ben As CommandBarPopup
+    Dim samp As CommandBarPopup
 
     On Error Resume Next
     Set pop = Application.CommandBars("Worksheet Menu Bar").Controls.Add( _
@@ -28,12 +30,16 @@ Private Sub BuildMenu()
     pop.Caption = "&Excel VBA Lib"
     pop.Tag = TagMenu
 
-    Call AddButton(pop, "Benford: &First digit", "BenfordAnalysisFirstDigit")
-    Call AddButton(pop, "Benford: &Second digit", "BenfordAnalysisSecondDigit")
-    Call AddButton(pop, "Benford: &Third digit", "BenfordAnalysisThirdDigit")
-    Call AddButton(pop, "Benford: First &two digits", "BenfordAnalysisTwoDigit")
-    Call AddButton(pop, "Benford: First t&hree digits", "BenfordAnalysisThreeDigit")
-    Call AddButton(pop, "Benford: &Last two digits", "BenfordAnalysisLastTwoDigit")
+    Set ben = AddSubmenu(pop, "&Benford")
+    Call AddButton(ben, "&First digit", "BenfordAnalysisFirstDigit")
+    Call AddButton(ben, "&Second digit", "BenfordAnalysisSecondDigit")
+    Call AddButton(ben, "&Third digit", "BenfordAnalysisThirdDigit")
+    Call AddButton(ben, "First &two digits", "BenfordAnalysisTwoDigit")
+    Call AddButton(ben, "First t&hree digits", "BenfordAnalysisThreeDigit")
+    Call AddButton(ben, "&Last two digits", "BenfordAnalysisLastTwoDigit")
+
+    Set samp = AddSubmenu(pop, "&Sampling")
+    Call AddButton(samp, "Extract sample of &rows", "ExtractSample")
 
     Set tmpl = AddSubmenu(pop, "&Worksheet templates")
     Call AddButton(tmpl, "Notes workbook (all templates)", "CreateNotesWorkbook")
