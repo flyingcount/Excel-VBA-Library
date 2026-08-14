@@ -20,6 +20,8 @@ Private Sub BuildMenu()
     Dim tmpl As CommandBarPopup
     Dim ben As CommandBarPopup
     Dim samp As CommandBarPopup
+    Dim dataMenu As CommandBarPopup
+    Dim dist As CommandBarPopup
 
     On Error Resume Next
     Set pop = Application.CommandBars("Worksheet Menu Bar").Controls.Add( _
@@ -37,6 +39,27 @@ Private Sub BuildMenu()
     Call AddButton(ben, "First &two digits", "BenfordAnalysisTwoDigit")
     Call AddButton(ben, "First t&hree digits", "BenfordAnalysisThreeDigit")
     Call AddButton(ben, "&Last two digits", "BenfordAnalysisLastTwoDigit")
+
+    Set dataMenu = AddSubmenu(pop, "&Data")
+    Call AddButton(dataMenu, "&Combinations", "DataCombinations")
+    Call AddButton(dataMenu, "Random &integers", "RandomIntegers")
+    Call AddButton(dataMenu, "Random &numbers", "RandomNumbers")
+    Call AddButton(dataMenu, "Random d&ates", "RandomDates")
+    Call AddButton(dataMenu, "Random &strings", "RandomStrings")
+    Call AddButton(dataMenu, "Random from &list", "RandomFromList")
+    Call AddButton(dataMenu, "Random TRUE/&FALSE", "RandomTrueFalse")
+    Call AddButton(dataMenu, "Random &Yes/No", "RandomYesNo")
+    Call AddButton(dataMenu, "Random &1 or 0", "Random1or0")
+    Call AddButton(dataMenu, "Yes/No &dataset", "CreateYesNoDataset")
+    Call AddButton(dataMenu, "Random test data &types", "RandomTestDataTypes")
+    Set dist = AddSubmenu(dataMenu, "&Probability distributions")
+    Call AddButton(dist, "&Binomial", "RandomBinomialNumbers")
+    Call AddButton(dist, "B&ernoulli", "RandomBernoulliNumbers")
+    Call AddButton(dist, "&Normal", "RandomNormalNumbers")
+    Call AddButton(dist, "&Poisson", "RandomPoissonNumbers")
+    Call AddButton(dist, "&Exponential", "RandomExponentialNumbers")
+    Call AddButton(dist, "&Gamma", "RandomGammaNumbers")
+    Call AddButton(dist, "&Hypergeometric", "RandomHypergeometricNumbers")
 
     Set samp = AddSubmenu(pop, "&Sampling")
     Call AddButton(samp, "Extract sample of &rows", "ExtractSample")

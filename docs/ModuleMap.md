@@ -23,6 +23,7 @@ source/Api/
 ├── modApiBenford.bas     ← Benford / last-two-digit analyses
 ├── modApiWorksheetTemplates.bas ← Links, Actions, Force Field, Assumptions, Questions, Notes workbook
 ├── modApiSampling.bas    ← ExtractSample (Menu4)
+├── modApiData.bas        ← random fills, combinations, distributions (Menu6)
 └── modApiUi.bas
 
 source/Internal/
@@ -34,7 +35,8 @@ source/Internal/
 ├── modInternalText.bas
 ├── modInternalError.bas
 ├── modInternalWorksheetTemplates.bas
-└── modInternalSampling.bas
+├── modInternalSampling.bas
+└── modInternalData.bas
 
 source/Menus/
 ├── modAddinMenu.bas
@@ -50,6 +52,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Benford | In the add-in (`modApiBenford` + `modInternalBenford`) |
 | Worksheet templates | In the add-in (`modApiWorksheetTemplates`) — Personal `Custom_Menu26_wkshtTmplt` |
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
+| Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
 | Matrices | Later — `Custom_Menu13_*`, `Fn_Matrices*` |
 | Editing / ranges | Later |
@@ -96,6 +99,20 @@ Each analysis accepts an optional `Range`; if omitted, an InputBox prompts (same
 | `ExtractSample` | `modApiSampling` | Sample |
 
 Random sample of input rows (percent of row count), with or without replacement.
+
+### Data public surface
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `DataCombinations` | `modApiData` | Cartesian product of selected columns; writes to the right |
+| `RandomIntegers` / `RandomNumbers` / `RandomDates` / `RandomStrings` | `modApiData` | Fill the current selection |
+| `RandomFromList` | `modApiData` | Destination then source list (InputBox ranges) |
+| `RandomTrueFalse` / `RandomYesNo` / `Random1or0` | `modApiData` | Fill the current selection |
+| `CreateYesNoDataset` | `modApiData` | Sheet **Yes No Dataset** (Predicted / Actual) |
+| `RandomTestDataTypes` | `modApiData` | Two-column type/value block |
+| `RandomBinomialNumbers` / `RandomBernoulliNumbers` / `RandomNormalNumbers` / `RandomPoissonNumbers` / `RandomExponentialNumbers` / `RandomGammaNumbers` / `RandomHypergeometricNumbers` | `modApiData` | **Excel VBA Lib → Data → Probability distributions** |
+
+Personal Menu6 **Prime numbers** (`PrimeGenerator` in `Custom_Menu10_Prime`) is not in this pack.
 
 ## Dependency direction (keep this)
 

@@ -47,6 +47,8 @@ The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`;
 ```vb
 Application.Run "BenfordAnalysisFirstDigit", Range("A2:A50")
 Application.Run "CreateDateTable", #1/1/2024#, #1/31/2024#
+Application.Run "RandomIntegers"
+Application.Run "DataCombinations"
 ```
 
 Add-in `Public Sub`s do not appear in Alt+F8. Optional: Tools → References → **ExcelVbaLib** for early-bound `Call`.

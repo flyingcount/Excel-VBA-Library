@@ -45,6 +45,8 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    Application.Run "BenfordAnalysisFirstDigit", Range("A2:A50")
    Application.Run "CreateLinksTemplate"
    Application.Run "ExtractSample", Range("A1:C20"), 50, False
+   Application.Run "RandomIntegers"
+   Application.Run "DataCombinations"
    ```
 
 Grow the library in the add-in (`Alt+F11` on `ExcelVbaLib.xlam`), then save the `.xlam`. Do not import individual `modApi*` / `modInternal*` files into caller workbooks.
