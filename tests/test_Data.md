@@ -11,7 +11,7 @@
    powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
    ```
 
-   Then retry Poisson (no Excel restart required).
+   Use `-XlamPath` if the loaded add-in is not `build\ExcelVbaLib.xlam` under the repo. Then retry Poisson (no Excel restart required).
 
 ## Combinations
 

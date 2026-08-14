@@ -32,7 +32,7 @@ If Data macros (e.g. Poisson) are stale after a source change, with Excel open a
 powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
 ```
 
-That removes and re-imports `modInternalData` then `modApiData` into `ExcelVbaLib.xlam` and saves. Pass `-Modules` to replace other components (Internal first).
+That removes and re-imports `modInternalData` then `modApiData` into that `.xlam` and saves. Pass `-XlamPath` if the add-in is not `build\ExcelVbaLib.xlam` under the repo. Pass `-Modules` to replace other components (Internal first).
 
 If the menu is missing after a source change, with Excel open and the add-in loaded:
 

@@ -45,6 +45,8 @@ To replace Data modules in an already-loaded add-in (no full rebuild) — Intern
 powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
 ```
 
+If the add-in is not `build\ExcelVbaLib.xlam` under the repo, pass `-XlamPath` to that `.xlam`. The script updates that file (by full path), not a different loaded copy with the same name.
+
 That is `modInternalData` and `modApiData`. Other modules: `-Modules modInternalBenford,modApiBenford`.
 
 To refresh ThisWorkbook + the menu module in an already-loaded add-in (no full rebuild):
