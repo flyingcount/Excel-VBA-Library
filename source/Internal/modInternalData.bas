@@ -445,11 +445,7 @@ Public Sub FillPoisson(ByVal rng As Range, ByVal lambda As Double)
     Randomize
     For r = LBound(data, 1) To UBound(data, 1)
         For c = LBound(data, 2) To UBound(data, 2)
-            If lambda <= 0 Then
-                data(r, c) = 0
-            Else
-                data(r, c) = Application.WorksheetFunction.Poisson_Inv(UnitRnd(), lambda)
-            End If
+            data(r, c) = RandomPoisson(lambda)
         Next c
     Next r
     Call PutValueArray(rng, data)
@@ -547,6 +543,44 @@ Private Sub ShuffleRows(ByRef arr As Variant, ByVal firstRow As Long, ByVal last
         Next k
     Next i
 End Sub
+
+' Excel has POISSON / POISSON.DIST but no POISSON.INV, so WorksheetFunction.Poisson_Inv
+' raises 438. Knuth for ordinary lambda; rounded Normal(mean, Sqrt(mean)) when
+' Exp(-lambda) underflows or the Knuth loop would be too long.
+Private Function RandomPoisson(ByVal lambda As Double) As Long
+    Dim L As Double
+    Dim p As Double
+    Dim k As Long
+    Dim u As Double
+    Dim x As Double
+
+    If lambda <= 0# Then
+        RandomPoisson = 0
+        Exit Function
+    End If
+
+    L = Exp(-lambda)
+    If L > 0# And lambda < 100# Then
+        k = 0
+        p = 1#
+        Do
+            k = k + 1
+            p = p * Rnd()
+        Loop While p > L
+        RandomPoisson = k - 1
+        Exit Function
+    End If
+
+    u = UnitRnd()
+    x = Application.WorksheetFunction.NormInv(u, lambda, Sqr(lambda))
+    If x <= 0# Then
+        RandomPoisson = 0
+    ElseIf x >= 2147483647# Then
+        RandomPoisson = 2147483647
+    Else
+        RandomPoisson = CLng(Int(x + 0.5))
+    End If
+End Function
 
 Private Function RandomHypergeometric(ByVal nDraw As Long, ByVal kSuccess As Long, ByVal popSize As Long) As Long
     Dim i As Long

@@ -266,7 +266,7 @@ EH:
     Call modInternalError.RaiseCurrent("RandomNormalNumbers")
 End Sub
 
-''' @Description: Poisson draws in a prompted range (inverse CDF).
+''' @Description: Poisson draws in a prompted range (mean lambda).
 Public Sub RandomPoissonNumbers()
     Dim rng As Range
     Dim lam As Variant
@@ -275,6 +275,10 @@ Public Sub RandomPoissonNumbers()
     If rng Is Nothing Then Exit Sub
     lam = modInternalData.PromptNumber("Lambda (mean)", 1)
     If IsEmpty(lam) Then Exit Sub
+    If CDbl(lam) < 0 Then
+        MsgBox "Lambda cannot be negative.", vbExclamation, "Data"
+        Exit Sub
+    End If
     Call DistFill(rng, "pois", CDbl(lam), 0, 0)
     Exit Sub
 EH:
