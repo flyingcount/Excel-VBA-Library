@@ -39,6 +39,14 @@ powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 
 The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), compiles, and writes `build/ExcelVbaLib.xlam`. After that, grow the library in the add-in itself.
 
+To replace Data modules in an already-loaded add-in (no full rebuild) — Internal first, then Api:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
+```
+
+That is `modInternalData` and `modApiData`. Other modules: `-Modules modInternalBenford,modApiBenford`.
+
 To refresh ThisWorkbook + the menu module in an already-loaded add-in (no full rebuild):
 
 ```powershell

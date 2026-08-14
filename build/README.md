@@ -26,6 +26,14 @@ Binary `.xlam` files are gitignored.
 
 The **Excel VBA Lib** menu is scheduled from `Workbook_Open` / `Workbook_AddinInstall` (`InstallExcelVbaLibMenu`). Add-ins do not run `Auto_Open` at startup, and Excel also skips an explicit `Call Auto_Open` from the add-in.
 
+If Data macros (e.g. Poisson) are stale after a source change, with Excel open and the add-in loaded:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
+```
+
+That removes and re-imports `modInternalData` then `modApiData` into `ExcelVbaLib.xlam` and saves. Pass `-Modules` to replace other components (Internal first).
+
 If the menu is missing after a source change, with Excel open and the add-in loaded:
 
 ```powershell
