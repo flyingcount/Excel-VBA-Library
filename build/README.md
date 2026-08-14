@@ -1,22 +1,31 @@
 # Build output
 
-## Rebuild the add-in
+`build/ExcelVbaLib.xlam` is the add-in Excel loads. Source-only changes do **not** update it.
 
-From the repo root, with Excel closed (or at least without `ExcelVbaLib.xlam` loaded):
+## Rebuild the add-in (no Excel)
+
+From the repo root:
+
+```bash
+pip install pyOpenVBA
+python scripts/Build-ExcelVbaLib.py
+```
+
+That writes `build/ExcelVbaLib.xlam` from `source/Internal`, `Api`, and `Menus` (ThisWorkbook is injected, not imported as a second class).
+
+## Rebuild with Excel (optional compile)
+
+With Excel closed (or at least without `ExcelVbaLib.xlam` loaded):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
 
-That imports the snapshot under `source/Internal`, `Api`, and `Menus` into **one** project and saves:
-
-`build/ExcelVbaLib.xlam`
-
 Requires **Trust access to the VBA project object model** (see [docs/ExportImport.md](../docs/ExportImport.md)).
 
-**The add-in is the library.** Add new modules in the VBE of `ExcelVbaLib.xlam`, then save the `.xlam`. Do not drop new `.bas` files into `source/` as a substitute for editing the add-in.
+**Replace a loaded add-in:** quit Excel fully, copy the new `build/ExcelVbaLib.xlam` over the loaded file, then start Excel and load the add-in again.
 
-Binary `.xlam` files are gitignored.
+**The add-in is the library.** After a rebuild, grow it in the VBE of `ExcelVbaLib.xlam` or edit `source/` and run `Build-ExcelVbaLib.py` again.
 
 ## Load it in Excel
 

@@ -32,12 +32,18 @@ To copy from Personal123: export a module, then **File → Import File…** in t
 
 Caller workbooks should **load `ExcelVbaLib.xlam`**, not import Benford (or other) modules one by one.
 
+```bash
+# No Excel required (writes build/ExcelVbaLib.xlam)
+pip install pyOpenVBA
+python scripts/Build-ExcelVbaLib.py
+```
+
 ```powershell
-# From repo root; close the add-in in Excel first if it is already loaded
+# Optional: Excel COM import + compile. Close the add-in first if it is loaded.
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
 
-The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), compiles, and writes `build/ExcelVbaLib.xlam`. After that, grow the library in the add-in itself.
+The Python build packs `source/` (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), and writes `build/ExcelVbaLib.xlam`. That file is tracked so a git pull can replace a stale local add-in. **Quit Excel first** or the copy on disk will not change.
 
 To replace Data modules in an already-loaded add-in (no full rebuild) — Internal first, then Api:
 
