@@ -20,7 +20,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 │   └── InfrastructureCatalog.md
 ├── scripts/
 │   ├── Build-ExcelVbaLib.ps1      ← rebuild build/ExcelVbaLib.xlam from the source snapshot
-│   ├── Import-AddinModules.ps1    ← replace modules in a loaded add-in (default: Data)
+│   ├── Import-AddinModules.ps1    ← replace Data modules in a specific .xlam (default: build\)
 │   └── Inject-ThisWorkbook.ps1    ← write Workbook_Open into a loaded add-in (no full rebuild)
 ├── source/                  ← snapshot of modules already in the add-in (see source/README.md)
 │   ├── Api/
