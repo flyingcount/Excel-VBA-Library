@@ -19,8 +19,8 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 │   ├── PersonalInventory.md
 │   └── InfrastructureCatalog.md
 ├── source/
-│   ├── Api/                 ← Public entry points
-│   ├── Internal/            ← Shared helpers (array→sheet, app speed, …)
+│   ├── Api/                 ← Public entry points (incl. CreateDateTable)
+│   ├── Internal/            ← Shared helpers (array→sheet, date table build, …)
 │   └── _export_raw/         ← Local dumps from Personal123 (gitignored)
 ├── build/                   ← ExcelVbaLib.xlam (local; gitignored)
 └── Data/                    ← Personal123.xlsb (local; gitignored)

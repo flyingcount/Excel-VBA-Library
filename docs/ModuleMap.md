@@ -16,10 +16,12 @@ source/
 │   ├── modApiSheets.bas      ← CreateOutputSheet, WorksheetExists, UserSelectWorksheet…
 │   ├── modApiFiles.bas       ← CreateFolder/DeleteFolder + Filehandling
 │   ├── modApiTables.bas      ← table/list migrations (Menu1/Menu19…)
+│   ├── modApiDates.bas       ← CreateDateTable (calendar dimension)
 │   └── modApiUi.bas          ← StatusUpdate/StatusClear, Notify*
 └── Internal/
     ├── modInternalSheetIO.bas    ← WriteArrayToWorksheet implementation (single copy)
     ├── modInternalExcelApp.bas   ← SpeedOn/Off, TurnOff/OnScreeupdatesAndCalculation
+    ├── modInternalDateTable.bas  ← BuildDateTableArray
     ├── modInternalNamedRanges.bas← CheckNamedRangeExists, CreateNamedRange* (dedupe later)
     ├── modInternalText.bas       ← string/null helpers
     └── modInternalError.bas      ← error helpers
