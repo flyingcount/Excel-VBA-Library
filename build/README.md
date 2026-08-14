@@ -23,7 +23,7 @@ powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 
 Requires **Trust access to the VBA project object model** (see [docs/ExportImport.md](../docs/ExportImport.md)).
 
-**Replace a loaded add-in:** quit Excel fully, copy the new `build/ExcelVbaLib.xlam` over the loaded file, then start Excel and load the add-in again.
+**Replace a loaded add-in:** quit Excel fully, then either pull the tracked `build/ExcelVbaLib.xlam` or run `scripts/Update-Existing-Addin.cmd` (updates the existing `.xlam` in place; does not create a new add-in).
 
 **The add-in is the library.** After a rebuild, grow it in the VBE of `ExcelVbaLib.xlam` or edit `source/` and run `Build-ExcelVbaLib.py` again.
 

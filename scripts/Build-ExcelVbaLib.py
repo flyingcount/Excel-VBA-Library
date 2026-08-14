@@ -53,6 +53,52 @@ def module_files() -> list[Path]:
     return files
 
 
+def verify(out: Path) -> None:
+    with ExcelFile(str(out)) as wb:
+        names = wb.module_names()
+        print("modules:", ", ".join(names))
+        data = wb.get_module("modInternalData")
+        if "Poisson_Inv(" in data:
+            raise SystemExit("Add-in still contains Poisson_Inv( — aborting.")
+        if "Function RandomPoisson(" not in data:
+            raise SystemExit("Add-in is missing RandomPoisson — aborting.")
+        if "Sub Workbook_Open(" not in wb.get_module("ThisWorkbook"):
+            raise SystemExit("ThisWorkbook is missing Workbook_Open — aborting.")
+
+
+def sync_modules(wb: ExcelFile) -> None:
+    project = wb.vba_project()
+    existing = set(wb.module_names())
+    for path in module_files():
+        src = read_vba(path)
+        if path.stem in existing:
+            print(f"  update {path.stem}")
+            wb.set_module(path.stem, src)
+        else:
+            print(f"  add {path.stem}")
+            project.add_module(path.stem, src, kind=VBAModuleKind.standard)
+    wb.set_module("ThisWorkbook", this_workbook_body(THIS_WORKBOOK))
+
+
+def create_new_xlam(out: Path) -> None:
+    with ExcelFile.create_new(str(out)) as wb:
+        project = wb.vba_project()
+        project.name = "ExcelVbaLib"
+        for extra in list(wb.module_names()):
+            if extra not in ("ThisWorkbook", "Sheet1"):
+                project.delete_module(extra)
+        sync_modules(wb)
+        wb.save()
+
+
+def patch_existing_xlam(out: Path) -> None:
+    with ExcelFile(str(out)) as wb:
+        project = wb.vba_project()
+        project.name = "ExcelVbaLib"
+        sync_modules(wb)
+        wb.save()
+
+
 def build(out: Path = OUT) -> Path:
     files = module_files()
     if not files:
@@ -60,35 +106,17 @@ def build(out: Path = OUT) -> Path:
     if not THIS_WORKBOOK.is_file():
         raise SystemExit(f"Missing {THIS_WORKBOOK}")
 
+    out = out.expanduser().resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
-    if out.exists():
-        out.unlink()
 
-    with ExcelFile.create_new(str(out)) as wb:
-        project = wb.vba_project()
-        project.name = "ExcelVbaLib"
-        for extra in list(wb.module_names()):
-            if extra not in ("ThisWorkbook", "Sheet1"):
-                project.delete_module(extra)
+    if out.is_file():
+        print(f"Updating existing add-in {out}")
+        patch_existing_xlam(out)
+    else:
+        print(f"Creating add-in {out}")
+        create_new_xlam(out)
 
-        for path in files:
-            print(f"  add {path.stem} from {path}")
-            project.add_module(path.stem, read_vba(path), kind=VBAModuleKind.standard)
-
-        wb.set_module("ThisWorkbook", this_workbook_body(THIS_WORKBOOK))
-        wb.save()
-
-    with ExcelFile(str(out)) as wb:
-        names = wb.module_names()
-        print("modules:", ", ".join(names))
-        data = wb.get_module("modInternalData")
-        if "Poisson_Inv(" in data:
-            raise SystemExit("Built add-in still contains Poisson_Inv( — aborting.")
-        if "Function RandomPoisson(" not in data:
-            raise SystemExit("Built add-in is missing RandomPoisson — aborting.")
-        if "Sub Workbook_Open(" not in wb.get_module("ThisWorkbook"):
-            raise SystemExit("ThisWorkbook is missing Workbook_Open — aborting.")
-
+    verify(out)
     print(f"Saved {out} ({out.stat().st_size} bytes)")
     return out
 
