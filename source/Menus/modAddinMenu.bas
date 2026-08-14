@@ -17,6 +17,7 @@ End Sub
 
 Private Sub BuildMenu()
     Dim pop As CommandBarPopup
+    Dim tmpl As CommandBarPopup
 
     On Error Resume Next
     Set pop = Application.CommandBars("Worksheet Menu Bar").Controls.Add( _
@@ -33,7 +34,23 @@ Private Sub BuildMenu()
     Call AddButton(pop, "Benford: First &two digits", "BenfordAnalysisTwoDigit")
     Call AddButton(pop, "Benford: First t&hree digits", "BenfordAnalysisThreeDigit")
     Call AddButton(pop, "Benford: &Last two digits", "BenfordAnalysisLastTwoDigit")
+
+    Set tmpl = AddSubmenu(pop, "&Worksheet templates")
+    Call AddButton(tmpl, "Notes workbook (all templates)", "CreateNotesWorkbook")
+    Call AddButton(tmpl, "Links", "CreateLinksTemplate")
+    Call AddButton(tmpl, "Actions", "CreateActionsTemplate")
+    Call AddButton(tmpl, "Force field", "CreateForceFieldTemplate")
+    Call AddButton(tmpl, "Assumptions", "CreateAssumptionsTemplate")
+    Call AddButton(tmpl, "Questions", "CreateQuestionsTemplate")
+    Call AddButton(tmpl, "Python packages", "ImportPythonPackages")
 End Sub
+
+Private Function AddSubmenu(ByVal Parent As CommandBarPopup, ByVal Caption As String) As CommandBarPopup
+    Dim pop As CommandBarPopup
+    Set pop = Parent.Controls.Add(Type:=msoControlPopup, Temporary:=True)
+    pop.Caption = Caption
+    Set AddSubmenu = pop
+End Function
 
 Private Sub AddButton(ByVal Parent As CommandBarPopup, ByVal Caption As String, ByVal MacroName As String)
     Dim btn As CommandBarButton

@@ -21,6 +21,7 @@ source/Api/
 ├── modApiTables.bas
 ├── modApiDates.bas       ← CreateDateTable
 ├── modApiBenford.bas     ← Benford / last-two-digit analyses
+├── modApiWorksheetTemplates.bas ← Links, Actions, Force Field, Assumptions, Questions, Notes workbook
 └── modApiUi.bas
 
 source/Internal/
@@ -30,7 +31,8 @@ source/Internal/
 ├── modInternalBenford.bas
 ├── modInternalNamedRanges.bas
 ├── modInternalText.bas
-└── modInternalError.bas
+├── modInternalError.bas
+└── modInternalWorksheetTemplates.bas
 
 source/Menus/
 └── modAddinMenu.bas
@@ -43,6 +45,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Pack | Status |
 |------|--------|
 | Benford | In the add-in (`modApiBenford` + `modInternalBenford`) |
+| Worksheet templates | In the add-in (`modApiWorksheetTemplates`) — Personal `Custom_Menu26_wkshtTmplt` |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
 | Matrices | Later — `Custom_Menu13_*`, `Fn_Matrices*` |
 | Editing / ranges | Later |
@@ -68,6 +71,19 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | `Benford3rdDigitProbability` | `modApiBenford` | (UDF / helper) |
 
 Each analysis accepts an optional `Range`; if omitted, an InputBox prompts (same as the Personal menu macros).
+
+### Worksheet templates public surface
+
+| Public procedure | Module | Sheet / table |
+|------------------|--------|----------------|
+| `CreateLinksTemplate` | `modApiWorksheetTemplates` | Links / `Tbl_Links` |
+| `CreateActionsTemplate` | `modApiWorksheetTemplates` | Actions / `Tbl_Actions` |
+| `CreateForceFieldTemplate` | `modApiWorksheetTemplates` | Force Field / `Tbl_ForceField` |
+| `CreateAssumptionsTemplate` | `modApiWorksheetTemplates` | Assumptions / `Tbl_Assumptions` |
+| `CreateQuestionsTemplate` | `modApiWorksheetTemplates` | Questions / `Tbl_Questions` |
+| `CreateNotesWorkbook` | `modApiWorksheetTemplates` | New workbook + Index |
+| `ImportPythonPackages` | `modApiWorksheetTemplates` | Python packages |
+| `HyperLinkText` | `modApiWorksheetTemplates` | UDF used on the Links sheet |
 
 ## Dependency direction (keep this)
 
