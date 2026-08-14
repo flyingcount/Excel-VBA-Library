@@ -12,25 +12,21 @@ Without this, automation cannot list or export modules from `Personal123.xlsb` (
 
 | Kind | Prefix | Example |
 |------|--------|---------|
-| Public API standard module | `modApi` | `modApiArrays.bas` |
-| Internal helper module | `modInternal` | `modInternalSheetIO.bas` |
-| Feature pack (pre-split) | `mod` + domain | `modXmR.bas` under `source/Features/Stats/` |
-| Worksheet UDF module | `Fn_` | `Fn_Ageing.bas` under `source/Udf/` |
-| Class module | `cls` | `clsTimer.cls` under `source/Classes/` |
-| UserForm | form name | `BoxCoxForm.frm` under `source/Forms/` |
+| Public API standard module | `modApi` | `modApiArrays` (in the add-in) |
+| Internal helper module | `modInternal` | `modInternalSheetIO` (in the add-in) |
+| Worksheet UDF module | `Fn_` | `Fn_Ageing` (keep Public Function names) |
+| Class module | `cls` | `clsTimer` |
+| UserForm | form name | `BoxCoxForm` |
 | Public procedure | verb + noun | `WriteArrayToSheet` |
 | Private helper | same module, `Private` | `Private Function LastUsedRow(...)` |
 
 `Attribute VB_Name` inside each file **must** match the file stem (without extension).
 
-## Manual export (from Personal123.xlsb or the .xlam)
+## Add code to the library
 
-1. Open the workbook/add-in → `Alt+F11`
-2. For each module to migrate:
-   - Right-click module → **Export File…**
-   - Save under the folder in [source/README.md](../source/README.md) (Api, Internal, Features, Udf, Forms, …)
-3. Prefer **re-home** code into the target module names in the map (rename on export), rather than keeping legacy names forever
-4. Commit the `.bas` / `.cls` text files
+Open `ExcelVbaLib.xlam` → `Alt+F11` → Insert → Module (or import a `.bas` **into the add-in**). Save the `.xlam`. Caller workbooks only load the add-in.
+
+To copy from Personal123: export a module, then **File → Import File…** in the add-in project — not into a caller workbook.
 
 ## Build the add-in (one project, full call graph)
 
@@ -41,7 +37,7 @@ Caller workbooks should **load `ExcelVbaLib.xlam`**, not import Benford (or othe
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
 
-The script imports `source/Internal`, then `Api`, then `Udf` / `Features` / `Classes` / `Forms` / `Menus` (skips `Sandbox/` and `_export_raw/`), compiles, and writes `build/ExcelVbaLib.xlam`.
+The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), compiles, and writes `build/ExcelVbaLib.xlam`. After that, grow the library in the add-in itself.
 
 ### Load and run
 
@@ -104,7 +100,7 @@ $wb.Close($false)
 $excel.Quit()
 ```
 
-Then sort exported files using the routing table in [source/README.md](../source/README.md).
+Then import chosen modules into **ExcelVbaLib.xlam**, not into a folder tree.
 
 ## Do not commit
 

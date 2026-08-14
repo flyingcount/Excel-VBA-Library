@@ -2,16 +2,16 @@
 
 ## Setup
 
-1. Import `modInternalDateTable`, `modInternalSheetIO`, `modInternalExcelApp`, `modInternalError`, `modApiSheets`, `modApiDates` into `ExcelVbaLib.xlam` (or a test workbook).
-2. Compile (`Debug → Compile VBAProject`).
+1. Load `ExcelVbaLib.xlam` — see [build/README.md](../build/README.md).
+2. Do not import date-table modules into the test workbook.
 
 ## Steps
 
-In the Immediate window (or a caller workbook with the add-in loaded):
+Immediate window (add-in loaded):
 
 ```vb
-CreateDateTable #1/1/2024#, #1/31/2024#
-CreateDateTable #4/1/2024#, #3/31/2025#, "DimDate", 4
+Application.Run "CreateDateTable", #1/1/2024#, #1/31/2024#
+Application.Run "CreateDateTable", #4/1/2024#, #3/31/2025#, "DimDate", 4
 ```
 
 ## Expected (first call)

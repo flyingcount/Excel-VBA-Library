@@ -1,19 +1,9 @@
 # Test: Benford analyses
 
-## Setup (preferred)
+## Setup
 
-1. Build and load `ExcelVbaLib.xlam` — see [build/README.md](../build/README.md).
+1. Load `ExcelVbaLib.xlam` — see [build/README.md](../build/README.md).
 2. Do not import Benford modules into the test workbook.
-
-## Setup (modules only, if not using the add-in)
-
-1. Import, in order:
-   - `source/Internal/modInternalExcelApp.bas`
-   - `source/Internal/modInternalError.bas`
-   - `source/Internal/modInternalNamedRanges.bas`
-   - `source/Internal/modInternalBenford.bas`
-   - `source/Api/modApiBenford.bas`
-2. Compile (`Debug → Compile VBAProject`).
 
 ## Sample data
 

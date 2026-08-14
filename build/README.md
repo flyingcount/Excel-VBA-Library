@@ -8,15 +8,15 @@ From the repo root, with Excel closed (or at least without `ExcelVbaLib.xlam` lo
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
 
-That imports every curated `.bas` / `.cls` / `.frm` under `source/Internal`, `Api`, `Udf`, `Features`, `Classes`, `Forms`, and `Menus` (never `Sandbox/` or `_export_raw/`) into **one** project and saves:
+That imports the snapshot under `source/Internal`, `Api`, and `Menus` into **one** project and saves:
 
 `build/ExcelVbaLib.xlam`
 
 Requires **Trust access to the VBA project object model** (see [docs/ExportImport.md](../docs/ExportImport.md)).
 
-Adding a future Personal123 module: drop it in the right `source/` folder and re-run the script. The new file is picked up automatically.
+**The add-in is the library.** Add new modules in the VBE of `ExcelVbaLib.xlam`, then save the `.xlam`. Do not drop new `.bas` files into `source/` as a substitute for editing the add-in.
 
-Binary `.xlam` files are gitignored — commit source, not the add-in.
+Binary `.xlam` files are gitignored.
 
 ## Load it in Excel
 

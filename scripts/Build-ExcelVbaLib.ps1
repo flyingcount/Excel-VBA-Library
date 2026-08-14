@@ -23,14 +23,11 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
 $buildDir = Join-Path $RepoRoot "build"
 $xlamPath = Join-Path $buildDir "ExcelVbaLib.xlam"
 
-# Import order: Internal first (call graph), then Api, then optional packs. Never Sandbox or _export_raw.
+# Import order: Internal first (call graph), then Api, then Menus. Never _export_raw.
+# New library code belongs in ExcelVbaLib.xlam, not extra source folders.
 $importRoots = @(
     (Join-Path $RepoRoot "source\Internal"),
     (Join-Path $RepoRoot "source\Api"),
-    (Join-Path $RepoRoot "source\Udf"),
-    (Join-Path $RepoRoot "source\Features"),
-    (Join-Path $RepoRoot "source\Classes"),
-    (Join-Path $RepoRoot "source\Forms"),
     (Join-Path $RepoRoot "source\Menus")
 )
 
@@ -51,7 +48,7 @@ function Get-ImportFiles {
 
 $toImport = Get-ImportFiles
 if ($toImport.Count -eq 0) {
-    throw "No .bas/.cls/.frm files found under source/Internal, Api, Udf, Features, Classes, Forms, or Menus."
+    throw "No .bas/.cls/.frm files found under source/Internal, Api, or Menus."
 }
 
 Write-Host "Will import $($toImport.Count) component(s):"

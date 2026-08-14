@@ -7,32 +7,11 @@ Based on the export of `Data/Personal123.xlsb` (see [PersonalInventory.md](Perso
 
 Many `Custom_Menu*` modules contain **private copies** of the same helpers (~21× `WriteArrayToWorksheet`, ~18× screen-update toggles). Migration = centralize once, then delete duplicates.
 
-## Target layout
+## Library
 
-Full routing table (Personal prefix → folder): **[source/README.md](../source/README.md)**.
+**The library is `ExcelVbaLib.xlam`.** Add further Personal123 modules in the add-in VBE. `source/` is only a snapshot of what is already in the add-in (see [source/README.md](../source/README.md)).
 
-```text
-source/
-├── Api/                 ← Public names (modApi*.bas)
-├── Internal/            ← Shared plumbing (modInternal*.bas)
-├── Features/            ← Custom_Menu* domain packs
-│   ├── Stats/           ← Menu5 remainder, Menu11 plots/XmR, Menu18
-│   ├── Matrices/        ← Menu13
-│   ├── Editing/         ← Menu1, 14, 15, 16
-│   ├── Charts/          ← Menu3
-│   ├── Output/          ← Menu8
-│   ├── Workbook/        ← Menu2
-│   ├── TimeSeries/      ← Menu27, 28
-│   └── Other/           ← cipher, primes, sampling, …
-├── Udf/                 ← Fn_* worksheet functions
-├── Forms/               ← UserForms
-├── Classes/             ← cls*.cls
-├── Menus/               ← Custom_Menu_Menus, ThisWorkbook
-├── Sandbox/             ← z_* / WIP
-└── _export_raw/         ← unsorted Personal dump
-```
-
-### Curated so far (Api + Internal)
+### Currently in the add-in
 
 ```text
 source/Api/
@@ -52,26 +31,28 @@ source/Internal/
 ├── modInternalNamedRanges.bas
 ├── modInternalText.bas
 └── modInternalError.bas
+
+source/Menus/
+└── modAddinMenu.bas
 ```
 
-### Phase-2 feature packs (do not import all at once)
+### Later Personal packs
 
-Keep as separate modules under `source/Features/<family>/` when landing from Personal. Split to Api + Internal only when the public surface is stable (Benford already is).
+Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-process). Do not land it in git folders first. Leave `z_*` / WIP out until reviewed.
 
-| Pack | Status | Destination |
-|------|--------|-------------|
-| Benford | Extracted | `Api/modApiBenford` + `Internal/modInternalBenford` |
-| Stats / quality | Later | `Features/Stats/` — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
-| Matrices | Later | `Features/Matrices/` — `Custom_Menu13_*`; UDFs → `Udf/` |
-| Editing / ranges | Later | `Features/Editing/` |
-| Charts | Later | `Features/Charts/` |
-| Output | Later | `Features/Output/` |
-| Workbook | Later | `Features/Workbook/` |
-| Time series | Later | `Features/TimeSeries/` |
-| UDFs | Later | `Udf/` — keep `Fn_*` names |
-| Forms | Later | `Forms/` |
-| Menus | Later | `Menus/` |
-| `z_*` / WIP | Exclude | `Sandbox/` |
+| Pack | Status |
+|------|--------|
+| Benford | In the add-in (`modApiBenford` + `modInternalBenford`) |
+| Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
+| Matrices | Later — `Custom_Menu13_*`, `Fn_Matrices*` |
+| Editing / ranges | Later |
+| Charts | Later |
+| Output | Later |
+| Workbook | Later |
+| Time series | Later |
+| UDFs | Later — keep `Fn_*` names |
+| Forms | Later |
+| Menus | Add-in menu is `modAddinMenu`; Personal `Custom_Menu_Menus` later |
 
 ### Benford public surface
 
@@ -94,36 +75,18 @@ Each analysis accepts an optional `Range`; if omitted, an InputBox prompts (same
 Other workbooks / Personal shims
         │
         ▼
-   Api  /  Udf  /  Features  /  Menus
+   ExcelVbaLib.xlam (public Subs / UDFs / menu)
         │
         ▼
-   Internal
+   Internal helpers in the same add-in
         │
         ▼
    Excel object model
 ```
 
-- **Api / Features / Udf / Menus → Internal** ✅  
-- **Internal → Api** ❌ (causes cycles)  
-- **Api → Api** sparingly (prefer one facade calling Internal)  
-- **Sandbox** is never imported until promoted
-
-## What goes where
-
-| If the routine… | Put it in |
-|-----------------|-----------|
-| Is called from other workbooks or from the ribbon | `Api/*` as `Public` |
-| Is a worksheet formula (`Fn_*`) | `Udf/` (keep the Public Function name) |
-| Is a `Custom_Menu*` domain tool not yet split | `Features/<family>/` — see [source/README.md](../source/README.md) |
-| Is a UserForm | `Forms/` |
-| Is a class module | `Classes/` |
-| Builds menus / `Workbook_Open` | `Menus/` |
-| Is `z_*` / WIP / stock snippets | `Sandbox/` |
-| Writes/reads arrays to ranges and is shared by many macros | `Internal/modInternalSheetIO` |
-| Turns off screen updating / calculation around a block | `Internal/modInternalExcelApp` |
-| Is only used by one Api procedure | `Private` in that same Api module |
-| Picks a folder or builds a file list | `Api/modApiFiles` (thin) + Internal if parsing is heavy |
-| Creates sheets / clears used ranges for output | `Api/modApiSheets` calling SheetIO |
+- Public entry points and helpers live in **the same `.xlam`** ✅  
+- Internal helpers must not call public API modules (avoids cycles)  
+- Do not import add-in modules into caller workbooks
 
 ## Suggested public surface (starter names)
 
@@ -172,11 +135,11 @@ Stabilize these names in the add-in; map old Personal names → new names in a s
 
 ## Migration order (preserves Call links)
 
-1. **Split `aPublicProcedures.bas`** from `_export_raw/` into Api + Internal (see mapping below) — this is step one, not importing 200 menu modules.
-2. Create empty `.xlam`; import Internal then Api; **compile**.
-3. In Personal123, change one pilot menu module to `Call` the shared names (or reference the add-in) and **delete its private** `WriteArrayToWorksheet` / `TurnOffScreeupdates…` copies.
-4. Repeat pilots (Histogram → LinearRegression → Benford).
-5. Only then batch-import feature modules; UDFs (`Fn_*`) can stay in Personal longer if worksheet formulas depend on them.
+1. **Split `aPublicProcedures.bas`** from `_export_raw/` into helpers already in the add-in (see mapping below) — this is step one, not importing 200 menu modules.
+2. Load `ExcelVbaLib.xlam`; **compile**.
+3. In Personal123, change one pilot menu module to `Call` / `Application.Run` the add-in names and **delete its private** `WriteArrayToWorksheet` / `TurnOffScreeupdates…` copies.
+4. Repeat pilots (Histogram → LinearRegression). Benford is already in the add-in.
+5. Copy further feature modules into the **add-in** project; UDFs (`Fn_*`) can stay in Personal longer if worksheet formulas depend on them.
 6. Leave `z_*` / `z_WIP` out of the add-in until reviewed.
 
 ### `aPublicProcedures` → scaffold mapping
