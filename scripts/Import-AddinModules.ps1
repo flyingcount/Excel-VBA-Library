@@ -120,6 +120,12 @@ try {
         Write-Host "Opening $XlamPath"
         $addinWb = $excel.Workbooks.Open($XlamPath)
     }
+    if ($null -eq $addinWb) {
+        try { $addinWb = $excel.Workbooks.Item("ExcelVbaLib.xlam") } catch { $addinWb = $null }
+        if ($null -ne $addinWb) {
+            Write-Warning "Path match failed; updating open workbook $($addinWb.FullName)"
+        }
+    }
 
     try {
         $null = $addinWb.VBProject.Name
@@ -143,6 +149,25 @@ Then re-run this script.
         }
         [void]$addinWb.VBProject.VBComponents.Import($item.Path)
         Write-Host "  imported $($item.Name) from $($item.Path)"
+    }
+
+    try {
+        $excel.Visible = $true
+        $excel.VBE.MainWindow.Visible = $true
+        $compileCtrl = $excel.VBE.CommandBars.FindControl(1, 578)
+        if ($null -eq $compileCtrl) {
+            $compileCtrl = $excel.VBE.CommandBars.FindControl($null, 578)
+        }
+        if ($null -ne $compileCtrl) {
+            $compileCtrl.Execute()
+            Write-Host "  compiled VBA project"
+        }
+        if ($createdExcel) {
+            $excel.VBE.MainWindow.Visible = $false
+            $excel.Visible = $false
+        }
+    } catch {
+        Write-Warning "Compile step skipped: $($_.Exception.Message)"
     }
 
     $excel.DisplayAlerts = $false
