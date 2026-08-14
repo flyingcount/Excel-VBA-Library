@@ -592,6 +592,8 @@ Private Sub BenfordFrequencyPlot(ByVal suffix As String, ByVal chartTitle As Str
             .XValues = rngBins
             .Values = rngActual
             .ChartType = xlLineMarkers
+            .MarkerStyle = xlMarkerStyleX
+            .MarkerSize = 3
             .Format.Line.Weight = 0.25
         End With
         .SeriesCollection.NewSeries
@@ -600,6 +602,8 @@ Private Sub BenfordFrequencyPlot(ByVal suffix As String, ByVal chartTitle As Str
             .XValues = rngBins
             .Values = rngExpected
             .ChartType = xlLineMarkers
+            .MarkerStyle = xlMarkerStyleX
+            .MarkerSize = 3
             .Format.Line.Weight = 0.25
         End With
         .SeriesCollection.NewSeries
@@ -650,6 +654,8 @@ Private Sub BenfordScatterPlot(ByVal suffix As String)
             .XValues = rngExpected
             .Values = rngActual
             .ChartType = xlXYScatter
+            .MarkerStyle = xlMarkerStyleX
+            .MarkerSize = 3
             .Trendlines.Add
             With .Trendlines(1)
                 .DisplayEquation = True
