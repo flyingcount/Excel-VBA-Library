@@ -9,36 +9,84 @@ Many `Custom_Menu*` modules contain **private copies** of the same helpers (~21�
 
 ## Target layout
 
+Full routing table (Personal prefix → folder): **[source/README.md](../source/README.md)**.
+
 ```text
 source/
-├── Api/
-│   ├── modApiArrays.bas      ← from aPublicProcedures: WriteArray*, WriteRange*
-│   ├── modApiSheets.bas      ← CreateOutputSheet, WorksheetExists, UserSelectWorksheet…
-│   ├── modApiFiles.bas       ← CreateFolder/DeleteFolder + Filehandling
-│   ├── modApiTables.bas      ← table/list migrations (Menu1/Menu19…)
-│   ├── modApiDates.bas       ← CreateDateTable (calendar dimension)
-│   └── modApiUi.bas          ← StatusUpdate/StatusClear, Notify*
-└── Internal/
-    ├── modInternalSheetIO.bas    ← WriteArrayToWorksheet implementation (single copy)
-    ├── modInternalExcelApp.bas   ← SpeedOn/Off, TurnOff/OnScreeupdatesAndCalculation
-    ├── modInternalDateTable.bas  ← BuildDateTableArray
-    ├── modInternalNamedRanges.bas← CheckNamedRangeExists, CreateNamedRange* (dedupe later)
-    ├── modInternalText.bas       ← string/null helpers
-    └── modInternalError.bas      ← error helpers
+├── Api/                 ← Public names (modApi*.bas)
+├── Internal/            ← Shared plumbing (modInternal*.bas)
+├── Features/            ← Custom_Menu* domain packs
+│   ├── Stats/           ← Menu5 remainder, Menu11 plots/XmR, Menu18
+│   ├── Matrices/        ← Menu13
+│   ├── Editing/         ← Menu1, 14, 15, 16
+│   ├── Charts/          ← Menu3
+│   ├── Output/          ← Menu8
+│   ├── Workbook/        ← Menu2
+│   ├── TimeSeries/      ← Menu27, 28
+│   └── Other/           ← cipher, primes, sampling, …
+├── Udf/                 ← Fn_* worksheet functions
+├── Forms/               ← UserForms
+├── Classes/             ← cls*.cls
+├── Menus/               ← Custom_Menu_Menus, ThisWorkbook
+├── Sandbox/             ← z_* / WIP
+└── _export_raw/         ← unsorted Personal dump
+```
+
+### Curated so far (Api + Internal)
+
+```text
+source/Api/
+├── modApiArrays.bas
+├── modApiSheets.bas
+├── modApiFiles.bas
+├── modApiTables.bas
+├── modApiDates.bas       ← CreateDateTable
+├── modApiBenford.bas     ← Benford / last-two-digit analyses
+└── modApiUi.bas
+
+source/Internal/
+├── modInternalSheetIO.bas
+├── modInternalExcelApp.bas
+├── modInternalDateTable.bas
+├── modInternalBenford.bas
+├── modInternalNamedRanges.bas
+├── modInternalText.bas
+└── modInternalError.bas
 ```
 
 ### Phase-2 feature packs (do not import all at once)
 
-Keep as separate modules under `source/Features/` when ready (names can stay `Custom_Menu…` initially):
+Keep as separate modules under `source/Features/<family>/` when landing from Personal. Split to Api + Internal only when the public surface is stable (Benford already is).
 
-| Pack | Examples from export |
-|------|----------------------|
-| Stats / quality | `Custom_Menu5_*` Benford, `Custom_Menu11_*` plots, XmR |
-| Matrices | `Custom_Menu13_*`, `Fn_Matrices*` |
-| Editing / ranges | `Custom_Menu1_Editing`, `Custom_Menu14_*` |
-| Output | `Custom_Menu8_Output*` |
-| UDFs | `Fn_*` (keep Public Function names for worksheet formulas) |
-| Menus | `Custom_Menu_Menus`, `ThisWorkbook` open handlers |
+| Pack | Status | Destination |
+|------|--------|-------------|
+| Benford | Extracted | `Api/modApiBenford` + `Internal/modInternalBenford` |
+| Stats / quality | Later | `Features/Stats/` — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
+| Matrices | Later | `Features/Matrices/` — `Custom_Menu13_*`; UDFs → `Udf/` |
+| Editing / ranges | Later | `Features/Editing/` |
+| Charts | Later | `Features/Charts/` |
+| Output | Later | `Features/Output/` |
+| Workbook | Later | `Features/Workbook/` |
+| Time series | Later | `Features/TimeSeries/` |
+| UDFs | Later | `Udf/` — keep `Fn_*` names |
+| Forms | Later | `Forms/` |
+| Menus | Later | `Menus/` |
+| `z_*` / WIP | Exclude | `Sandbox/` |
+
+### Benford public surface
+
+| Public procedure | Module | Output sheet (Personal spelling kept) |
+|------------------|--------|----------------------------------------|
+| `BenfordAnalysisFirstDigit` | `modApiBenford` | Bedford Analysis First digit |
+| `BenfordAnalysisSecondDigit` | `modApiBenford` | Bedford Analysis Second digit |
+| `BenfordAnalysisThirdDigit` | `modApiBenford` | Bedford Analysis Third digit |
+| `BenfordAnalysisTwoDigit` | `modApiBenford` | Bedford Analysis 2 digit |
+| `BenfordAnalysisThreeDigit` | `modApiBenford` | Bedford Analysis 3 digit |
+| `BenfordAnalysisLastTwoDigit` | `modApiBenford` | Bedford Analysis last 2 digits |
+| `Benford2ndDigitProbability` | `modApiBenford` | (UDF / helper) |
+| `Benford3rdDigitProbability` | `modApiBenford` | (UDF / helper) |
+
+Each analysis accepts an optional `Range`; if omitted, an InputBox prompts (same as the Personal menu macros).
 
 ## Dependency direction (keep this)
 
@@ -46,24 +94,31 @@ Keep as separate modules under `source/Features/` when ready (names can stay `Cu
 Other workbooks / Personal shims
         │
         ▼
-   Api (Public only)
+   Api  /  Udf  /  Features  /  Menus
         │
         ▼
-   Internal (helpers)
+   Internal
         │
         ▼
    Excel object model
 ```
 
-- **Api → Internal** ✅  
+- **Api / Features / Udf / Menus → Internal** ✅  
 - **Internal → Api** ❌ (causes cycles)  
-- **Api → Api** sparingly (prefer one facade calling Internal)
+- **Api → Api** sparingly (prefer one facade calling Internal)  
+- **Sandbox** is never imported until promoted
 
 ## What goes where
 
 | If the routine… | Put it in |
 |-----------------|-----------|
 | Is called from other workbooks or from the ribbon | `Api/*` as `Public` |
+| Is a worksheet formula (`Fn_*`) | `Udf/` (keep the Public Function name) |
+| Is a `Custom_Menu*` domain tool not yet split | `Features/<family>/` — see [source/README.md](../source/README.md) |
+| Is a UserForm | `Forms/` |
+| Is a class module | `Classes/` |
+| Builds menus / `Workbook_Open` | `Menus/` |
+| Is `z_*` / WIP / stock snippets | `Sandbox/` |
 | Writes/reads arrays to ranges and is shared by many macros | `Internal/modInternalSheetIO` |
 | Turns off screen updating / calculation around a block | `Internal/modInternalExcelApp` |
 | Is only used by one Api procedure | `Private` in that same Api module |
@@ -104,6 +159,17 @@ Stabilize these names in the add-in; map old Personal names → new names in a s
 |------------------|----------------|
 | `NotifyInfo` / `NotifyError` | User messaging wrappers |
 
+### `modApiBenford`
+| Public procedure | Responsibility |
+|------------------|----------------|
+| `BenfordAnalysisFirstDigit` | Leading-digit 1–9 analysis sheet + charts |
+| `BenfordAnalysisSecondDigit` | Second digit 0–9 |
+| `BenfordAnalysisThirdDigit` | Third digit 0–9 |
+| `BenfordAnalysisTwoDigit` | First two digits 10–99 |
+| `BenfordAnalysisThreeDigit` | First three digits 100–999 |
+| `BenfordAnalysisLastTwoDigit` | Last two digits 00–99 (uniform expected) |
+| `Benford2ndDigitProbability` / `Benford3rdDigitProbability` | Worksheet UDFs |
+
 ## Migration order (preserves Call links)
 
 1. **Split `aPublicProcedures.bas`** from `_export_raw/` into Api + Internal (see mapping below) — this is step one, not importing 200 menu modules.
@@ -120,7 +186,7 @@ Stabilize these names in the add-in; map old Personal names → new names in a s
 | `SpeedOn` / `SpeedOff` / `TurnOffScreeupdatesAndCalculation` / `TurnOn…` | `modInternalExcelApp` (+ thin Public wrappers in Api if menus need them) |
 | `WriteArrayToWorksheet` / `WriteArrayToWorksheetA1` / `WriteRangeToWorksheet` | `modInternalSheetIO` + `modApiArrays` |
 | `CreateOutputSheet` / `DeleteOutputSheet` / `CheckExistenceAndDeleteOutputSheet` / `WorksheetExists` | `modApiSheets` |
-| `CreateNamedRangeForSheet` / `ValidRangeName` / … | `modInternalNamedRanges` (add when you migrate) |
+| `CreateNamedRangeForSheet` / `ValidRangeName` / … | `modInternalNamedRanges` |
 | `CreateFolder` / `DeleteFolder` | `modApiFiles` |
 | `StatusUpdate` / `StatusClear` | `modApiUi` |
 

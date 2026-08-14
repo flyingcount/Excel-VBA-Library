@@ -16,15 +16,16 @@ Raw export: `source/_export_raw/` (gitignored dumps + `inventory.csv`)
 
 ## Natural groupings (keep Call links inside each family first)
 
-| Prefix / area | Role | Suggested long-term home |
-|---------------|------|---------------------------|
-| `Custom_Menu*` | Ribbon/menu-driven tools (stats, XmR, Benford, matrices, editing, output…) | Feature modules under `source/Features/MenuNN_…` later; for now leave as exported units |
-| `Fn_*` | Worksheet-callable UDFs (ageing, tax, flying, z-score…) | `source/Api/modApiUdf*.bas` or keep `Fn_*` names for Excel formula compatibility |
-| `aPublicProcedures` | Likely curated public entry list | Seed for `source/Api/` |
+| Prefix / area | Role | Home |
+|---------------|------|------|
+| `Custom_Menu*` domain tools | Stats, XmR, matrices, editing, output, … | `source/Features/<family>/` — [source/README.md](../source/README.md) |
+| `Fn_*` | Worksheet-callable UDFs | `source/Udf/` (keep Public Function names) |
+| `aPublicProcedures` / `aPublic*` | Shared library hubs | `source/Api/` + `source/Internal/` |
 | `Filehandling`, `JPEGS`, `Sampling`, `Maths` | Shared utilities | `Api` / `Internal` per [ModuleMap.md](ModuleMap.md) |
-| `z_*` / WIP | Incomplete or experiments | Do not import to `.xlam` until reviewed |
-| `Cipher_*`, domain tools | Niche features | Optional feature pack modules |
-| `ThisWorkbook` | `Workbook_Open`, custom menus | Stays in add-in `ThisWorkbook` (not a `.bas` API) |
+| UserForms | `.frm` / `.frx` | `source/Forms/` |
+| `Custom_Menu_Menus`, `ThisWorkbook` | Ribbon / open handlers | `source/Menus/` |
+| `z_*` / WIP | Incomplete or snippet templates | `source/Sandbox/` — do not import to `.xlam` until reviewed |
+| `Cipher_*`, niche tools | Domain features | `source/Features/Other/` until a family folder exists |
 
 ## Critical finding: duplicated sheet/array helpers
 

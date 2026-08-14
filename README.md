@@ -18,9 +18,17 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 │   ├── ModuleMap.md
 │   ├── PersonalInventory.md
 │   └── InfrastructureCatalog.md
-├── source/
-│   ├── Api/                 ← Public entry points (incl. CreateDateTable)
-│   ├── Internal/            ← Shared helpers (array→sheet, date table build, …)
+├── scripts/
+│   └── Build-ExcelVbaLib.ps1  ← rebuild build/ExcelVbaLib.xlam from source/
+├── source/                  ← see [source/README.md](source/README.md) for where each Personal123 family goes
+│   ├── Api/                 ← Public entry points (CreateDateTable, Benford, …)
+│   ├── Internal/            ← Shared helpers
+│   ├── Features/            ← Domain packs (Stats, Matrices, Editing, …)
+│   ├── Udf/                 ← Worksheet functions (`Fn_*`)
+│   ├── Forms/               ← UserForms
+│   ├── Classes/             ← Class modules
+│   ├── Menus/               ← Ribbon / ThisWorkbook handlers
+│   ├── Sandbox/             ← `z_*` / WIP (not imported until reviewed)
 │   └── _export_raw/         ← Local dumps from Personal123 (gitignored)
 ├── build/                   ← ExcelVbaLib.xlam (local; gitignored)
 └── Data/                    ← Personal123.xlsb (local; gitignored)
@@ -29,9 +37,22 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 ## Quick start
 
 1. Enable **Trust access to the VBA project object model** — see [docs/ExportImport.md](docs/ExportImport.md).
-2. Export or refresh from `Data/Personal123.xlsb` into `source/_export_raw/` when needed.
-3. Curate shared code into `source/Api` and `source/Internal` using [docs/ModuleMap.md](docs/ModuleMap.md) and [docs/InfrastructureCatalog.md](docs/InfrastructureCatalog.md).
-4. Create `build/ExcelVbaLib.xlam`, import curated modules, compile, and load as an Excel add-in.
+2. Build the add-in (Excel must not have `ExcelVbaLib.xlam` loaded):
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
+   ```
+
+3. Excel → Options → Add-ins → Excel Add-ins → Browse → `build/ExcelVbaLib.xlam`.
+4. Run Benford from the **Excel VBA Lib** menu, or:
+
+   ```vb
+   Application.Run "BenfordAnalysisFirstDigit", Range("A2:A50")
+   ```
+
+Do not import individual `modApi*` / `modInternal*` files into caller workbooks. Re-run the build script when you add modules under `source/`.
+
+To migrate more code from Personal123, export into `source/_export_raw/` and re-home using [source/README.md](source/README.md).
 
 ## License
 

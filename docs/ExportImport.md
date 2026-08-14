@@ -14,7 +14,10 @@ Without this, automation cannot list or export modules from `Personal123.xlsb` (
 |------|--------|---------|
 | Public API standard module | `modApi` | `modApiArrays.bas` |
 | Internal helper module | `modInternal` | `modInternalSheetIO.bas` |
-| Class module (optional) | `cls` | `clsTimer.cls` |
+| Feature pack (pre-split) | `mod` + domain | `modXmR.bas` under `source/Features/Stats/` |
+| Worksheet UDF module | `Fn_` | `Fn_Ageing.bas` under `source/Udf/` |
+| Class module | `cls` | `clsTimer.cls` under `source/Classes/` |
+| UserForm | form name | `BoxCoxForm.frm` under `source/Forms/` |
 | Public procedure | verb + noun | `WriteArrayToSheet` |
 | Private helper | same module, `Private` | `Private Function LastUsedRow(...)` |
 
@@ -25,17 +28,42 @@ Without this, automation cannot list or export modules from `Personal123.xlsb` (
 1. Open the workbook/add-in → `Alt+F11`
 2. For each module to migrate:
    - Right-click module → **Export File…**
-   - Save under `source/Api/` or `source/Internal/` per [ModuleMap.md](ModuleMap.md)
+   - Save under the folder in [source/README.md](../source/README.md) (Api, Internal, Features, Udf, Forms, …)
 3. Prefer **re-home** code into the target module names in the map (rename on export), rather than keeping legacy names forever
 4. Commit the `.bas` / `.cls` text files
 
-## Manual import (into the add-in)
+## Build the add-in (one project, full call graph)
+
+Caller workbooks should **load `ExcelVbaLib.xlam`**, not import Benford (or other) modules one by one.
+
+```powershell
+# From repo root; close the add-in in Excel first if it is already loaded
+powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
+```
+
+The script imports `source/Internal`, then `Api`, then `Udf` / `Features` / `Classes` / `Forms` / `Menus` (skips `Sandbox/` and `_export_raw/`), compiles, and writes `build/ExcelVbaLib.xlam`.
+
+### Load and run
+
+1. Excel → Options → Add-ins → Manage **Excel Add-ins** → Go → Browse → `build/ExcelVbaLib.xlam`
+2. Use the **Excel VBA Lib** menu, or from the Immediate window:
+
+```vb
+Application.Run "BenfordAnalysisFirstDigit", Range("A2:A50")
+Application.Run "CreateDateTable", #1/1/2024#, #1/31/2024#
+```
+
+Add-in `Public Sub`s do not appear in Alt+F8. Optional: Tools → References → **ExcelVbaLib** for early-bound `Call`.
+
+### Manual import (into the add-in)
+
+Use this only if you are not running the build script:
 
 1. Create a new workbook → save as **Excel Add-in** (`*.xlam`) under `build/ExcelVbaLib.xlam`
-2. `Alt+F11` → File → **Import File…** for each `source/**/*.bas`
-3. Set project name (VBAProject properties) to e.g. `ExcelVbaLib`
+2. `Alt+F11` → File → **Import File…** for each `source/**/*.bas` (**Internal** first)
+3. Set project name (VBAProject properties) to `ExcelVbaLib`
 4. Save the add-in
-5. Excel → Options → Add-ins → manage Excel Add-ins → browse and load `ExcelVbaLib.xlam`
+5. Load it as an Excel add-in (steps above)
 
 ## Keep links (calls) intact
 
@@ -76,7 +104,7 @@ $wb.Close($false)
 $excel.Quit()
 ```
 
-Then sort exported files into `Api/` vs `Internal/` using the module map.
+Then sort exported files using the routing table in [source/README.md](../source/README.md).
 
 ## Do not commit
 
