@@ -52,7 +52,7 @@ Select a range (or accept the InputBox range), then **Excel VBA Lib → Data →
 | Binomial | trials 10, p 0.5 | Integers 0-10 |
 | Bernoulli | p 0.8 | 0 or 1; about 80% ones |
 | Normal | mean 0, sd 1 | Reals, roughly bell-shaped |
-| Poisson | lambda 4 | Non-negative integers |
+| Poisson | lambda 4 | Non-negative integers clustered near 4; must not raise 438 |
 | Exponential | lambda 1 | Positive reals |
 | Gamma | alpha 2, beta 2 | Positive reals |
 | Hypergeometric | n 10, K 20, N 50 | Integers 0-10 (successes in the sample) |
