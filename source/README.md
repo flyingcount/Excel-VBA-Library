@@ -6,14 +6,11 @@ These `.bas` files are a snapshot of what was imported into **`build/ExcelVbaLib
 
 `_export_raw/` is a local dump from `Data/Personal123.xlsb` (gitignored). It is not imported into the add-in.
 
-To rebuild the current add-in from this snapshot:
+To rebuild the current add-in from this snapshot (no Excel):
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
+```bash
+pip install pyOpenVBA
+python scripts/Build-ExcelVbaLib.py
 ```
 
-To replace Data modules in a loaded add-in (`modInternalData`, then `modApiData`):
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
-```
+Quit Excel before replacing a loaded `build/ExcelVbaLib.xlam`.
