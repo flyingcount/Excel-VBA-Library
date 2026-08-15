@@ -13,6 +13,6 @@
 ## Expected
 
 - The menu is present within about a second of startup (OnTime waits until Excel is idle).
-- Submenus: Benford, Data (with Probability distributions), Sampling, **Matrices** (Create / Operations / Properties / Validation / Decompositions), Worksheet templates.
+- Submenus: Benford, Data (with Probability distributions), Sampling, **Hyperlinks**, **Matrices** (Create / Operations / Properties / Validation / Decompositions), Worksheet templates.
 - Unchecking the add-in removes the menu. Checking it again restores the menu without a restart (`Workbook_AddinInstall`).
 - `Application.Run "Auto_Open"` still rebuilds the menu if you need it in the current session.

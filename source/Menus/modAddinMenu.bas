@@ -69,6 +69,7 @@ Private Function TryBuildMenu() As Boolean
     Dim samp As CommandBarPopup
     Dim dataMenu As CommandBarPopup
     Dim dist As CommandBarPopup
+    Dim hlMenu As CommandBarPopup
     Dim mat As CommandBarPopup
     Dim matCreate As CommandBarPopup
     Dim matOps As CommandBarPopup
@@ -120,6 +121,15 @@ Private Function TryBuildMenu() As Boolean
 
     Set samp = AddSubmenu(pop, "&Sampling")
     Call AddButton(samp, "Extract sample of &rows", "ExtractSample")
+
+    Set hlMenu = AddSubmenu(pop, "&Hyperlinks")
+    Call AddButton(hlMenu, "&Inventory", "HyperlinkInventory")
+    Call AddButton(hlMenu, "Create &index", "CreateIndex")
+    Call AddButton(hlMenu, "&Update index", "UpdateIndex")
+    Call AddButton(hlMenu, "List &worksheets", "ShowAllWorksheetsInWorkbook")
+    Call AddButton(hlMenu, "Remove by &text to display", "RemovingHyperLink", True)
+    Call AddButton(hlMenu, "&Open selected", "OpenHyperlink")
+    Call AddButton(hlMenu, "&Back-links to this sheet A1", "AddHyperlinksToCurrentSheetA1")
 
     Set mat = AddSubmenu(pop, "&Matrices")
     Call AddButton(mat, "Matrix &diagnostic", "MatrixDiagnosticMessage")

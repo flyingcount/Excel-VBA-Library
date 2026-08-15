@@ -24,6 +24,7 @@ source/Api/
 ├── modApiWorksheetTemplates.bas ← Links, Actions, Force Field, Assumptions, Questions, Notes workbook
 ├── modApiSampling.bas    ← ExtractSample (Menu4)
 ├── modApiData.bas        ← random fills, combinations, distributions (Menu6)
+├── modApiHyperlinks.bas  ← hyperlink inventory / index / follow (Menu21)
 ├── Custom_Menu13_CreateMatrices.bas
 ├── Custom_Menu13_Matrices1.bas
 ├── Custom_Menu13_Matrices2.bas
@@ -45,6 +46,7 @@ source/Internal/
 ├── modInternalWorksheetTemplates.bas
 ├── modInternalSampling.bas
 ├── modInternalData.bas
+├── modInternalHyperlinks.bas
 └── modInternalMatrices.bas
 
 source/Menus/
@@ -62,6 +64,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Worksheet templates | In the add-in (`modApiWorksheetTemplates`) — Personal `Custom_Menu26_wkshtTmplt` |
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
 | Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
+| Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
 | Matrices | In the add-in (`Custom_Menu13_Matrices1` / `Custom_Menu13_Matrices2` / rest of Menu13) — Personal names kept. Overlay originals with `Import-Menu13FromPersonal.ps1` |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
 | Editing / ranges | Later |
@@ -122,6 +125,22 @@ Random sample of input rows (percent of row count), with or without replacement.
 | `RandomBinomialNumbers` / `RandomBernoulliNumbers` / `RandomNormalNumbers` / `RandomPoissonNumbers` / `RandomExponentialNumbers` / `RandomGammaNumbers` / `RandomHypergeometricNumbers` | `modApiData` | **Excel VBA Lib → Data → Probability distributions** |
 
 Personal Menu6 **Prime numbers** (`PrimeGenerator` in `Custom_Menu10_Prime`) is not in this pack.
+
+### Hyperlinks public surface
+
+Personal Menu21 (`Custom_Menu21_Hyperlinks`, `Custom_Menu21_Index`). Menu **Excel VBA Lib → Hyperlinks**. Personal OnAction names are kept.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `HyperlinkInventory` | `modApiHyperlinks` | Sheet **Hyperlinks**: location, text, ScreenTip, address, SubAddress, type |
+| `CreateIndex` | `modApiHyperlinks` | Sheet **Index**; inserts a Back to Index row on unprotected sheets |
+| `UpdateIndex` | `modApiHyperlinks` | Rebuilds Index in place; does not insert rows |
+| `ShowAllWorksheetsInWorkbook` | `modApiHyperlinks` | Message box with hidden / very hidden flags |
+| `RemovingHyperLink` | `modApiHyperlinks` | Deletes workbook links whose Text to display matches the selected cells |
+| `OpenHyperlink` | `modApiHyperlinks` | Follows hyperlinks in the selection (Personal showed RangeForm instead) |
+| `AddHyperlinksToCurrentSheetA1` | `modApiHyperlinks` | Back-link in the active cell on every other unprotected sheet |
+
+`HyperLinkText` (UDF) already lives on `modApiWorksheetTemplates`. Notes workbook Index (`BuildIndexSheet`) does not insert rows; **Create index** does.
 
 ### Matrices public surface
 
