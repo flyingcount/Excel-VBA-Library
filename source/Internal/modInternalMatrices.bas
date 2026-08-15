@@ -150,7 +150,7 @@ Public Function DiagonalFromVector(ByRef vec As Variant) As Variant
     DiagonalFromVector = a
 End Function
 
-Public Function Transpose(ByRef a As Variant) As Variant
+Public Function TransposeMatrix(ByRef a As Variant) As Variant
     Dim nr As Long
     Dim nc As Long
     Dim b As Variant
@@ -164,10 +164,10 @@ Public Function Transpose(ByRef a As Variant) As Variant
             b(j, i) = a(i, j)
         Next j
     Next i
-    Transpose = b
+    TransposeMatrix = b
 End Function
 
-Public Function Add(ByRef a As Variant, ByRef b As Variant, ByVal signB As Double) As Variant
+Public Function AddScaled(ByRef a As Variant, ByRef b As Variant, ByVal signB As Double) As Variant
     Dim nr As Long
     Dim nc As Long
     Dim c As Variant
@@ -184,7 +184,7 @@ Public Function Add(ByRef a As Variant, ByRef b As Variant, ByVal signB As Doubl
             c(i, j) = CDbl(a(i, j)) + signB * CDbl(b(i, j))
         Next j
     Next i
-    Add = c
+    AddScaled = c
 End Function
 
 Public Function Hadamard(ByRef a As Variant, ByRef b As Variant) As Variant
@@ -576,6 +576,301 @@ Public Function ScalarMatrix(ByVal value As Double) As Variant
     Dim a(1 To 1, 1 To 1) As Double
     a(1, 1) = value
     ScalarMatrix = a
+End Function
+
+Public Function ScaleMat(ByRef a As Variant, ByVal k As Double) As Variant
+    Dim nr As Long
+    Dim nc As Long
+    Dim b As Variant
+    Dim i As Long
+    Dim j As Long
+    nr = RowsOf(a)
+    nc = ColsOf(a)
+    ReDim b(1 To nr, 1 To nc)
+    For i = 1 To nr
+        For j = 1 To nc
+            b(i, j) = k * CDbl(a(i, j))
+        Next j
+    Next i
+    ScaleMat = b
+End Function
+
+Public Function MatPower(ByRef a As Variant, ByVal p As Long) As Variant
+    Dim i As Long
+    Dim acc As Variant
+    Call RequireSquare(a, "MatPower")
+    If p = 0 Then
+        MatPower = Identity(RowsOf(a))
+        Exit Function
+    End If
+    If p < 0 Then
+        acc = Inverse(a)
+        p = -p
+    Else
+        acc = CopyMat(a)
+    End If
+    MatPower = Identity(RowsOf(a))
+    For i = 1 To p
+        MatPower = MatrixMultDefined(MatPower, acc)
+    Next i
+End Function
+
+Public Function RankOf(ByRef a As Variant) As Long
+    Dim lu As Variant
+    Dim piv() As Long
+    Dim i As Long
+    Dim n As Long
+    Dim m As Long
+    Dim r As Long
+    Dim tol As Double
+    n = RowsOf(a)
+    m = ColsOf(a)
+    If n < m Then
+        lu = TransposeMatrix(a)
+        n = RowsOf(lu)
+        m = ColsOf(lu)
+    Else
+        lu = CopyMat(a)
+    End If
+    Call LUFactor(lu, piv)
+    tol = 0.000000001
+    r = 0
+    For i = 1 To n
+        If i <= m Then
+            If Abs(CDbl(lu(i, i))) > tol Then r = r + 1
+        End If
+    Next i
+    RankOf = r
+End Function
+
+Public Function ExtractDiag(ByRef a As Variant) As Variant
+    Dim n As Long
+    Dim i As Long
+    Dim b As Variant
+    n = RowsOf(a)
+    If ColsOf(a) < n Then n = ColsOf(a)
+    ReDim b(1 To n, 1 To 1)
+    For i = 1 To n
+        b(i, 1) = CDbl(a(i, i))
+    Next i
+    ExtractDiag = b
+End Function
+
+Public Function OuterProduct(ByRef u As Variant, ByRef v As Variant) As Variant
+    Dim colU As Variant
+    Dim colV As Variant
+    colU = AsColumn(u)
+    colV = AsColumn(v)
+    OuterProduct = MatrixMultDefined(colU, TransposeMatrix(colV))
+End Function
+
+Public Function DotProduct(ByRef u As Variant, ByRef v As Variant) As Double
+    Dim colU As Variant
+    Dim colV As Variant
+    Dim i As Long
+    Dim acc As Double
+    colU = AsColumn(u)
+    colV = AsColumn(v)
+    If RowsOf(colU) <> RowsOf(colV) Then
+        Err.Raise 5, "DotProduct", "Vectors must have the same length."
+    End If
+    acc = 0
+    For i = 1 To RowsOf(colU)
+        acc = acc + CDbl(colU(i, 1)) * CDbl(colV(i, 1))
+    Next i
+    DotProduct = acc
+End Function
+
+Public Function Norm1(ByRef a As Variant) As Double
+    Dim j As Long
+    Dim i As Long
+    Dim colSum As Double
+    Dim best As Double
+    best = 0
+    For j = 1 To ColsOf(a)
+        colSum = 0
+        For i = 1 To RowsOf(a)
+            colSum = colSum + Abs(CDbl(a(i, j)))
+        Next i
+        If colSum > best Then best = colSum
+    Next j
+    Norm1 = best
+End Function
+
+Public Function NormInf(ByRef a As Variant) As Double
+    Dim i As Long
+    Dim j As Long
+    Dim rowSum As Double
+    Dim best As Double
+    best = 0
+    For i = 1 To RowsOf(a)
+        rowSum = 0
+        For j = 1 To ColsOf(a)
+            rowSum = rowSum + Abs(CDbl(a(i, j)))
+        Next j
+        If rowSum > best Then best = rowSum
+    Next i
+    NormInf = best
+End Function
+
+Public Function ExchangeMat(ByVal n As Long) As Variant
+    Dim a As Variant
+    Dim i As Long
+    Dim j As Long
+    Call CheckSize(n, n)
+    ReDim a(1 To n, 1 To n)
+    For i = 1 To n
+        For j = 1 To n
+            a(i, j) = 0
+        Next j
+        a(i, n - i + 1) = 1
+    Next i
+    ExchangeMat = a
+End Function
+
+Public Function ToeplitzFromVector(ByRef vec As Variant) As Variant
+    Dim col As Variant
+    Dim n As Long
+    Dim a As Variant
+    Dim i As Long
+    Dim j As Long
+    col = AsColumn(vec)
+    n = RowsOf(col)
+    Call CheckSize(n, n)
+    ReDim a(1 To n, 1 To n)
+    For i = 1 To n
+        For j = 1 To n
+            a(i, j) = CDbl(col(Abs(i - j) + 1, 1))
+        Next j
+    Next i
+    ToeplitzFromVector = a
+End Function
+
+Public Function VandermondeFromVector(ByRef vec As Variant, Optional ByVal nCols As Long = 0) As Variant
+    Dim col As Variant
+    Dim n As Long
+    Dim m As Long
+    Dim a As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim x As Double
+    col = AsColumn(vec)
+    n = RowsOf(col)
+    If nCols <= 0 Then
+        m = n
+    Else
+        m = nCols
+    End If
+    Call CheckSize(n, m)
+    ReDim a(1 To n, 1 To m)
+    For i = 1 To n
+        x = 1
+        For j = 1 To m
+            a(i, j) = x
+            x = x * CDbl(col(i, 1))
+        Next j
+    Next i
+    VandermondeFromVector = a
+End Function
+
+Public Function LUFactors(ByRef a As Variant) As Variant
+    Dim lu As Variant
+    Dim piv() As Long
+    Dim n As Long
+    Dim L As Variant
+    Dim U As Variant
+    Dim out As Variant
+    Dim i As Long
+    Dim j As Long
+    Call RequireSquare(a, "LU")
+    n = RowsOf(a)
+    lu = CopyMat(a)
+    If LUFactor(lu, piv) = 0 Then
+        Err.Raise 5, "LU", "Matrix is singular."
+    End If
+    ReDim L(1 To n, 1 To n)
+    ReDim U(1 To n, 1 To n)
+    For i = 1 To n
+        For j = 1 To n
+            If i > j Then
+                L(i, j) = CDbl(lu(i, j))
+                U(i, j) = 0
+            ElseIf i = j Then
+                L(i, j) = 1
+                U(i, j) = CDbl(lu(i, j))
+            Else
+                L(i, j) = 0
+                U(i, j) = CDbl(lu(i, j))
+            End If
+        Next j
+    Next i
+    ReDim out(1 To 2 * n, 1 To n)
+    For i = 1 To n
+        For j = 1 To n
+            out(i, j) = L(i, j)
+            out(n + i, j) = U(i, j)
+        Next j
+    Next i
+    LUFactors = out
+End Function
+
+Public Function Adjugate(ByRef a As Variant) As Variant
+    Adjugate = ScaleMat(Inverse(a), Determinant(a))
+End Function
+
+Public Function PseudoInverse(ByRef a As Variant) As Variant
+    Dim at As Variant
+    Dim ata As Variant
+    Dim aat As Variant
+    at = TransposeMatrix(a)
+    If RowsOf(a) >= ColsOf(a) Then
+        ata = MatrixMultDefined(at, a)
+        PseudoInverse = MatrixMultDefined(Inverse(ata), at)
+    Else
+        aat = MatrixMultDefined(a, at)
+        PseudoInverse = MatrixMultDefined(at, Inverse(aat))
+    End If
+End Function
+
+Public Function IsOrthogonal(ByRef a As Variant, Optional ByVal tol As Double = 0.000000001) As Boolean
+    Dim at As Variant
+    Dim p As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim expect As Double
+    Call RequireSquare(a, "IsOrthogonal")
+    at = TransposeMatrix(a)
+    p = MatrixMultDefined(at, a)
+    For i = 1 To RowsOf(p)
+        For j = 1 To ColsOf(p)
+            If i = j Then expect = 1 Else expect = 0
+            If Abs(CDbl(p(i, j)) - expect) > tol Then
+                IsOrthogonal = False
+                Exit Function
+            End If
+        Next j
+    Next i
+    IsOrthogonal = True
+End Function
+
+Private Function AsColumn(ByRef a As Variant) As Variant
+    Dim n As Long
+    Dim b As Variant
+    Dim i As Long
+    If ColsOf(a) = 1 Then
+        AsColumn = CopyMat(a)
+        Exit Function
+    End If
+    If RowsOf(a) = 1 Then
+        n = ColsOf(a)
+        ReDim b(1 To n, 1 To 1)
+        For i = 1 To n
+            b(i, 1) = CDbl(a(1, i))
+        Next i
+        AsColumn = b
+        Exit Function
+    End If
+    Err.Raise 5, "AsColumn", "Select a single row or column vector."
 End Function
 
 Private Function ToFiniteDouble(ByVal v As Variant, ByVal r As Long, ByVal c As Long) As Double

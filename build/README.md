@@ -23,7 +23,7 @@ cd "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library"
 powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
 ```
 
-That writes Internal + Api + Menus (including Matrices) into `build\ExcelVbaLib.xlam` and saves. Excel can be open with the add-in loaded.
+That writes Internal + Api + Menus (including Matrices) into `build\ExcelVbaLib.xlam` and saves. Excel can be open with the add-in loaded. The script lists public names in `modApiMatrices` and fails if those matrix modules are missing. Running **without** `-All` only replaces Data modules, which leaves matrix functions missing or stale.
 
 A full rebuild (add-in **not** loaded) is still:
 

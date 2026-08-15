@@ -120,14 +120,18 @@ Personal Menu6 **Prime numbers** (`PrimeGenerator` in `Custom_Menu10_Prime`) is 
 
 Personal modules: `Custom_Menu13_CreateMatrices`, `Custom_Menu13_Matrices1`, `Custom_Menu13_Matrices2`, `Custom_Menu13_Cholesky`, `Custom_Menu13_EigenDecomp`, `custom_Menu13_Unitary`, `Custom_Menu13_MatrixUtilities`, `Fn_MatricesArray`, `Fn_MatricesRng`, `Fn_Matrices2`.
 
+Personal `.bas` dumps were gitignored; this is an array-based reimplementation (not a line-for-line paste). Complex/unitary helpers from `custom_Menu13_Unitary` are not included.
+
+`git pull` does not update `build\ExcelVbaLib.xlam` (gitignored). After pulling source, refresh the add-in with `Import-AddinModules.ps1 -All` in **Windows PowerShell**. Running the import script **without** `-All` only replaces Data modules, so matrix Subs/UDFs stay missing or stale. Add-in macros never appear in Alt+F8; worksheet `Mat*` names are registered into Insert Function (category **Excel VBA Lib**) by `RegisterMatrixUdfs` when the menu installs.
+
 | Public procedure | Module | Notes |
 |------------------|--------|--------|
-| `MatrixCreateIdentity` / `Zeros` / `Ones` / `Diagonal` / `Random` / `Hilbert` | `modApiMatrices` | Write at the active cell |
-| `MatrixTranspose` / `Add` / `Subtract` / `Multiply` / `Hadamard` / `Kronecker` / `Inverse` / `Determinant` / `Trace` / `Solve` / `Norm` / `IsSymmetric` | `modApiMatrices` | Result one column to the right of the selection |
-| `MatrixCholesky` / `MatrixEigen` / `MatrixQR` | `modApiMatrices` | **Excel VBA Lib → Matrices → Decompositions** |
-| `MatMult`, `MatInv`, `MatDet`, `MatChol`, … / `MatrixMultDefined` | `modApiMatrices` | Worksheet UDFs |
+| `MatrixCreateIdentity` / `Zeros` / `Ones` / `Diagonal` / `Random` / `Hilbert` / `Exchange` / `Toeplitz` / `Vandermonde` | `modApiMatrices` | Create writes at the active cell; vector-based create writes to the right of the selection |
+| `MatrixTranspose` / `Add` / `Subtract` / `Scale` / `Multiply` / `Hadamard` / `Kronecker` / `Outer` / `Dot` / `Inverse` / `Adjugate` / `PseudoInverse` / `Power` / `Determinant` / `Trace` / `DiagExtract` / `Rank` / `Solve` / `Norm` / `Norm1` / `NormInf` / `IsSymmetric` / `IsOrthogonal` | `modApiMatrices` | Result one column to the right of the selection |
+| `MatrixCholesky` / `MatrixEigen` / `MatrixQR` / `MatrixLU` | `modApiMatrices` | **Excel VBA Lib → Matrices → Decompositions**. QR/LU stack the second factor below the first; eigen writes vectors then a λ column |
+| `MatTranspose`, `MatInv`, `MatDet`, `MatTrace`, `MatIdentity`, `MatZeros`, `MatOnes`, `MatHilbert`, `MatExchange`, `MatMult`, `MatrixMultDefined`, `MatAdd`, `MatSub`, `MatScale`, `MatPow`, `MatHadamard`, `MatKronecker`, `MatChol`, `MatQR`, `MatEigen`, `MatLU`, `MatNormF`, `MatNorm1`, `MatNormInf`, `MatRank`, `MatDiag`, `MatOuter`, `MatDot`, `MatAdj`, `MatPInv`, `MatIsSymmetric`, `MatIsOrthogonal`, `MatToeplitz`, `MatVander` | `modApiMatrices` | Worksheet UDFs (`RegisterMatrixUdfs`) |
 
-Numeric arrays only; max side 250. Inverse uses Gauss-Jordan; determinant uses LU; eigen is Jacobi (symmetric); QR is modified Gram-Schmidt.
+Numeric arrays only; max side 250. Inverse uses Gauss-Jordan; determinant and rank use LU; eigen is Jacobi (symmetric); QR is modified Gram-Schmidt; pseudoinverse uses normal equations (needs full column or row rank).
 
 ## Dependency direction (keep this)
 

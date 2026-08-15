@@ -55,9 +55,9 @@ function Get-AllModuleItems {
         if (-not (Test-Path $root)) { continue }
         foreach ($ext in @("*.bas", "*.cls", "*.frm")) {
             Get-ChildItem -Path $root -File -Filter $ext -ErrorAction SilentlyContinue |
+                Where-Object { $_.BaseName -ne "ThisWorkbook" } |
                 Sort-Object FullName |
                 ForEach-Object {
-                    if ($_.BaseName -eq "ThisWorkbook") { return }
                     $list.Add([pscustomobject]@{ Name = $_.BaseName; Path = $_.FullName })
                 }
         }
@@ -125,9 +125,46 @@ function Get-OpenWorkbookByPath {
     return $null
 }
 
+function Write-PublicProcs {
+    param($Component)
+    if ($null -eq $Component) { return }
+    $cm = $Component.CodeModule
+    Write-Host "Public entry points in $($Component.Name):"
+    $count = 0
+    for ($i = 1; $i -le $cm.CountOfLines; $i++) {
+        $line = $cm.Lines($i, 1)
+        if ($line -match '^\s*Public\s+(Sub|Function)\s+(\w+)') {
+            Write-Host ("  {0,-8} {1}" -f $Matches[1], $Matches[2])
+            $count++
+        }
+    }
+    if ($count -eq 0) {
+        Write-Warning "$($Component.Name) has no Public Sub/Function lines after import."
+    } else {
+        Write-Host "  ($count public names)"
+    }
+}
+
+function Assert-RequiredComponents {
+    param($Workbook, [string[]]$Names, [switch]$Required)
+    $missing = New-Object System.Collections.Generic.List[string]
+    foreach ($name in $Names) {
+        $comp = $null
+        try { $comp = $Workbook.VBProject.VBComponents.Item($name) } catch { $comp = $null }
+        if ($null -eq $comp) { $missing.Add($name) }
+    }
+    if ($missing.Count -eq 0) { return }
+    $msg = "Add-in is missing: $($missing -join ', '). Run with -All to import Internal + Api + Menus (including Matrices)."
+    if ($Required) {
+        throw $msg
+    }
+    Write-Warning $msg
+}
+
 if ($All) {
     $toImport = Get-AllModuleItems
 } else {
+    Write-Warning "Without -All this updates only: $($Modules -join ', '). Matrix UDFs live in modApiMatrices; use -All to refresh the whole add-in."
     if ($null -eq $Modules -or $Modules.Count -eq 0) {
         throw "Pass -All, or at least one module name, e.g. -Modules modInternalMatrices,modApiMatrices,modAddinMenu"
     }
@@ -239,12 +276,25 @@ Then re-run this script.
     if (-not $createdExcel) { $excel.DisplayAlerts = $true }
     Write-Host "Saved $($addinWb.FullName)"
 
+    Assert-RequiredComponents -Workbook $addinWb -Names @("modInternalMatrices", "modApiMatrices", "modAddinMenu") -Required:$All
+    try {
+        Write-PublicProcs $addinWb.VBProject.VBComponents.Item("modApiMatrices")
+    } catch {
+        Write-Warning "Could not list modApiMatrices public names: $($_.Exception.Message)"
+    }
+
     if (-not $createdExcel) {
         try {
             $excel.Run("'" + $addinWb.Name + "'!InstallExcelVbaLibMenu")
             Write-Host "Rebuilt the Excel VBA Lib menu for this session."
         } catch {
             Write-Warning "Could not run InstallExcelVbaLibMenu: $($_.Exception.Message). Restart Excel."
+        }
+        try {
+            $excel.Run("'" + $addinWb.Name + "'!RegisterMatrixUdfs")
+            Write-Host "Registered matrix worksheet functions (Insert Function category Excel VBA Lib)."
+        } catch {
+            Write-Warning "Could not register matrix UDFs: $($_.Exception.Message). Restart Excel with the add-in loaded."
         }
     } else {
         $addinWb.Close($true)

@@ -17,3 +17,9 @@ To replace Data modules in a loaded add-in (`modInternalData`, then `modApiData`
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
 ```
+
+That does **not** update Matrices. Refresh the whole add-in with `-All`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
+```

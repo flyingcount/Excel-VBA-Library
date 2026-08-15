@@ -1,22 +1,34 @@
 # Test: Matrices (Personal Menu13)
 
-Personal dump (`Custom_Menu13_*`, `Fn_Matrices*`) is gitignored and was not in the cloud workspace. This pack covers the same families (create, operations, Cholesky, symmetric eigen, QR) with array writes and cancel-safe prompts.
+Personal dump (`Custom_Menu13_*`, `Fn_Matrices*`) is gitignored and was not in the cloud workspace. This pack covers create, operations, Cholesky, symmetric eigen, QR, and LU with array writes and cancel-safe prompts.
 
 ## Setup
 
-1. Load `ExcelVbaLib.xlam`.
-2. Do not import matrix modules into the test workbook.
-3. Use **Excel VBA Lib → Matrices**. Add-in macros do not appear in Alt+F8.
+1. After `git pull`, refresh the gitignored add-in **in Windows PowerShell** (not the cloud Linux terminal):
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
+   ```
+
+   Import **without** `-All` only updates Data modules, so matrix functions stay missing. The script should list `modApiMatrices` public Subs/Functions and fail if `modInternalMatrices` / `modApiMatrices` / `modAddinMenu` are absent.
+
+2. Load `ExcelVbaLib.xlam`. Fully quit Excel and restart so `RegisterMatrixUdfs` runs.
+3. Do not import matrix modules into the test workbook.
+4. Use **Excel VBA Lib → Matrices**. Add-in macros do not appear in Alt+F8.
 
 ## Create
 
 Select an empty cell. **Matrices → Create → Identity**, rows = 3.
 
-Expected: 3 x 3 identity starting at that cell. Zeros / Ones / Hilbert / Random follow the same pattern. **Diagonal from vector**: select a column of 3 numbers; a 3 x 3 diagonal appears to the right.
+Expected: 3 x 3 identity starting at that cell. Zeros / Ones / Hilbert / Random / Exchange follow the same pattern.
+
+- **Diagonal from vector**: select a column of 3 numbers; a 3 x 3 diagonal appears to the right.
+- **Toeplitz from vector**: select `3; 1; 0` as a column. Expected symmetric Toeplitz with 3s on the diagonal.
+- **Vandermonde from vector**: select `1; 2; 3`, columns = 3. First column is ones.
 
 ## Operations
 
-Put `= {1,2;3,4}` equivalent in A1:B2 (1 2 / 3 4). Select A1:B2.
+Put 1 2 / 3 4 in A1:B2. Select A1:B2.
 
 | Menu | Expected to the right of the selection |
 |------|----------------------------------------|
@@ -24,10 +36,18 @@ Put `= {1,2;3,4}` equivalent in A1:B2 (1 2 / 3 4). Select A1:B2.
 | Inverse | -2 1 / 1.5 -0.5 |
 | Determinant | -2 |
 | Trace | 5 |
-| Frobenius norm | sqrt(1+4+9+16)=sqrt(30) |
+| Rank | 2 |
+| Extract diagonal | 1 / 4 |
+| Frobenius norm | sqrt(30) |
+| 1-norm | 6 |
+| Infinity-norm | 7 |
 | Is symmetric | FALSE |
+| Scale (k=2) | 2 4 / 6 8 |
+| Power (p=2) | 7 10 / 15 22 |
 
 **Multiply**: A1:B2 times itself, second matrix = A1:B2. Result 7 10 / 15 22.
+
+**Dot product** of `{1;2}` and `{3;4}` → 11. **Outer product** of the same → 3 4 / 6 8.
 
 Cancel on the second-matrix InputBox must not write.
 
@@ -36,21 +56,25 @@ Cancel on the second-matrix InputBox must not write.
 - **Cholesky** on a SPD matrix such as 4 2 / 2 3. Lower L to the right; `L * L^T` recovers A.
 - **Eigen (symmetric)** on 2 1 / 1 2. Last column eigenvalues near 3 and 1; A v ≈ λ v.
 - **QR** on a tall or square numeric range. Q on top, R immediately below; Q^T Q ≈ I and Q R ≈ A.
+- **LU** on 4 2 / 2 3 (no row swap). L on top, U below; L U ≈ A. On a matrix that needs pivoting, L U equals P A rather than A.
 
 ## Worksheet UDFs
 
-Array-enter or use dynamic arrays:
+After restart, Insert Function should list a category **Excel VBA Lib** with `Mat*` names. Array-enter or use dynamic arrays:
 
 ```
 =MatMult(A1:B2,A1:B2)
 =MatInv(A1:B2)
 =MatDet(A1:B2)
 =MatChol(A1:B2)
+=MatLU(A1:B2)
+=MatRank(A1:B2)
+=MatScale(A1:B2,2)
 =MatrixMultDefined(A1:B2,A1:B2)
 ```
 
-Empty or text cells → `#VALUE!`. Non-symmetric Cholesky / Eigen → `#VALUE!` (UDF) or an error message (menu).
+Empty or text cells → `#VALUE!`. Singular inverse / non-SPD Cholesky / non-symmetric Eigen → `#NUM!` or `#VALUE!` (UDF) or an error message (menu).
 
 ## Limits
 
-Side length above 250 is rejected. Results write one column to the right of the selection (create writes at the active cell).
+Side length above 250 is rejected. Results write one column to the right of the selection (create writes at the active cell). Complex/unitary helpers from Personal `custom_Menu13_Unitary` are not in this pack.

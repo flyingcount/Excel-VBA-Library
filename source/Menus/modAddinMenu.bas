@@ -25,6 +25,9 @@ Public Sub InstallExcelVbaLibMenu()
     On Error GoTo NeedRetry
     Call RemoveMenu
     If Not TryBuildMenu() Then GoTo NeedRetry
+    On Error Resume Next
+    Call modApiMatrices.RegisterMatrixUdfs
+    On Error GoTo 0
     retryCount = 0
     Exit Sub
 NeedRetry:
@@ -124,23 +127,38 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(matCreate, "&Diagonal from vector", "MatrixCreateDiagonal")
     Call AddButton(matCreate, "&Random", "MatrixCreateRandom")
     Call AddButton(matCreate, "&Hilbert", "MatrixCreateHilbert")
+    Call AddButton(matCreate, "&Exchange", "MatrixCreateExchange")
+    Call AddButton(matCreate, "&Toeplitz from vector", "MatrixCreateToeplitz")
+    Call AddButton(matCreate, "&Vandermonde from vector", "MatrixCreateVandermonde")
     Set matOps = AddSubmenu(mat, "&Operations")
     Call AddButton(matOps, "&Transpose", "MatrixTranspose")
     Call AddButton(matOps, "&Add", "MatrixAdd")
     Call AddButton(matOps, "&Subtract", "MatrixSubtract")
+    Call AddButton(matOps, "Sca&le", "MatrixScale")
     Call AddButton(matOps, "&Multiply", "MatrixMultiply")
     Call AddButton(matOps, "&Hadamard", "MatrixHadamard")
     Call AddButton(matOps, "&Kronecker", "MatrixKronecker")
+    Call AddButton(matOps, "Outer &product", "MatrixOuter")
+    Call AddButton(matOps, "D&ot product", "MatrixDot")
     Call AddButton(matOps, "&Inverse", "MatrixInverse")
+    Call AddButton(matOps, "Ad&jugate", "MatrixAdjugate")
+    Call AddButton(matOps, "Pseudoin&verse", "MatrixPseudoInverse")
+    Call AddButton(matOps, "Po&wer", "MatrixPower")
     Call AddButton(matOps, "&Determinant", "MatrixDeterminant")
     Call AddButton(matOps, "T&race", "MatrixTrace")
+    Call AddButton(matOps, "Extract d&iagonal", "MatrixDiagExtract")
+    Call AddButton(matOps, "Ran&k", "MatrixRank")
     Call AddButton(matOps, "&Solve A X = B", "MatrixSolve")
     Call AddButton(matOps, "Frobenius &norm", "MatrixNorm")
+    Call AddButton(matOps, "1-&norm", "MatrixNorm1")
+    Call AddButton(matOps, "Infinit&y-norm", "MatrixNormInf")
     Call AddButton(matOps, "Is s&ymmetric", "MatrixIsSymmetric")
+    Call AddButton(matOps, "Is o&rthogonal", "MatrixIsOrthogonal")
     Set matDecomp = AddSubmenu(mat, "&Decompositions")
     Call AddButton(matDecomp, "&Cholesky", "MatrixCholesky")
     Call AddButton(matDecomp, "&Eigen (symmetric)", "MatrixEigen")
     Call AddButton(matDecomp, "&QR", "MatrixQR")
+    Call AddButton(matDecomp, "&LU", "MatrixLU")
 
     Set tmpl = AddSubmenu(pop, "&Worksheet templates")
     Call AddButton(tmpl, "Notes workbook (all templates)", "CreateNotesWorkbook")

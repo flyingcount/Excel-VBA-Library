@@ -47,7 +47,7 @@ powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
 
 If the add-in is not `build\ExcelVbaLib.xlam` under the repo, pass `-XlamPath` to that `.xlam`. The script updates that file (by full path), not a different loaded copy with the same name.
 
-That is `modInternalData` and `modApiData`. Other modules: `-Modules modInternalBenford,modApiBenford`.
+That is `modInternalData` and `modApiData` only. **Matrix functions are not updated unless you pass `-All` or name those modules.** Other modules: `-Modules modInternalBenford,modApiBenford`.
 
 To write **all** source modules (including Matrices) into `build\ExcelVbaLib.xlam` after a `git pull` (the `.xlam` is gitignored):
 
