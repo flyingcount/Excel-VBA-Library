@@ -24,6 +24,7 @@ source/Api/
 ├── modApiWorksheetTemplates.bas ← Links, Actions, Force Field, Assumptions, Questions, Notes workbook
 ├── modApiSampling.bas    ← ExtractSample (Menu4)
 ├── modApiData.bas        ← random fills, combinations, distributions (Menu6)
+├── modApiMatrices.bas    ← create / operate / decompose (Menu13)
 └── modApiUi.bas
 
 source/Internal/
@@ -36,7 +37,8 @@ source/Internal/
 ├── modInternalError.bas
 ├── modInternalWorksheetTemplates.bas
 ├── modInternalSampling.bas
-└── modInternalData.bas
+├── modInternalData.bas
+└── modInternalMatrices.bas
 
 source/Menus/
 ├── modAddinMenu.bas
@@ -53,8 +55,8 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Worksheet templates | In the add-in (`modApiWorksheetTemplates`) — Personal `Custom_Menu26_wkshtTmplt` |
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
 | Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
+| Matrices | In the add-in (`modApiMatrices`) — Personal `Custom_Menu13_*` / `Fn_Matrices*` (reimplemented; dump was gitignored) |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
-| Matrices | Later — `Custom_Menu13_*`, `Fn_Matrices*` |
 | Editing / ranges | Later |
 | Charts | Later |
 | Output | Later |
@@ -113,6 +115,19 @@ Random sample of input rows (percent of row count), with or without replacement.
 | `RandomBinomialNumbers` / `RandomBernoulliNumbers` / `RandomNormalNumbers` / `RandomPoissonNumbers` / `RandomExponentialNumbers` / `RandomGammaNumbers` / `RandomHypergeometricNumbers` | `modApiData` | **Excel VBA Lib → Data → Probability distributions** |
 
 Personal Menu6 **Prime numbers** (`PrimeGenerator` in `Custom_Menu10_Prime`) is not in this pack.
+
+### Matrices public surface
+
+Personal modules: `Custom_Menu13_CreateMatrices`, `Custom_Menu13_Matrices1`, `Custom_Menu13_Matrices2`, `Custom_Menu13_Cholesky`, `Custom_Menu13_EigenDecomp`, `custom_Menu13_Unitary`, `Custom_Menu13_MatrixUtilities`, `Fn_MatricesArray`, `Fn_MatricesRng`, `Fn_Matrices2`.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `MatrixCreateIdentity` / `Zeros` / `Ones` / `Diagonal` / `Random` / `Hilbert` | `modApiMatrices` | Write at the active cell |
+| `MatrixTranspose` / `Add` / `Subtract` / `Multiply` / `Hadamard` / `Kronecker` / `Inverse` / `Determinant` / `Trace` / `Solve` / `Norm` / `IsSymmetric` | `modApiMatrices` | Result one column to the right of the selection |
+| `MatrixCholesky` / `MatrixEigen` / `MatrixQR` | `modApiMatrices` | **Excel VBA Lib → Matrices → Decompositions** |
+| `MatMult`, `MatInv`, `MatDet`, `MatChol`, … / `MatrixMultDefined` | `modApiMatrices` | Worksheet UDFs |
+
+Numeric arrays only; max side 250. Inverse uses Gauss-Jordan; determinant uses LU; eigen is Jacobi (symmetric); QR is modified Gram-Schmidt.
 
 ## Dependency direction (keep this)
 

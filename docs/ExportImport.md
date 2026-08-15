@@ -67,6 +67,7 @@ Application.Run "BenfordAnalysisFirstDigit", Range("A2:A50")
 Application.Run "CreateDateTable", #1/1/2024#, #1/31/2024#
 Application.Run "RandomIntegers"
 Application.Run "DataCombinations"
+Application.Run "MatrixMultiply"
 ```
 
 Add-in `Public Sub`s do not appear in Alt+F8. Optional: Tools → References → **ExcelVbaLib** for early-bound `Call`.

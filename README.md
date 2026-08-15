@@ -20,8 +20,9 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 │   └── InfrastructureCatalog.md
 ├── scripts/
 │   ├── Build-ExcelVbaLib.ps1      ← rebuild build/ExcelVbaLib.xlam from the source snapshot
-│   ├── Import-AddinModules.ps1    ← replace Data modules in a specific .xlam (default: build\)
-│   └── Inject-ThisWorkbook.ps1    ← write Workbook_Open into a loaded add-in (no full rebuild)
+│   ├── Import-AddinModules.ps1    ← replace modules in a specific .xlam (default: build\)
+│   ├── Inject-ThisWorkbook.ps1    ← write Workbook_Open into a loaded add-in (no full rebuild)
+│   └── Export-PersonalModules.ps1 ← dump Menu13 (and other) modules from Personal.xlsb
 ├── source/                  ← snapshot of modules already in the add-in (see source/README.md)
 │   ├── Api/
 │   ├── Internal/
@@ -56,6 +57,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    Application.Run "ExtractSample", Range("A1:C20"), 50, False
    Application.Run "RandomIntegers"
    Application.Run "DataCombinations"
+   Application.Run "MatrixMultiply"
    ```
 
 Grow the library in the add-in (`Alt+F11` on `ExcelVbaLib.xlam`), then save the `.xlam`. Do not import individual `modApi*` / `modInternal*` files into caller workbooks.

@@ -66,6 +66,10 @@ Private Function TryBuildMenu() As Boolean
     Dim samp As CommandBarPopup
     Dim dataMenu As CommandBarPopup
     Dim dist As CommandBarPopup
+    Dim mat As CommandBarPopup
+    Dim matCreate As CommandBarPopup
+    Dim matOps As CommandBarPopup
+    Dim matDecomp As CommandBarPopup
 
     On Error Resume Next
     Set bar = Application.CommandBars("Worksheet Menu Bar")
@@ -111,6 +115,32 @@ Private Function TryBuildMenu() As Boolean
 
     Set samp = AddSubmenu(pop, "&Sampling")
     Call AddButton(samp, "Extract sample of &rows", "ExtractSample")
+
+    Set mat = AddSubmenu(pop, "&Matrices")
+    Set matCreate = AddSubmenu(mat, "&Create")
+    Call AddButton(matCreate, "&Identity", "MatrixCreateIdentity")
+    Call AddButton(matCreate, "&Zeros", "MatrixCreateZeros")
+    Call AddButton(matCreate, "&Ones", "MatrixCreateOnes")
+    Call AddButton(matCreate, "&Diagonal from vector", "MatrixCreateDiagonal")
+    Call AddButton(matCreate, "&Random", "MatrixCreateRandom")
+    Call AddButton(matCreate, "&Hilbert", "MatrixCreateHilbert")
+    Set matOps = AddSubmenu(mat, "&Operations")
+    Call AddButton(matOps, "&Transpose", "MatrixTranspose")
+    Call AddButton(matOps, "&Add", "MatrixAdd")
+    Call AddButton(matOps, "&Subtract", "MatrixSubtract")
+    Call AddButton(matOps, "&Multiply", "MatrixMultiply")
+    Call AddButton(matOps, "&Hadamard", "MatrixHadamard")
+    Call AddButton(matOps, "&Kronecker", "MatrixKronecker")
+    Call AddButton(matOps, "&Inverse", "MatrixInverse")
+    Call AddButton(matOps, "&Determinant", "MatrixDeterminant")
+    Call AddButton(matOps, "T&race", "MatrixTrace")
+    Call AddButton(matOps, "&Solve A X = B", "MatrixSolve")
+    Call AddButton(matOps, "Frobenius &norm", "MatrixNorm")
+    Call AddButton(matOps, "Is s&ymmetric", "MatrixIsSymmetric")
+    Set matDecomp = AddSubmenu(mat, "&Decompositions")
+    Call AddButton(matDecomp, "&Cholesky", "MatrixCholesky")
+    Call AddButton(matDecomp, "&Eigen (symmetric)", "MatrixEigen")
+    Call AddButton(matDecomp, "&QR", "MatrixQR")
 
     Set tmpl = AddSubmenu(pop, "&Worksheet templates")
     Call AddButton(tmpl, "Notes workbook (all templates)", "CreateNotesWorkbook")
