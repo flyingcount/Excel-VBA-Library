@@ -42,6 +42,11 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    ```
 
 3. Excel → Options → Add-ins → Excel Add-ins → Browse → `build/ExcelVbaLib.xlam`.
+   `build\ExcelVbaLib.xlam` is gitignored, so after `git pull` refresh it:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
+   ```
 4. Restart Excel. **Excel VBA Lib** should appear on the **Add-ins** ribbon tab without running `Auto_Open`. If it does not, with Excel open:
 
    ```powershell

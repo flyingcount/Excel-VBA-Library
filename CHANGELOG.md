@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add-in menu loads on Excel start via `ThisWorkbook` `Workbook_Open` / `Workbook_AddinInstall` (`.xlam` does not run `Auto_Open`).
 - `ExtractSample` (`source/Api/modApiSampling.bas` + `source/Internal/modInternalSampling.bas`) — random row sample from a range (Personal Menu4).
 - Data fills (`source/Api/modApiData.bas` + `source/Internal/modInternalData.bas`) — Personal Menu6 random / combinations / probability distributions. Menu **Excel VBA Lib → Data** (with **Probability distributions** submenu). Prime-number generator from Personal Menu10 is not included.
-- `scripts/Import-AddinModules.ps1` — replace modules in `ExcelVbaLib.xlam` (default: `modInternalData`, `modApiData`). Pass `-XlamPath` to target a specific add-in file.
+- `scripts/Import-AddinModules.ps1` — replace modules in `ExcelVbaLib.xlam` (default: `modInternalData`, `modApiData`). `-All` writes Internal + Api + Menus into `build\ExcelVbaLib.xlam` (needed because the `.xlam` is gitignored). Pass `-XlamPath` to target a specific add-in file.
 - Matrices (`source/Api/modApiMatrices.bas` + `source/Internal/modInternalMatrices.bas`) — Personal Menu13 create / operate / Cholesky / symmetric eigen / QR, plus `Mat*` worksheet UDFs and `MatrixMultDefined`. Menu **Excel VBA Lib → Matrices**. Personal `.bas` dumps were gitignored; this is an array-based reimplementation of that family (not a line-for-line paste). `scripts/Export-PersonalModules.ps1` exports the original modules when Personal.xlsb is present.
 
 ### Changed

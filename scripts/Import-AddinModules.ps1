@@ -1,22 +1,25 @@
 # Replace modules in ExcelVbaLib.xlam from the source snapshot.
-# Default: Data modules (modInternalData, then modApiData).
+# Targets the add-in *file* (default: <repo>\build\ExcelVbaLib.xlam).
+# git pull does not update that .xlam — it is gitignored.
 #
-# Targets the add-in file (not "whatever ExcelVbaLib.xlam is loaded").
-# Pass -XlamPath when the file is not build\ExcelVbaLib.xlam under the repo.
+# Refresh the whole add-in in place (Internal, Api, Menus + ThisWorkbook events):
+#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
 #
+# Data modules only (legacy default):
 #   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
-#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -XlamPath "C:\path\to\build\ExcelVbaLib.xlam"
 #
-# Other modules (Internal first when they depend on each other):
-#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -Modules modInternalBenford,modApiBenford
+# Named modules (Internal first when they depend on each other):
+#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -Modules modInternalMatrices,modApiMatrices,modAddinMenu
 #
-# ThisWorkbook is the document module — use Inject-ThisWorkbook.ps1 for that.
+# Other copy of the add-in:
+#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All -XlamPath "C:\path\to\ExcelVbaLib.xlam"
 
 [CmdletBinding()]
 param(
     [string]$RepoRoot,
     [string]$XlamPath,
-    [string[]]$Modules = @("modInternalData", "modApiData")
+    [string[]]$Modules = @("modInternalData", "modApiData"),
+    [switch]$All
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,16 +30,6 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
         $here = Split-Path -Parent $MyInvocation.MyCommand.Path
     }
     $RepoRoot = (Resolve-Path (Join-Path $here "..")).Path
-}
-
-if ($null -eq $Modules -or $Modules.Count -eq 0) {
-    throw "Pass at least one module name, e.g. -Modules modInternalData,modApiData"
-}
-
-foreach ($modName in $Modules) {
-    if ($modName -eq "ThisWorkbook") {
-        throw "ThisWorkbook is the add-in document module. Use scripts/Inject-ThisWorkbook.ps1 instead of Import."
-    }
 }
 
 $searchRoots = @(
@@ -54,6 +47,64 @@ function Get-ModuleSourcePath {
         }
     }
     throw "No source file for '$ModName' under source/Internal, Api, or Menus."
+}
+
+function Get-AllModuleItems {
+    $list = New-Object System.Collections.Generic.List[object]
+    foreach ($root in $searchRoots) {
+        if (-not (Test-Path $root)) { continue }
+        foreach ($ext in @("*.bas", "*.cls", "*.frm")) {
+            Get-ChildItem -Path $root -File -Filter $ext -ErrorAction SilentlyContinue |
+                Sort-Object FullName |
+                ForEach-Object {
+                    if ($_.BaseName -eq "ThisWorkbook") { return }
+                    $list.Add([pscustomobject]@{ Name = $_.BaseName; Path = $_.FullName })
+                }
+        }
+    }
+    if ($list.Count -eq 0) {
+        throw "No .bas/.cls/.frm files found under source/Internal, Api, or Menus."
+    }
+    return $list
+}
+
+function Get-ThisWorkbookCode {
+    param([string]$EventsPath)
+    $code = [System.IO.File]::ReadAllText($EventsPath)
+    if ($code.Length -gt 0 -and [int][char]$code[0] -eq 0xFEFF) {
+        $code = $code.Substring(1)
+    }
+    $out = New-Object System.Collections.Generic.List[string]
+    $inHeader = $false
+    foreach ($line in ($code -split "`r?`n")) {
+        if ($line -match '^VERSION\s+\d') { $inHeader = $true; continue }
+        if ($inHeader -and $line -match '^(BEGIN|END)\b') {
+            if ($line -match '^END\b') { $inHeader = $false }
+            continue
+        }
+        if ($line -match '^Attribute\s+VB_') { continue }
+        $out.Add($line)
+    }
+    return ($out -join "`r`n").Trim() + "`r`n"
+}
+
+function Set-ThisWorkbookEvents {
+    param($Workbook, [string]$EventsPath)
+    if (-not (Test-Path $EventsPath)) { return }
+    $code = Get-ThisWorkbookCode $EventsPath
+    $cm = $Workbook.VBProject.VBComponents.Item("ThisWorkbook").CodeModule
+    if ($cm.CountOfLines -gt 0) {
+        $cm.DeleteLines(1, $cm.CountOfLines)
+    }
+    $cm.AddFromString($code)
+    $foundOpen = $false
+    for ($i = 1; $i -le $cm.CountOfLines; $i++) {
+        if ($cm.Lines($i, 1) -match "Sub Workbook_Open") { $foundOpen = $true; break }
+    }
+    if (-not $foundOpen) {
+        throw "ThisWorkbook is missing Workbook_Open after inject."
+    }
+    Write-Host "  wrote ThisWorkbook events ($($cm.CountOfLines) lines)"
 }
 
 function Test-SamePath([string]$A, [string]$B) {
@@ -74,10 +125,22 @@ function Get-OpenWorkbookByPath {
     return $null
 }
 
-$toImport = New-Object System.Collections.Generic.List[object]
-foreach ($modName in $Modules) {
-    $path = Get-ModuleSourcePath $modName
-    $toImport.Add([pscustomobject]@{ Name = $modName; Path = $path })
+if ($All) {
+    $toImport = Get-AllModuleItems
+} else {
+    if ($null -eq $Modules -or $Modules.Count -eq 0) {
+        throw "Pass -All, or at least one module name, e.g. -Modules modInternalMatrices,modApiMatrices,modAddinMenu"
+    }
+    foreach ($modName in $Modules) {
+        if ($modName -eq "ThisWorkbook") {
+            throw "ThisWorkbook is the add-in document module. Use -All or scripts/Inject-ThisWorkbook.ps1."
+        }
+    }
+    $toImport = New-Object System.Collections.Generic.List[object]
+    foreach ($modName in $Modules) {
+        $path = Get-ModuleSourcePath $modName
+        $toImport.Add([pscustomobject]@{ Name = $modName; Path = $path })
+    }
 }
 
 if ([string]::IsNullOrWhiteSpace($XlamPath)) {
@@ -87,6 +150,9 @@ $XlamPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSP
 if (Test-Path -LiteralPath $XlamPath) {
     $XlamPath = (Resolve-Path -LiteralPath $XlamPath).Path
 }
+
+Write-Host "Will update $XlamPath"
+$toImport | ForEach-Object { Write-Host "  $($_.Name)" }
 
 $excel = $null
 $createdExcel = $false
@@ -142,7 +208,30 @@ Then re-run this script.
             Write-Host "  removed $($item.Name)"
         }
         [void]$addinWb.VBProject.VBComponents.Import($item.Path)
-        Write-Host "  imported $($item.Name) from $($item.Path)"
+        Write-Host "  imported $($item.Name)"
+    }
+
+    if ($All) {
+        Set-ThisWorkbookEvents -Workbook $addinWb -EventsPath (Join-Path $RepoRoot "source\Menus\ThisWorkbook.cls")
+    }
+
+    try {
+        $excel.Visible = $true
+        $excel.VBE.MainWindow.Visible = $true
+        $compileCtrl = $excel.VBE.CommandBars.FindControl(1, 578)
+        if ($null -eq $compileCtrl) { $compileCtrl = $excel.VBE.CommandBars.FindControl($null, 578) }
+        if ($null -ne $compileCtrl) {
+            $compileCtrl.Execute()
+            Write-Host "Compiled VBA project."
+        } else {
+            Write-Warning "Could not find Compile VBAProject (id 578). Compile manually in the VBE."
+        }
+        if ($createdExcel) {
+            $excel.VBE.MainWindow.Visible = $false
+            $excel.Visible = $false
+        }
+    } catch {
+        Write-Warning "Compile step failed: $($_.Exception.Message)"
     }
 
     $excel.DisplayAlerts = $false
@@ -150,11 +239,16 @@ Then re-run this script.
     if (-not $createdExcel) { $excel.DisplayAlerts = $true }
     Write-Host "Saved $($addinWb.FullName)"
 
-    if ($createdExcel) {
-        $addinWb.Close($true)
-        Write-Host "Closed Excel. Load that add-in and retry Poisson."
+    if (-not $createdExcel) {
+        try {
+            $excel.Run("'" + $addinWb.Name + "'!InstallExcelVbaLibMenu")
+            Write-Host "Rebuilt the Excel VBA Lib menu for this session."
+        } catch {
+            Write-Warning "Could not run InstallExcelVbaLibMenu: $($_.Exception.Message). Restart Excel."
+        }
     } else {
-        Write-Host "Retry Excel VBA Lib → Data → Probability distributions → Poisson."
+        $addinWb.Close($true)
+        Write-Host "Closed Excel. Restart Excel (add-in loaded via Excel Add-ins) so the menu appears."
     }
 } finally {
     if ($createdExcel -and $null -ne $excel) {

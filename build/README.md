@@ -16,9 +16,20 @@ Requires **Trust access to the VBA project object model** (see [docs/ExportImpor
 
 **The add-in is the library.** Add new modules in the VBE of `ExcelVbaLib.xlam`, then save the `.xlam`. Do not drop new `.bas` files into `source/` as a substitute for editing the add-in.
 
-Binary `.xlam` files are gitignored.
+Binary `.xlam` files are gitignored. **`git pull` does not change `build\ExcelVbaLib.xlam`.** After pulling source, refresh that file from the **repo folder** (not `C:\Windows\System32`):
 
-## Load it in Excel
+```powershell
+cd "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library"
+powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
+```
+
+That writes Internal + Api + Menus (including Matrices) into `build\ExcelVbaLib.xlam` and saves. Excel can be open with the add-in loaded.
+
+A full rebuild (add-in **not** loaded) is still:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-ExcelVbaLib.ps1
+```
 
 1. File → Options → Add-ins → Manage **Excel Add-ins** → Go
 2. Browse to `build/ExcelVbaLib.xlam` → OK

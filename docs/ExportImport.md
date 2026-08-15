@@ -49,6 +49,12 @@ If the add-in is not `build\ExcelVbaLib.xlam` under the repo, pass `-XlamPath` t
 
 That is `modInternalData` and `modApiData`. Other modules: `-Modules modInternalBenford,modApiBenford`.
 
+To write **all** source modules (including Matrices) into `build\ExcelVbaLib.xlam` after a `git pull` (the `.xlam` is gitignored):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
+```
+
 To refresh ThisWorkbook + the menu module in an already-loaded add-in (no full rebuild):
 
 ```powershell
