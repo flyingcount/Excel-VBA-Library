@@ -2,10 +2,11 @@ Attribute VB_Name = "modInternalMatrices"
 Option Explicit
 
 ' Internal: real matrix algebra for Personal Menu13 (Custom_Menu13_* / Fn_Matrices*).
-' Called from modApiMatrices. Do not document these as the external API.
+' Called from Custom_Menu13_* / Fn_Matrices*. Do not document these as the external API.
 ' Arrays are 1-based, 2-dimensional Doubles stored in Variant.
 
 Public Const MatrixMaxN As Long = 250
+Public Const CofactorMaxN As Long = 20
 
 Public Function RowsOf(ByRef mat As Variant) As Long
     RowsOf = UBound(mat, 1) - LBound(mat, 1) + 1
@@ -830,6 +831,140 @@ Public Function PseudoInverse(ByRef a As Variant) As Variant
         aat = MatrixMultDefined(a, at)
         PseudoInverse = MatrixMultDefined(at, Inverse(aat))
     End If
+End Function
+
+' Column-major vec(A): stack columns into one column (Personal Matrices1).
+Public Function Vectorize(ByRef a As Variant) As Variant
+    Dim nr As Long
+    Dim nc As Long
+    Dim b As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    nr = RowsOf(a)
+    nc = ColsOf(a)
+    Call CheckSize(nr * nc, 1)
+    ReDim b(1 To nr * nc, 1 To 1)
+    k = 1
+    For j = 1 To nc
+        For i = 1 To nr
+            b(k, 1) = CDbl(a(i, j))
+            k = k + 1
+        Next i
+    Next j
+    Vectorize = b
+End Function
+
+Public Function Unvectorize(ByRef vec As Variant, ByVal nRows As Long) As Variant
+    Dim col As Variant
+    Dim n As Long
+    Dim nCols As Long
+    Dim a As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    col = AsColumn(vec)
+    n = RowsOf(col)
+    If nRows < 1 Then
+        Err.Raise 5, "Unvectorize", "Number of rows must be at least 1."
+    End If
+    If n Mod nRows <> 0 Then
+        Err.Raise 5, "Unvectorize", "Vector length must be a multiple of the row count."
+    End If
+    nCols = n / nRows
+    Call CheckSize(nRows, nCols)
+    ReDim a(1 To nRows, 1 To nCols)
+    k = 1
+    For j = 1 To nCols
+        For i = 1 To nRows
+            a(i, j) = CDbl(col(k, 1))
+            k = k + 1
+        Next i
+    Next j
+    Unvectorize = a
+End Function
+
+' Companion of x^n + c_n x^{n-1} + ... + c_1, with the selected vector = (c_1 .. c_n)
+' (constant term first). Result is n x n.
+Public Function CompanionFromVector(ByRef vec As Variant) As Variant
+    Dim col As Variant
+    Dim n As Long
+    Dim a As Variant
+    Dim i As Long
+    Dim j As Long
+    col = AsColumn(vec)
+    n = RowsOf(col)
+    Call CheckSize(n, n)
+    ReDim a(1 To n, 1 To n)
+    For i = 1 To n
+        For j = 1 To n
+            a(i, j) = 0
+        Next j
+    Next i
+    For i = 2 To n
+        a(i, i - 1) = 1
+    Next i
+    For i = 1 To n
+        a(i, n) = -CDbl(col(i, 1))
+    Next i
+    CompanionFromVector = a
+End Function
+
+Public Function MinorMatrix(ByRef a As Variant, ByVal skipRow As Long, ByVal skipCol As Long) As Variant
+    Dim n As Long
+    Dim b As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim ri As Long
+    Dim cj As Long
+    Call RequireSquare(a, "Minor")
+    n = RowsOf(a)
+    If n < 2 Then
+        Err.Raise 5, "Minor", "Minor needs a matrix of order 2 or more."
+    End If
+    If skipRow < 1 Or skipRow > n Or skipCol < 1 Or skipCol > n Then
+        Err.Raise 5, "Minor", "Row and column indices must be between 1 and n."
+    End If
+    ReDim b(1 To n - 1, 1 To n - 1)
+    ri = 1
+    For i = 1 To n
+        If i <> skipRow Then
+            cj = 1
+            For j = 1 To n
+                If j <> skipCol Then
+                    b(ri, cj) = CDbl(a(i, j))
+                    cj = cj + 1
+                End If
+            Next j
+            ri = ri + 1
+        End If
+    Next i
+    MinorMatrix = b
+End Function
+
+Public Function CofactorMatrix(ByRef a As Variant) As Variant
+    Dim n As Long
+    Dim c As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim sgn As Long
+    Call RequireSquare(a, "Cofactor")
+    n = RowsOf(a)
+    If n > CofactorMaxN Then
+        Err.Raise 5, "Cofactor", "Cofactor matrix is limited to " & CofactorMaxN & " x " & CofactorMaxN & "."
+    End If
+    If n = 1 Then
+        CofactorMatrix = ScalarMatrix(1)
+        Exit Function
+    End If
+    ReDim c(1 To n, 1 To n)
+    For i = 1 To n
+        For j = 1 To n
+            If ((i + j) Mod 2) = 0 Then sgn = 1 Else sgn = -1
+            c(i, j) = sgn * Determinant(MinorMatrix(a, i, j))
+        Next j
+    Next i
+    CofactorMatrix = c
 End Function
 
 Public Function IsOrthogonal(ByRef a As Variant, Optional ByVal tol As Double = 0.000000001) As Boolean

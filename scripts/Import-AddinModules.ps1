@@ -9,7 +9,7 @@
 #   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
 #
 # Named modules (Internal first when they depend on each other):
-#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -Modules modInternalMatrices,modApiMatrices,modAddinMenu
+#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -Modules modInternalMatrices,Custom_Menu13_Matrices1,Custom_Menu13_Matrices2,modAddinMenu
 #
 # Other copy of the add-in:
 #   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All -XlamPath "C:\path\to\ExcelVbaLib.xlam"
@@ -164,9 +164,9 @@ function Assert-RequiredComponents {
 if ($All) {
     $toImport = Get-AllModuleItems
 } else {
-    Write-Warning "Without -All this updates only: $($Modules -join ', '). Matrix UDFs live in modApiMatrices; use -All to refresh the whole add-in."
+    Write-Warning "Without -All this updates only: $($Modules -join ', '). Matrix modules live in Custom_Menu13_Matrices1 / Custom_Menu13_Matrices2; use -All to refresh the whole add-in."
     if ($null -eq $Modules -or $Modules.Count -eq 0) {
-        throw "Pass -All, or at least one module name, e.g. -Modules modInternalMatrices,modApiMatrices,modAddinMenu"
+        throw "Pass -All, or at least one module name, e.g. -Modules modInternalMatrices,Custom_Menu13_Matrices1,Custom_Menu13_Matrices2,modAddinMenu"
     }
     foreach ($modName in $Modules) {
         if ($modName -eq "ThisWorkbook") {
@@ -276,11 +276,12 @@ Then re-run this script.
     if (-not $createdExcel) { $excel.DisplayAlerts = $true }
     Write-Host "Saved $($addinWb.FullName)"
 
-    Assert-RequiredComponents -Workbook $addinWb -Names @("modInternalMatrices", "modApiMatrices", "modAddinMenu") -Required:$All
+    Assert-RequiredComponents -Workbook $addinWb -Names @("modInternalMatrices", "Custom_Menu13_Matrices1", "Custom_Menu13_Matrices2", "modAddinMenu") -Required:$All
     try {
-        Write-PublicProcs $addinWb.VBProject.VBComponents.Item("modApiMatrices")
+        Write-PublicProcs $addinWb.VBProject.VBComponents.Item("Custom_Menu13_Matrices1")
+        Write-PublicProcs $addinWb.VBProject.VBComponents.Item("Custom_Menu13_Matrices2")
     } catch {
-        Write-Warning "Could not list modApiMatrices public names: $($_.Exception.Message)"
+        Write-Warning "Could not list Custom_Menu13_Matrices1/2 public names: $($_.Exception.Message)"
     }
 
     if (-not $createdExcel) {

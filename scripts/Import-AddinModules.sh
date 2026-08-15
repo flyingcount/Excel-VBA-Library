@@ -13,8 +13,13 @@ not in this Linux workspace.
    cd "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library"
    git pull origin add-create-date-table
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
+   powershell -ExecutionPolicy Bypass -File .\scripts\Import-Menu13FromPersonal.ps1
 
 3. Quit Excel fully and start it again.
+
+Import-Menu13FromPersonal.ps1 copies Custom_Menu13_Matrices1 and
+Custom_Menu13_Matrices2 from Personal.xlsb into the add-in. Use -AllMenu13
+for the rest of the Menu13 family.
 
 If that folder is a different clone, cd to the clone that contains
 build\ExcelVbaLib.xlam, then run the same Import-AddinModules.ps1 -All line.

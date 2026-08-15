@@ -21,6 +21,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 ├── scripts/
 │   ├── Build-ExcelVbaLib.ps1      ← rebuild build/ExcelVbaLib.xlam from the source snapshot
 │   ├── Import-AddinModules.ps1    ← replace modules in a specific .xlam (default: build\)
+│   ├── Import-Menu13FromPersonal.ps1 ← copy Personal Matrices1/2 into the .xlam
 │   ├── Inject-ThisWorkbook.ps1    ← write Workbook_Open into a loaded add-in (no full rebuild)
 │   └── Export-PersonalModules.ps1 ← dump Menu13 (and other) modules from Personal.xlsb
 ├── source/                  ← snapshot of modules already in the add-in (see source/README.md)
@@ -46,6 +47,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
+   powershell -ExecutionPolicy Bypass -File .\scripts\Import-Menu13FromPersonal.ps1
    ```
 4. Restart Excel. **Excel VBA Lib** should appear on the **Add-ins** ribbon tab without running `Auto_Open`. If it does not, with Excel open:
 

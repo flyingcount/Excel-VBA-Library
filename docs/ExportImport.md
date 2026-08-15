@@ -55,6 +55,12 @@ To write **all** source modules (including Matrices) into `build\ExcelVbaLib.xla
 powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
 ```
 
+That imports `Custom_Menu13_Matrices1` and `Custom_Menu13_Matrices2` from git. To copy the original Personal modules into the `.xlam` (Personal.xlsb must be on that PC):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-Menu13FromPersonal.ps1
+```
+
 To refresh ThisWorkbook + the menu module in an already-loaded add-in (no full rebuild):
 
 ```powershell

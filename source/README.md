@@ -23,3 +23,9 @@ That does **not** update Matrices. Refresh the whole add-in with `-All`:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
 ```
+
+That writes `Custom_Menu13_Matrices1` and `Custom_Menu13_Matrices2` (and the rest of Menu13) from this snapshot. To replace those two modules with the **original Personal VBA**:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-Menu13FromPersonal.ps1
+```

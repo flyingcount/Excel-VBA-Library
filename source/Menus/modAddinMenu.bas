@@ -26,7 +26,7 @@ Public Sub InstallExcelVbaLibMenu()
     Call RemoveMenu
     If Not TryBuildMenu() Then GoTo NeedRetry
     On Error Resume Next
-    Call modApiMatrices.RegisterMatrixUdfs
+    Call Fn_MatricesRng.RegisterMatrixUdfs
     On Error GoTo 0
     retryCount = 0
     Exit Sub
@@ -130,6 +130,7 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(matCreate, "&Exchange", "MatrixCreateExchange")
     Call AddButton(matCreate, "&Toeplitz from vector", "MatrixCreateToeplitz")
     Call AddButton(matCreate, "&Vandermonde from vector", "MatrixCreateVandermonde")
+    Call AddButton(matCreate, "&Companion from vector", "MatrixCreateCompanion")
     Set matOps = AddSubmenu(mat, "&Operations")
     Call AddButton(matOps, "&Transpose", "MatrixTranspose")
     Call AddButton(matOps, "&Add", "MatrixAdd")
@@ -147,11 +148,15 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(matOps, "&Determinant", "MatrixDeterminant")
     Call AddButton(matOps, "T&race", "MatrixTrace")
     Call AddButton(matOps, "Extract d&iagonal", "MatrixDiagExtract")
+    Call AddButton(matOps, "&Vec (column-major)", "MatrixVec")
+    Call AddButton(matOps, "&Unvec", "MatrixUnvec")
     Call AddButton(matOps, "Ran&k", "MatrixRank")
     Call AddButton(matOps, "&Solve A X = B", "MatrixSolve")
     Call AddButton(matOps, "Frobenius &norm", "MatrixNorm")
     Call AddButton(matOps, "1-&norm", "MatrixNorm1")
     Call AddButton(matOps, "Infinit&y-norm", "MatrixNormInf")
+    Call AddButton(matOps, "Co&factor matrix", "MatrixCofactor")
+    Call AddButton(matOps, "M&inor", "MatrixMinor")
     Call AddButton(matOps, "Is s&ymmetric", "MatrixIsSymmetric")
     Call AddButton(matOps, "Is o&rthogonal", "MatrixIsOrthogonal")
     Set matDecomp = AddSubmenu(mat, "&Decompositions")

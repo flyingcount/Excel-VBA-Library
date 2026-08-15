@@ -10,7 +10,15 @@ Personal dump (`Custom_Menu13_*`, `Fn_Matrices*`) is gitignored and was not in t
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
    ```
 
-   Import **without** `-All` only updates Data modules, so matrix functions stay missing. The script should list `modApiMatrices` public Subs/Functions and fail if `modInternalMatrices` / `modApiMatrices` / `modAddinMenu` are absent.
+The script should list `Custom_Menu13_Matrices1` / `Custom_Menu13_Matrices2` public Subs and fail if those modules are absent.
+
+   Then overlay the original Personal modules (so the VBE shows the Personal Matrices1/2 code, not only the git snapshot):
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\scripts\Import-Menu13FromPersonal.ps1
+   ```
+
+   Personal.xlsb must be in `Data\` (or pass `-WorkbookPath`). Use `-AllMenu13` for the rest of the family.
 
 2. Load `ExcelVbaLib.xlam`. Fully quit Excel and restart so `RegisterMatrixUdfs` runs.
 3. Do not import matrix modules into the test workbook.
@@ -25,6 +33,8 @@ Expected: 3 x 3 identity starting at that cell. Zeros / Ones / Hilbert / Random 
 - **Diagonal from vector**: select a column of 3 numbers; a 3 x 3 diagonal appears to the right.
 - **Toeplitz from vector**: select `3; 1; 0` as a column. Expected symmetric Toeplitz with 3s on the diagonal.
 - **Vandermonde from vector**: select `1; 2; 3`, columns = 3. First column is ones.
+- **Companion from vector**: select `1; -2; 3` (constant term first). 3 x 3 companion with 1s on the subdiagonal.
+- **Vec**: A1:B2 → one column 1 / 3 / 2 / 4 (column-major). **Unvec** with rows = 2 recovers A.
 
 ## Operations
 
@@ -74,6 +84,10 @@ After restart, Insert Function should list a category **Excel VBA Lib** with `Ma
 ```
 
 Empty or text cells → `#VALUE!`. Singular inverse / non-SPD Cholesky / non-symmetric Eigen → `#NUM!` or `#VALUE!` (UDF) or an error message (menu).
+
+**Cofactor** on 1 2 / 3 4 → 4 -3 / -2 1. **Minor** deleting row 1 column 1 → 4.
+
+In the add-in VBE (`Alt+F11` on `ExcelVbaLib.xlam`) you should see `Custom_Menu13_Matrices1` and `Custom_Menu13_Matrices2`. If those modules are still the short git wrappers, run `Import-Menu13FromPersonal.ps1` to overlay Personal.
 
 ## Limits
 
