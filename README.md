@@ -42,7 +42,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    ```
 
 3. Excel → Options → Add-ins → Excel Add-ins → Browse → `build/ExcelVbaLib.xlam`.
-   `build\ExcelVbaLib.xlam` is gitignored, so after `git pull` refresh it:
+   `build\ExcelVbaLib.xlam` is gitignored, so after `git pull` refresh it **in Windows PowerShell on the PC that has Excel** (not the cloud Linux terminal):
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
