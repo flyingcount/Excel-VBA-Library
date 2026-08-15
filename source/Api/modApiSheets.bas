@@ -26,3 +26,26 @@ EH:
     Call modInternalExcelApp.PopAppState
     Call modInternalError.RaiseCurrent("ClearSheetData")
 End Sub
+
+' Personal Menu13 names (Custom_Menu13_Matrices1 diagnostic / Cholesky / eigen output sheets).
+
+Public Function WorksheetExists(ByVal str_Name As String) As Boolean
+    Dim ws As Object
+    On Error Resume Next
+    Set ws = ActiveWorkbook.Sheets(str_Name)
+    On Error GoTo 0
+    WorksheetExists = Not ws Is Nothing
+End Function
+
+Public Sub CheckExistenceAndDeleteOutputSheet(ByVal str_Name As String)
+    If WorksheetExists(str_Name) Then
+        Application.DisplayAlerts = False
+        ActiveWorkbook.Sheets(str_Name).Delete
+        Application.DisplayAlerts = True
+    End If
+End Sub
+
+Public Sub CreateOutputSheet(ByVal str_Name As String)
+    Call CheckExistenceAndDeleteOutputSheet(str_Name)
+    ActiveWorkbook.Sheets.Add(After:=ActiveWorkbook.ActiveSheet).Name = str_Name
+End Sub

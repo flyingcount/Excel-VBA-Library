@@ -44,22 +44,39 @@ Put 1 2 / 3 4 in A1:B2. Select A1:B2.
 |------|----------------------------------------|
 | Transpose | 1 3 / 2 4 |
 | Inverse | -2 1 / 1.5 -0.5 |
-| Determinant | -2 |
-| Trace | 5 |
-| Rank | 2 |
 | Extract diagonal | 1 / 4 |
-| Frobenius norm | sqrt(30) |
-| 1-norm | 6 |
-| Infinity-norm | 7 |
-| Is symmetric | FALSE |
 | Scale (k=2) | 2 4 / 6 8 |
 | Power (p=2) | 7 10 / 15 22 |
 
-**Multiply**: A1:B2 times itself, second matrix = A1:B2. Result 7 10 / 15 22.
+**Multiply / Hadamard / Kronecker / Add** (and other two-matrix ops): first InputBox is matrix A (defaults to the selection), second is matrix B. Multiply A1:B2 by itself → 7 10 / 15 22.
 
 **Dot product** of `{1;2}` and `{3;4}` → 11. **Outer product** of the same → 3 4 / 6 8.
 
-Cancel on the second-matrix InputBox must not write.
+Cancel on either InputBox must not write.
+
+## Properties
+
+Same A1:B2. **Matrices → Properties**. Each item prompts for the matrix and an output cell (default two rows below, same as Size) and writes the property name with the value in the cell to its right.
+
+| Menu | Label | Value |
+|------|-------|-------|
+| All properties | eight scalar rows, then Eigenvalues and Eigenvectors | includes Condition number and Spectral radius |
+| Determinant | Determinant | -2 |
+| Trace | Trace | 5 |
+| Rank | Rank | 2 |
+| Frobenius norm | Frobenius norm | sqrt(30) |
+| 1-norm | 1-norm | 6 |
+| Infinity-norm | Infinity-norm | 7 |
+| Condition number | Condition number | 21 (∞-norm, ||A||_∞ ||A⁻¹||_∞) |
+| Spectral radius | Spectral radius | 5.372 (max \|λ\|; exact when symmetric) |
+| Eigenvalues | Eigenvalues | column of λ to the right (symmetric matrices; else "Needs a symmetric matrix") |
+| Eigenvectors | Eigenvectors | n × n matrix to the right of the label (columns are eigenvectors) |
+
+## Validation
+
+| Menu | Expected |
+|------|----------|
+| Is symmetric | `Symmetric` and TRUE/FALSE in the cell to its right (prompts for the matrix and an output cell; default is two rows below, same as Size) |
 
 ## Decompositions
 

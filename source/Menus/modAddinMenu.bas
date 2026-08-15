@@ -72,6 +72,8 @@ Private Function TryBuildMenu() As Boolean
     Dim mat As CommandBarPopup
     Dim matCreate As CommandBarPopup
     Dim matOps As CommandBarPopup
+    Dim matProps As CommandBarPopup
+    Dim matValid As CommandBarPopup
     Dim matDecomp As CommandBarPopup
 
     On Error Resume Next
@@ -120,48 +122,78 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(samp, "Extract sample of &rows", "ExtractSample")
 
     Set mat = AddSubmenu(pop, "&Matrices")
+    Call AddButton(mat, "Matrix &diagnostic", "MatrixDiagnosticMessage")
     Set matCreate = AddSubmenu(mat, "&Create")
     Call AddButton(matCreate, "&Identity", "MatrixCreateIdentity")
     Call AddButton(matCreate, "&Zeros", "MatrixCreateZeros")
     Call AddButton(matCreate, "&Ones", "MatrixCreateOnes")
-    Call AddButton(matCreate, "&Diagonal from vector", "MatrixCreateDiagonal")
-    Call AddButton(matCreate, "&Random", "MatrixCreateRandom")
     Call AddButton(matCreate, "&Hilbert", "MatrixCreateHilbert")
     Call AddButton(matCreate, "&Exchange", "MatrixCreateExchange")
+    Call AddButton(matCreate, "&Anti-diagonal", "CreateAntiDiagonalMatrix")
+    Call AddButton(matCreate, "Sca&ling matrix", "MtrxScaling")
+    Call AddButton(matCreate, "S&tretch matrices", "MtrxStretch")
+    Call AddButton(matCreate, "Random d&iagonal", "CreateRandomDiagonalMatrix", True)
+    Call AddButton(matCreate, "Random s&ymmetric", "CreateRandomSymmetricMatrix")
+    Call AddButton(matCreate, "&Random", "MatrixCreateRandom")
+    Call AddButton(matCreate, "Random squar&e", "MatrixCreateRandomSquare")
+    Call AddButton(matCreate, "&Upper triangular", "MtrxTriangularUpper", True)
+    Call AddButton(matCreate, "&Lower triangular", "MtrxTriangularLower")
+    Call AddButton(matCreate, "R&otation (all)", "MtrxRotAll", True)
+    Call AddButton(matCreate, "Rotation &X", "MtrxRotX")
+    Call AddButton(matCreate, "Rotation &Y", "MtrxRotY")
+    Call AddButton(matCreate, "Rotation &Z", "MtrxRotZ")
+    Call AddButton(matCreate, "&Diagonal from vector", "MatrixCreateDiagonal", True)
     Call AddButton(matCreate, "&Toeplitz from vector", "MatrixCreateToeplitz")
     Call AddButton(matCreate, "&Vandermonde from vector", "MatrixCreateVandermonde")
     Call AddButton(matCreate, "&Companion from vector", "MatrixCreateCompanion")
     Set matOps = AddSubmenu(mat, "&Operations")
     Call AddButton(matOps, "&Transpose", "MatrixTranspose")
+    Call AddButton(matOps, "Transpose with &formulae", "TransposeMatrixFormulae")
     Call AddButton(matOps, "&Add", "MatrixAdd")
     Call AddButton(matOps, "&Subtract", "MatrixSubtract")
     Call AddButton(matOps, "Sca&le", "MatrixScale")
+    Call AddButton(matOps, "Scale with f&ormulae", "MtrxMultScalarFormulae")
     Call AddButton(matOps, "&Multiply", "MatrixMultiply")
+    Call AddButton(matOps, "Multiply with for&mulae", "MtrxMultFormulae")
     Call AddButton(matOps, "&Hadamard", "MatrixHadamard")
     Call AddButton(matOps, "&Kronecker", "MatrixKronecker")
     Call AddButton(matOps, "Outer &product", "MatrixOuter")
     Call AddButton(matOps, "D&ot product", "MatrixDot")
     Call AddButton(matOps, "&Inverse", "MatrixInverse")
+    Call AddButton(matOps, "Inverse with form&ulae", "MtrxInverse")
     Call AddButton(matOps, "Ad&jugate", "MatrixAdjugate")
     Call AddButton(matOps, "Pseudoin&verse", "MatrixPseudoInverse")
     Call AddButton(matOps, "Po&wer", "MatrixPower")
-    Call AddButton(matOps, "&Determinant", "MatrixDeterminant")
-    Call AddButton(matOps, "T&race", "MatrixTrace")
     Call AddButton(matOps, "Extract d&iagonal", "MatrixDiagExtract")
     Call AddButton(matOps, "&Vec (column-major)", "MatrixVec")
     Call AddButton(matOps, "&Unvec", "MatrixUnvec")
-    Call AddButton(matOps, "Ran&k", "MatrixRank")
-    Call AddButton(matOps, "&Solve A X = B", "MatrixSolve")
-    Call AddButton(matOps, "Frobenius &norm", "MatrixNorm")
-    Call AddButton(matOps, "1-&norm", "MatrixNorm1")
-    Call AddButton(matOps, "Infinit&y-norm", "MatrixNormInf")
     Call AddButton(matOps, "Co&factor matrix", "MatrixCofactor")
     Call AddButton(matOps, "M&inor", "MatrixMinor")
-    Call AddButton(matOps, "Is s&ymmetric", "MatrixIsSymmetric")
-    Call AddButton(matOps, "Is o&rthogonal", "MatrixIsOrthogonal")
+    Call AddButton(matOps, "&Solve A X = B", "MatrixSolve", True)
+    Call AddButton(matOps, "&Covariance", "MatrixCovariance", True)
+    Call AddButton(matOps, "&Standardised covariance", "MatrixCovarianceStandardise")
+    Set matProps = AddSubmenu(mat, "&Properties")
+    Call AddButton(matProps, "&All properties", "MatrixPropertiesAll")
+    Call AddButton(matProps, "&Determinant", "MatrixDeterminant", True)
+    Call AddButton(matProps, "T&race", "MatrixTrace")
+    Call AddButton(matProps, "Ran&k", "MatrixRank")
+    Call AddButton(matProps, "Frobenius &norm", "MatrixNorm")
+    Call AddButton(matProps, "1-&norm", "MatrixNorm1")
+    Call AddButton(matProps, "Infinit&y-norm", "MatrixNormInf")
+    Call AddButton(matProps, "&Condition number", "MatrixConditionNumber")
+    Call AddButton(matProps, "&Spectral radius", "MatrixSpectralRadius")
+    Call AddButton(matProps, "&Eigenvalues", "MatrixEigenvalues", True)
+    Call AddButton(matProps, "Eigen&vectors", "MatrixEigenvectors")
+    Set matValid = AddSubmenu(mat, "&Validation")
+    Call AddButton(matValid, "&Size (rows x columns)", "MatrixWriteSize")
+    Call AddButton(matValid, "Is s&ymmetric", "MatrixIsSymmetric")
+    Call AddButton(matValid, "Is o&rthogonal", "MatrixIsOrthogonal")
     Set matDecomp = AddSubmenu(mat, "&Decompositions")
     Call AddButton(matDecomp, "&Cholesky", "MatrixCholesky")
+    Call AddButton(matDecomp, "Cholesky (&sheet)", "CholeskyDecompositionOutput")
     Call AddButton(matDecomp, "&Eigen (symmetric)", "MatrixEigen")
+    Call AddButton(matDecomp, "Eigen (&sheet)", "EigenDecompositionSymmetricMatrix")
+    Call AddButton(matDecomp, "Eigenvalue &diagonal", "DiagonalEigenvalueSymmetricMatrix")
     Call AddButton(matDecomp, "&QR", "MatrixQR")
     Call AddButton(matDecomp, "&LU", "MatrixLU")
 
@@ -184,11 +216,12 @@ Private Function AddSubmenu(ByVal Parent As CommandBarPopup, ByVal Caption As St
     Set AddSubmenu = pop
 End Function
 
-Private Sub AddButton(ByVal Parent As CommandBarPopup, ByVal Caption As String, ByVal MacroName As String)
+Private Sub AddButton(ByVal Parent As CommandBarPopup, ByVal Caption As String, ByVal MacroName As String, Optional ByVal BeginGroup As Boolean = False)
     Dim btn As CommandBarButton
     Set btn = Parent.Controls.Add(Type:=msoControlButton, Temporary:=True)
     btn.Caption = Caption
     btn.OnAction = MacroName
+    If BeginGroup Then btn.BeginGroup = True
 End Sub
 
 Private Sub RemoveMenu()

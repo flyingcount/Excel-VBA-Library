@@ -16,14 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `ExtractSample` (`source/Api/modApiSampling.bas` + `source/Internal/modInternalSampling.bas`) — random row sample from a range (Personal Menu4).
 - Data fills (`source/Api/modApiData.bas` + `source/Internal/modInternalData.bas`) — Personal Menu6 random / combinations / probability distributions. Menu **Excel VBA Lib → Data** (with **Probability distributions** submenu). Prime-number generator from Personal Menu10 is not included.
 - `scripts/Import-AddinModules.ps1` — replace modules in `ExcelVbaLib.xlam` (default: `modInternalData`, `modApiData`). `-All` writes Internal + Api + Menus into `build\ExcelVbaLib.xlam` (needed because the `.xlam` is gitignored). Pass `-XlamPath` to target a specific add-in file.
-- Matrices — Personal Menu13 module names in the add-in VBE (`Custom_Menu13_Matrices1`, `Custom_Menu13_Matrices2`, create / Cholesky / eigen / unitary / utilities, plus `Fn_Matrices*`). Math is in `modInternalMatrices`. Overlay the original Personal VBA with `scripts/Import-Menu13FromPersonal.ps1` after `-All`. Extra ops: vec/unvec, companion, cofactor, minor.
+- Matrices — Personal Menu13 module names in the add-in VBE (`Custom_Menu13_Matrices1`, `Custom_Menu13_Matrices2`, create / Cholesky / eigen / unitary / utilities, plus `Fn_Matrices*`). Math is in `modInternalMatrices`. Overlay the original Personal VBA with `scripts/Import-Menu13FromPersonal.ps1` after `-All`. Extra ops: vec/unvec, companion, cofactor, minor. Personal-only Menu13 tools (diagnostic, formulae, rotations, sheet eigen/Cholesky) sit on **Excel VBA Lib → Matrices** Create / Operations / Decompositions; duplicate identity/zeros/ones/exchange/transpose/dot items are not listed twice.
 
 ### Changed
 - The library is `ExcelVbaLib.xlam`. Placeholder `source/` folders (`Features/`, `Udf/`, `Forms/`, `Classes/`, `Sandbox/`) were removed; add new modules in the add-in VBE.
 - Add-in menu install no longer calls `Auto_Open` from `Workbook_Open` (Excel skips that name for add-ins). `Workbook_Open` / `Workbook_AddinInstall` schedule `InstallExcelVbaLibMenu` via `Application.OnTime`. Re-inject ThisWorkbook with `scripts/Inject-ThisWorkbook.ps1` or a full rebuild.
+- Matrices **Properties** submenu holds All properties, determinant, trace, rank, the three norms, condition number, spectral radius, eigenvalues, and eigenvectors. Each writes a label with the value in the cell to its right.
 
 ### Fixed
 - `RandomPoissonNumbers` (Data → Probability distributions → Poisson) raised error 438 because Excel has no `WorksheetFunction.Poisson_Inv`. Draws now use Knuth's method, with a rounded normal approximation for large lambda.
+- Matrices **Is symmetric** / **Is orthogonal** raised "You cannot change part of an array" because they wrote a Boolean into the cell to the right of the matrix (often a leftover array formula). They now prompt for output like **Size** and write `Symmetric`/`Orthogonal` with TRUE/FALSE in the cell to the right.
 
 ## [0.1.0] - 2026-08-09
 

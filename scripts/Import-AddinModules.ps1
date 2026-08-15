@@ -248,6 +248,19 @@ Then re-run this script.
         Write-Host "  imported $($item.Name)"
     }
 
+    # Older add-in copies kept a combined API module whose Public names now live in
+    # Custom_Menu13_* / Fn_Matrices*. Leaving it causes duplicate-definition compile errors.
+    if ($All) {
+        foreach ($obsoleteName in @("modApiMatrices")) {
+            $comp = $null
+            try { $comp = $addinWb.VBProject.VBComponents.Item($obsoleteName) } catch { $comp = $null }
+            if ($null -ne $comp) {
+                $addinWb.VBProject.VBComponents.Remove($comp)
+                Write-Host "  removed obsolete $obsoleteName"
+            }
+        }
+    }
+
     if ($All) {
         Set-ThisWorkbookEvents -Workbook $addinWb -EventsPath (Join-Path $RepoRoot "source\Menus\ThisWorkbook.cls")
     }

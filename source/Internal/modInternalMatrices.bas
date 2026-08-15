@@ -515,6 +515,107 @@ Public Function EigenSymmetric(ByRef a As Variant) As Variant
     EigenSymmetric = out
 End Function
 
+' n x 1 column of eigenvalues from Jacobi (symmetric matrices).
+Public Function EigenvaluesColumn(ByRef a As Variant) As Variant
+    Dim packed As Variant
+    Dim n As Long
+    Dim i As Long
+    Dim out As Variant
+    packed = EigenSymmetric(a)
+    n = RowsOf(packed)
+    ReDim out(1 To n, 1 To 1)
+    For i = 1 To n
+        out(i, 1) = packed(i, n + 1)
+    Next i
+    EigenvaluesColumn = out
+End Function
+
+' n x n matrix whose columns are eigenvectors from Jacobi (symmetric matrices).
+Public Function EigenvectorsOf(ByRef a As Variant) As Variant
+    Dim packed As Variant
+    Dim n As Long
+    Dim i As Long
+    Dim j As Long
+    Dim out As Variant
+    packed = EigenSymmetric(a)
+    n = RowsOf(packed)
+    ReDim out(1 To n, 1 To n)
+    For i = 1 To n
+        For j = 1 To n
+            out(i, j) = packed(i, j)
+        Next j
+    Next i
+    EigenvectorsOf = out
+End Function
+
+' Infinity-norm condition number ||A||_inf * ||A^{-1}||_inf (Excel MCOND).
+Public Function ConditionNumberInf(ByRef a As Variant) As Double
+    Call RequireSquare(a, "Condition")
+    ConditionNumberInf = NormInf(a) * NormInf(Inverse(a))
+End Function
+
+' Spectral radius max |lambda|. Exact for symmetric matrices; power iteration otherwise.
+Public Function SpectralRadiusOf(ByRef a As Variant) As Double
+    Dim evals As Variant
+    Dim i As Long
+    Dim best As Double
+    Call RequireSquare(a, "SpectralRadius")
+    If IsSymmetric(a, 0.000000001) Then
+        evals = EigenvaluesColumn(a)
+        best = 0
+        For i = 1 To RowsOf(evals)
+            If Abs(CDbl(evals(i, 1))) > best Then best = Abs(CDbl(evals(i, 1)))
+        Next i
+        SpectralRadiusOf = best
+        Exit Function
+    End If
+    SpectralRadiusOf = SpectralRadiusPower(a)
+End Function
+
+Private Function SpectralRadiusPower(ByRef a As Variant) As Double
+    Dim n As Long
+    Dim i As Long
+    Dim iter As Long
+    Dim x As Variant
+    Dim y As Variant
+    Dim nrm As Double
+    Dim ray As Double
+    Dim prev As Double
+    Const maxIter As Long = 200
+    Const tol As Double = 0.000000001
+    n = RowsOf(a)
+    ReDim x(1 To n, 1 To 1)
+    For i = 1 To n
+        x(i, 1) = 1
+    Next i
+    prev = 0
+    For iter = 1 To maxIter
+        y = MatrixMultDefined(a, x)
+        nrm = 0
+        For i = 1 To n
+            If Abs(CDbl(y(i, 1))) > nrm Then nrm = Abs(CDbl(y(i, 1)))
+        Next i
+        If nrm < 1E-18 Then
+            SpectralRadiusPower = 0
+            Exit Function
+        End If
+        For i = 1 To n
+            x(i, 1) = CDbl(y(i, 1)) / nrm
+        Next i
+        y = MatrixMultDefined(a, x)
+        ray = 0
+        nrm = 0
+        For i = 1 To n
+            ray = ray + CDbl(x(i, 1)) * CDbl(y(i, 1))
+            nrm = nrm + CDbl(x(i, 1)) * CDbl(x(i, 1))
+        Next i
+        If nrm > 0 Then ray = ray / nrm
+        If iter > 5 And Abs(Abs(ray) - prev) < tol Then Exit For
+        prev = Abs(ray)
+    Next iter
+    SpectralRadiusPower = Abs(ray)
+End Function
+
 ' Thin QR via modified Gram-Schmidt. Returns [Q | R] stacked as Q then R below? Better two outputs.
 ' Returns n x (n+m) = Q then R on the right if square. For n x m, Q is n x m, R is m x m.
 Public Function QRFactors(ByRef a As Variant) As Variant
@@ -618,29 +719,54 @@ End Function
 
 Public Function RankOf(ByRef a As Variant) As Long
     Dim lu As Variant
-    Dim piv() As Long
-    Dim i As Long
     Dim n As Long
     Dim m As Long
+    Dim k As Long
+    Dim i As Long
+    Dim j As Long
+    Dim p As Long
     Dim r As Long
+    Dim maxAbs As Double
+    Dim tmp As Double
     Dim tol As Double
-    n = RowsOf(a)
-    m = ColsOf(a)
+
+    lu = CopyMat(a)
+    n = RowsOf(lu)
+    m = ColsOf(lu)
     If n < m Then
-        lu = TransposeMatrix(a)
+        lu = TransposeMatrix(lu)
         n = RowsOf(lu)
         m = ColsOf(lu)
-    Else
-        lu = CopyMat(a)
     End If
-    Call LUFactor(lu, piv)
+
     tol = 0.000000001
     r = 0
-    For i = 1 To n
-        If i <= m Then
-            If Abs(CDbl(lu(i, i))) > tol Then r = r + 1
+    For k = 1 To m
+        p = r + 1
+        maxAbs = 0
+        For i = r + 1 To n
+            If Abs(CDbl(lu(i, k))) > maxAbs Then
+                maxAbs = Abs(CDbl(lu(i, k)))
+                p = i
+            End If
+        Next i
+        If maxAbs <= tol Then GoTo NextCol
+        r = r + 1
+        If p <> r Then
+            For j = 1 To m
+                tmp = lu(r, j)
+                lu(r, j) = lu(p, j)
+                lu(p, j) = tmp
+            Next j
         End If
-    Next i
+        For i = r + 1 To n
+            lu(i, k) = CDbl(lu(i, k)) / CDbl(lu(r, k))
+            For j = k + 1 To m
+                lu(i, j) = CDbl(lu(i, j)) - CDbl(lu(i, k)) * CDbl(lu(r, j))
+            Next j
+        Next i
+NextCol:
+    Next k
     RankOf = r
 End Function
 
