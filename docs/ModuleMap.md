@@ -17,7 +17,7 @@ Many `Custom_Menu*` modules contain **private copies** of the same helpers (~21�
 source/Api/
 ├── modApiArrays.bas
 ├── modApiSheets.bas
-├── modApiFiles.bas
+├── modApiFiles.bas       ← folder file listings (Menu24)
 ├── modApiTables.bas      ← table inventory (Menu19)
 ├── modApiDates.bas       ← CreateDateTable
 ├── modApiBenford.bas     ← Benford / last-two-digit analyses
@@ -28,6 +28,7 @@ source/Api/
 ├── modApiCustomLists.bas ← custom lists / AutoCorrect (Menu16)
 ├── modApiPowerQuery.bas  ← import/export form, background refresh, Fast Combine, connect all tables (Menu29)
 ├── frmPQLibrary.frm      ← Import or export queries and functions (Menu29)
+├── frmFileListingProgress.frm ← modeless Cancel during Files listing
 ├── modApiMatrixCreate.bas
 ├── modApiMatrices1.bas
 ├── modApiMatrices2.bas
@@ -53,6 +54,7 @@ source/Internal/
 ├── modInternalHyperlinks.bas
 ├── modInternalCustomLists.bas
 ├── modInternalTables.bas
+├── modInternalFiles.bas
 ├── modInternalPowerQuery.bas
 └── modInternalMatrices.bas
 
@@ -74,6 +76,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
 | Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
 | Tables | In the add-in (`modApiTables`) — Personal `Custom_Menu19_Tables` |
+| Files | In the add-in (`modApiFiles`) — Personal `Custom_Menu24_ListFilesInFolder` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
@@ -182,6 +185,19 @@ Personal `CreateCalendar` is not on this menu; use `CreateDateTable` for a calen
 | `RangeToListObject` | `modApiTables` | Promote a range to a ListObject |
 | `ListObjectToArray` | `modApiTables` | Table body → array |
 
+### Files public surface
+
+Personal Menu24 (`Custom_Menu24_ListFilesInFolder`). Menu **Excel VBA Lib → Files**. Personal OnAction names are kept.
+
+SharePoint download (`Custom_Menu24_ShrpntDownload`) is not included (hard-coded destination path). Workbook-name helpers from that module are not included.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ReturnFilesInSelectedFolder` | `modApiFiles` | Folder picker; sheet **File listing** for that folder only. Count-and-estimate prompt only when there are 1,000 or more files. Modeless **Cancel** during count/list writes any rows already collected (partial sheet). Personal wrote two columns at a selected cell and called missing `SelectFolder` / `GetRange`. Same columns as the recursive listing. |
+| `BatchListAllFiles_FolderSubfolders` | `modApiFiles` | Same sheet, including subfolders. Counts files first (`Files.Count` per folder). Under 1,000 files, lists immediately; otherwise a prompt shows the count and an estimated listing time so you can cancel. Modeless **Cancel** during the run writes a partial **File listing**. Then collects all files and writes once (Personal reset the row counter in each subfolder and overwrote earlier rows). Hidden / system / junction folders are skipped. Attribute flags are decoded as a combination, not a single Case value. |
+| `PickFolder` | `modApiFiles` | Folder picker → path string (starts at Excel's default file path, not `E:\`) |
+| `ListFiles` | `modApiFiles` | Paths in one folder matching an extension filter such as `*.csv` |
+
 ### Power Query public surface
 
 Personal Menu29 (`Custom_Menu29_PowerQuery`). Menu **Excel VBA Lib → Power Query**. Personal OnAction names are kept.
@@ -253,8 +269,10 @@ Stabilize these names in the add-in; map old Personal names → new names in a s
 ### `modApiFiles`
 | Public procedure | Responsibility |
 |------------------|----------------|
+| `ReturnFilesInSelectedFolder` | List files in one folder on **File listing** |
+| `BatchListAllFiles_FolderSubfolders` | List files in a folder tree on **File listing** |
 | `PickFolder` | Folder picker → path string |
-| `ListFiles` | Extensions filter → path array/collection |
+| `ListFiles` | Extensions filter → path array |
 
 ### `modApiTables`
 | Public procedure | Responsibility |

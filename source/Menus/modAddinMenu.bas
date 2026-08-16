@@ -71,6 +71,7 @@ Private Function TryBuildMenu() As Boolean
     Dim dist As CommandBarPopup
     Dim clMenu As CommandBarPopup
     Dim tblMenu As CommandBarPopup
+    Dim filesMenu As CommandBarPopup
     Dim hlMenu As CommandBarPopup
     Dim pqMenu As CommandBarPopup
     Dim mat As CommandBarPopup
@@ -134,6 +135,10 @@ Private Function TryBuildMenu() As Boolean
     Set tblMenu = AddSubmenu(pop, "&Tables")
     Call AddButton(tblMenu, "&List table properties", "ListTableProperties")
     Call AddButton(tblMenu, "List tables in a &message box", "ShowAllTablesInWorkbook")
+
+    Set filesMenu = AddSubmenu(pop, "&Files")
+    Call AddButton(filesMenu, "List files in &folder", "ReturnFilesInSelectedFolder")
+    Call AddButton(filesMenu, "List files in folder and &subfolders", "BatchListAllFiles_FolderSubfolders")
 
     Set samp = AddSubmenu(pop, "&Sampling")
     Call AddButton(samp, "Extract sample of &rows", "ExtractSample")
