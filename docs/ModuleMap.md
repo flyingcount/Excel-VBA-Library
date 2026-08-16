@@ -25,6 +25,8 @@ source/Api/
 ├── modApiSampling.bas    ← ExtractSample (Menu4)
 ├── modApiData.bas        ← random fills, combinations, distributions (Menu6)
 ├── modApiHyperlinks.bas  ← hyperlink inventory / index / follow (Menu21)
+    ├── modApiPowerQuery.bas  ← import/export form, background refresh, Fast Combine, connect all tables (Menu29)
+    ├── frmPQLibrary.frm      ← Import or export queries and functions (Menu29)
 ├── modApiMatrixCreate.bas
 ├── modApiMatrices1.bas
 ├── modApiMatrices2.bas
@@ -48,6 +50,7 @@ source/Internal/
 ├── modInternalSampling.bas
 ├── modInternalData.bas
 ├── modInternalHyperlinks.bas
+├── modInternalPowerQuery.bas
 └── modInternalMatrices.bas
 
 source/Menus/
@@ -66,6 +69,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
 | Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
+| Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
 | Editing / ranges | Later |
@@ -142,6 +146,17 @@ Personal Menu21 (`Custom_Menu21_Hyperlinks`, `Custom_Menu21_Index`). Menu **Exce
 | `AddHyperlinksToCurrentSheetA1` | `modApiHyperlinks` | Back-link in the active cell on every other unprotected sheet |
 
 `HyperLinkText` (UDF) already lives on `modApiWorksheetTemplates`. Notes workbook Index (`BuildIndexSheet`) does not insert rows; **Create index** does.
+
+### Power Query public surface
+
+Personal Menu29 (`Custom_Menu29_PowerQuery`). Menu **Excel VBA Lib → Power Query**. Personal OnAction names are kept.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ShowPQLibraryForm` | `modApiPowerQuery` | Form `frmPQLibrary`: import selected `tblPQ_Library` functions (with `fn*` deps) into the active workbook, or export workbook queries to sheet **PQ_Functions**. Looks up `tblPQ_Library` in any open workbook (not only Personal.xlsb). |
+| `BackgroundRefreshToggle` | `modApiPowerQuery` | Flips `BackgroundQuery` on every OLEDB connection; reports how many are on/off |
+| `IgnorePrivacyToggle` | `modApiPowerQuery` | Flips `Queries.FastCombine` (Ignore Privacy Levels); reports the new state |
+| `Add_Connection_All_Tables` | `modApiPowerQuery` | Connection-only query per Excel Table; optional Data Model load. Skips tables that already have a query. One connection per table (Personal added two with the same name when loading to the model) |
 
 ### Matrices public surface
 
@@ -278,7 +293,7 @@ End Sub
 | Related PQ library | VBA touchpoint |
 |------------------|----------------|
 | [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library) `src/Files/` | `modApiFiles` + sheet dump of results |
-| PQ Cleanse\* / profiling | Rarely needed in VBA; if macros orchestrate PQ, keep orchestration in `modApiUi` / a future `modApiPowerQuery` |
+| PQ Cleanse\* / profiling | Rarely needed in VBA; workbook PQ connections are `modApiPowerQuery` |
 | Output of any macro | Always via `modInternalSheetIO` |
 
 ## After Trust access is enabled

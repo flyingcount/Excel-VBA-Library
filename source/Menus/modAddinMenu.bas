@@ -70,6 +70,7 @@ Private Function TryBuildMenu() As Boolean
     Dim dataMenu As CommandBarPopup
     Dim dist As CommandBarPopup
     Dim hlMenu As CommandBarPopup
+    Dim pqMenu As CommandBarPopup
     Dim mat As CommandBarPopup
     Dim matCreate As CommandBarPopup
     Dim matOps As CommandBarPopup
@@ -130,6 +131,12 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(hlMenu, "Remove by &text to display", "RemovingHyperLink", True)
     Call AddButton(hlMenu, "&Open selected", "OpenHyperlink")
     Call AddButton(hlMenu, "&Back-links to this sheet A1", "AddHyperlinksToCurrentSheetA1")
+
+    Set pqMenu = AddSubmenu(pop, "&Power Query")
+    Call AddButton(pqMenu, "&Import or export queries and functions", "ShowPQLibraryForm")
+    Call AddButton(pqMenu, "Toggle &background refresh", "BackgroundRefreshToggle")
+    Call AddButton(pqMenu, "Toggle &privacy (Fast Combine)", "IgnorePrivacyToggle")
+    Call AddButton(pqMenu, "&Connect all tables", "Add_Connection_All_Tables")
 
     Set mat = AddSubmenu(pop, "&Matrices")
     Call AddButton(mat, "Matrix &diagnostic", "MatrixDiagnosticMessage")
