@@ -2,8 +2,7 @@
 # This cloud/Linux workspace cannot see Personal.xlsb. Run on the Windows PC.
 #
 # After git pull + Import-AddinModules -All (git snapshot), overlay the Personal
-# modules so the add-in VBE contains Custom_Menu13_Matrices1 and
-# Custom_Menu13_Matrices2 from Personal:
+# modules, rewriting their VBA names to modApiMatrices1 / modApiMatrices2:
 #
 #   powershell -ExecutionPolicy Bypass -File scripts/Import-Menu13FromPersonal.ps1
 #
@@ -32,12 +31,12 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
     $RepoRoot = (Resolve-Path (Join-Path $here "..")).Path
 }
 
-$names = @(
+$personalNames = @(
     "Custom_Menu13_Matrices1",
     "Custom_Menu13_Matrices2"
 )
 if ($AllMenu13) {
-    $names = @(
+    $personalNames = @(
         "Custom_Menu13_CreateMatrices",
         "Custom_Menu13_Matrices1",
         "Custom_Menu13_Matrices2",
@@ -49,6 +48,28 @@ if ($AllMenu13) {
         "Fn_MatricesRng",
         "Fn_Matrices2"
     )
+}
+
+$moduleRename = [ordered]@{
+    "Custom_Menu13_CreateMatrices" = "modApiMatrixCreate"
+    "Custom_Menu13_MatrixUtilities" = "modApiMatrixUtilities"
+    "Custom_Menu13_EigenDecomp" = "modApiEigenDecomp"
+    "Custom_Menu13_Matrices1" = "modApiMatrices1"
+    "Custom_Menu13_Matrices2" = "modApiMatrices2"
+    "Custom_Menu13_Cholesky" = "modApiCholesky"
+    "custom_Menu13_Unitary" = "modApiUnitary"
+    "Custom_Menu18_Covariance" = "modApiCovariance"
+}
+
+function Convert-PersonalModuleSource {
+    param([string]$Path, [string]$NewName)
+    $text = [System.IO.File]::ReadAllText($Path)
+    foreach ($old in $moduleRename.Keys) {
+        $text = $text.Replace($old, [string]$moduleRename[$old])
+    }
+    $tmp = Join-Path $env:TEMP ($NewName + ".bas")
+    [System.IO.File]::WriteAllText($tmp, $text)
+    return $tmp
 }
 
 $outDir = Join-Path $RepoRoot "source\_export_raw"
@@ -97,7 +118,7 @@ try {
     }
 
     $exported = New-Object System.Collections.Generic.List[object]
-    foreach ($name in $names) {
+    foreach ($name in $personalNames) {
         $comp = $null
         try { $comp = $personalWb.VBProject.VBComponents.Item($name) } catch { $comp = $null }
         if ($null -eq $comp) {
@@ -132,14 +153,24 @@ try {
     }
 
     foreach ($item in $exported) {
-        $comp = $null
-        try { $comp = $addinWb.VBProject.VBComponents.Item($item.Name) } catch { $comp = $null }
-        if ($null -ne $comp) {
-            $addinWb.VBProject.VBComponents.Remove($comp)
-            Write-Host "  removed $($item.Name) from add-in"
+        $libName = $item.Name
+        if ($moduleRename.Keys -contains $item.Name) {
+            $libName = [string]$moduleRename[$item.Name]
         }
-        [void]$addinWb.VBProject.VBComponents.Import($item.Path)
-        Write-Host "  imported Personal $($item.Name) into add-in"
+        $importPath = $item.Path
+        if ($libName -ne $item.Name) {
+            $importPath = Convert-PersonalModuleSource -Path $item.Path -NewName $libName
+        }
+        foreach ($removeName in @($item.Name, $libName)) {
+            $comp = $null
+            try { $comp = $addinWb.VBProject.VBComponents.Item($removeName) } catch { $comp = $null }
+            if ($null -ne $comp) {
+                $addinWb.VBProject.VBComponents.Remove($comp)
+                Write-Host "  removed $removeName from add-in"
+            }
+        }
+        [void]$addinWb.VBProject.VBComponents.Import($importPath)
+        Write-Host "  imported Personal $($item.Name) as $libName"
     }
 
     $excel.DisplayAlerts = $false

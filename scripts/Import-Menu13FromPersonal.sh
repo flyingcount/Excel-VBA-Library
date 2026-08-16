@@ -11,8 +11,8 @@ On your Windows PC, in Windows PowerShell (not this terminal):
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-Menu13FromPersonal.ps1
 
-That last script copies Custom_Menu13_Matrices1 and Custom_Menu13_Matrices2
-from Data\Personal.xlsb (or Personal123.xlsb) into build\ExcelVbaLib.xlam.
+That last script copies Personal Matrices1/2 and imports them as
+modApiMatrices1 and modApiMatrices2 into build\ExcelVbaLib.xlam.
 
 Whole Menu13 family:
 

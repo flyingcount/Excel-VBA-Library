@@ -17,8 +17,8 @@ not in this Linux workspace.
 
 3. Quit Excel fully and start it again.
 
-Import-Menu13FromPersonal.ps1 copies Custom_Menu13_Matrices1 and
-Custom_Menu13_Matrices2 from Personal.xlsb into the add-in. Use -AllMenu13
+Import-Menu13FromPersonal.ps1 copies Personal Matrices1/2 and imports them as
+modApiMatrices1 and modApiMatrices2.
 for the rest of the Menu13 family.
 
 If that folder is a different clone, cd to the clone that contains

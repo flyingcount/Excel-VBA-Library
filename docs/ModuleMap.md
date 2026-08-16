@@ -25,13 +25,14 @@ source/Api/
 ├── modApiSampling.bas    ← ExtractSample (Menu4)
 ├── modApiData.bas        ← random fills, combinations, distributions (Menu6)
 ├── modApiHyperlinks.bas  ← hyperlink inventory / index / follow (Menu21)
-├── Custom_Menu13_CreateMatrices.bas
-├── Custom_Menu13_Matrices1.bas
-├── Custom_Menu13_Matrices2.bas
-├── Custom_Menu13_Cholesky.bas
-├── Custom_Menu13_EigenDecomp.bas
-├── custom_Menu13_Unitary.bas
-├── Custom_Menu13_MatrixUtilities.bas
+├── modApiMatrixCreate.bas
+├── modApiMatrices1.bas
+├── modApiMatrices2.bas
+├── modApiCholesky.bas
+├── modApiEigenDecomp.bas
+├── modApiUnitary.bas
+├── modApiMatrixUtilities.bas
+├── modApiCovariance.bas
 ├── Fn_MatricesArray.bas / Fn_MatricesRng.bas / Fn_Matrices2.bas
 └── modApiUi.bas
 
@@ -65,7 +66,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
 | Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
-| Matrices | In the add-in (`Custom_Menu13_Matrices1` / `Custom_Menu13_Matrices2` / rest of Menu13) — Personal names kept. Overlay originals with `Import-Menu13FromPersonal.ps1` |
+| Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
 | Editing / ranges | Later |
 | Charts | Later |
@@ -144,7 +145,7 @@ Personal Menu21 (`Custom_Menu21_Hyperlinks`, `Custom_Menu21_Index`). Menu **Exce
 
 ### Matrices public surface
 
-Personal modules (same names in the add-in VBE): `Custom_Menu13_CreateMatrices`, `Custom_Menu13_Matrices1`, `Custom_Menu13_Matrices2`, `Custom_Menu13_Cholesky`, `Custom_Menu13_EigenDecomp`, `custom_Menu13_Unitary`, `Custom_Menu13_MatrixUtilities`, `Fn_MatricesArray`, `Fn_MatricesRng`, `Fn_Matrices2`.
+Api modules (VBE names): `modApiMatrixCreate`, `modApiMatrices1`, `modApiMatrices2`, `modApiCholesky`, `modApiEigenDecomp`, `modApiUnitary`, `modApiMatrixUtilities`, `modApiCovariance`, plus `Fn_MatricesArray`, `Fn_MatricesRng`, `Fn_Matrices2`.
 
 Git snapshot math is array-based in `modInternalMatrices` (Personal dumps are gitignored). After `Import-AddinModules.ps1 -All`, overlay the original Personal modules into the `.xlam` with `scripts/Import-Menu13FromPersonal.ps1` (Windows, Personal.xlsb present). `-AllMenu13` copies the whole family. Do that **after** `-All`; running `-All` again replaces them with the git snapshot.
 
@@ -152,13 +153,13 @@ Git snapshot math is array-based in `modInternalMatrices` (Personal dumps are gi
 
 | Public procedure | Module | Notes |
 |------------------|--------|--------|
-| `MatrixCreateIdentity` / `Zeros` / `Ones` / `Diagonal` / `Random` / `Hilbert` / `Exchange` / `Toeplitz` / `Vandermonde` / `Companion` | `Custom_Menu13_CreateMatrices` | Create writes at the active cell; vector-based create writes to the right of the selection |
-| `MatrixTranspose` / `Add` / `Subtract` / `Scale` / `Multiply` / `MultiplicationHadamard` / `MultiplicationKronecker` / `Outer` / `Dot` / `Inverse` / `Power` / `Determinant` / `Trace` / `DiagExtract` / `Vec` / `Unvec` | `Custom_Menu13_Matrices1` | Result one column to the right of the selection (Hadamard prompts; default is to the right of B) |
-| `MatrixHadamardProof` | `Custom_Menu13_MatrixUtilities` | Sheet **Hadamard Proof**: H, Hᵀ, H.HT, then n and I or a not-Hadamard message |
-| `MatrixSolve` / `Rank` / `Norm` / `Norm1` / `NormInf` / `IsSymmetric` / `Adjugate` / `PseudoInverse` / `LU` / `Cofactor` / `Minor` | `Custom_Menu13_Matrices2` | Cofactor limited to order 20 |
-| `MatrixCholesky` | `Custom_Menu13_Cholesky` | SPD only |
-| `MatrixEigen` | `Custom_Menu13_EigenDecomp` | Jacobi; symmetric only. Writes vectors then a λ column |
-| `MatrixQR` / `MatrixIsOrthogonal` | `custom_Menu13_Unitary` | QR stacks R below Q. Complex unitary from Personal is not included |
+| `MatrixCreateIdentity` / `Zeros` / `Ones` / `Diagonal` / `Random` / `Hilbert` / `Exchange` / `Toeplitz` / `Vandermonde` / `Companion` | `modApiMatrixCreate` | Create writes at the active cell; vector-based create writes to the right of the selection |
+| `MatrixTranspose` / `Add` / `Subtract` / `Scale` / `Multiply` / `MultiplicationHadamard` / `MultiplicationKronecker` / `Outer` / `Dot` / `Inverse` / `Power` / `Determinant` / `Trace` / `DiagExtract` / `Vec` / `Unvec` | `modApiMatrixUtilities` | Result one column to the right of the selection (Hadamard prompts; default is to the right of B) |
+| `MatrixHadamardProof` | `modApiMatrixUtilities` | Sheet **Hadamard Proof**: H, Hᵀ, H.HT, then n and I or a not-Hadamard message |
+| `MatrixSolve` / `Rank` / `Norm` / `Norm1` / `NormInf` / `IsSymmetric` / `Adjugate` / `PseudoInverse` / `LU` / `Cofactor` / `Minor` | `modApiMatrices2` | Cofactor limited to order 20 |
+| `MatrixCholesky` | `modApiCholesky` | SPD only |
+| `MatrixEigen` | `modApiEigenDecomp` | Jacobi; symmetric only. Writes vectors then a λ column |
+| `MatrixQR` / `MatrixIsOrthogonal` | `modApiUnitary` | QR stacks R below Q. Complex unitary from Personal is not included |
 | `Mat*` / `MatrixMultDefined` | `Fn_MatricesArray` / `Fn_MatricesRng` / `Fn_Matrices2` | Worksheet UDFs (`RegisterMatrixUdfs`) |
 
 Numeric arrays only; max side 250. Inverse uses Gauss-Jordan; determinant and rank use LU; eigen is Jacobi (symmetric); QR is modified Gram-Schmidt; pseudoinverse uses normal equations (needs full column or row rank). `vec`/`unvec` are column-major.

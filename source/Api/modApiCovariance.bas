@@ -1,4 +1,4 @@
-Attribute VB_Name = "Custom_Menu18_Covariance"
+Attribute VB_Name = "modApiCovariance"
 Option Explicit
 
 Sub MatrixCovariance()

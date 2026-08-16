@@ -10,7 +10,7 @@ Personal dump (`Custom_Menu13_*`, `Fn_Matrices*`) is gitignored and was not in t
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
    ```
 
-The script should list `Custom_Menu13_Matrices1` / `Custom_Menu13_Matrices2` public Subs and fail if those modules are absent.
+The script should list `modApiMatrices1` / `modApiMatrices2` public Subs and fail if those modules are absent.
 
    Then overlay the original Personal modules (so the VBE shows the Personal Matrices1/2 code, not only the git snapshot):
 
@@ -48,7 +48,7 @@ Put 1 2 / 3 4 in A1:B2. Select A1:B2.
 | Scale (k=2) | 2 4 / 6 8 |
 | Power (p=2) | 7 10 / 15 22 |
 
-**Multiply / Multiplication-Hadamard / Multiplication-Kronecker / Add** (and other two-matrix ops): first InputBox is matrix A (defaults to the selection), second is matrix B. Multiply A1:B2 by itself → 7 10 / 15 22. **Multiplication-Hadamard** is the element-wise product; a third InputBox asks for the output cell (default one column to the right of B). **Multiplication-Kronecker** is the Kronecker product (A ⊗ B).
+**Multiply / Multiplication-Hadamard / Multiplication-Kronecker / Add** (and other two-matrix ops): first InputBox is matrix A (defaults to the selection), second is matrix B. Multiply A1:B2 by itself → 7 10 / 15 22. **Multiplication-Hadamard** is the element-wise product; if A and B differ in shape, an OK message box says they must be the same shape and nothing is written. If they match, a third InputBox asks for the output cell (default one column to the right of B). **Multiplication-Kronecker** is the Kronecker product (A ⊗ B).
 
 **Dot product** of `{1;2}` and `{3;4}` → 11. **Outer product** of the same → 3 4 / 6 8.
 
@@ -105,7 +105,7 @@ Empty or text cells → `#VALUE!`. Singular inverse / non-SPD Cholesky / non-sym
 
 **Cofactor** on 1 2 / 3 4 → 4 -3 / -2 1. **Minor** deleting row 1 column 1 → 4.
 
-In the add-in VBE (`Alt+F11` on `ExcelVbaLib.xlam`) you should see `Custom_Menu13_Matrices1` and `Custom_Menu13_Matrices2`. If those modules are still the short git wrappers, run `Import-Menu13FromPersonal.ps1` to overlay Personal.
+In the add-in VBE (`Alt+F11` on `ExcelVbaLib.xlam`) you should see `modApiMatrices1` and `modApiMatrices2`. If those modules are still the short git wrappers, run `Import-Menu13FromPersonal.ps1` to overlay Personal (names are rewritten to `modApi*`).
 
 ## Limits
 

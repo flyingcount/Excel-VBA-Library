@@ -9,7 +9,7 @@
 #   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
 #
 # Named modules (Internal first when they depend on each other):
-#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -Modules modInternalMatrices,Custom_Menu13_Matrices1,Custom_Menu13_Matrices2,modAddinMenu
+#   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -Modules modInternalMatrices,modApiMatrices1,modApiMatrices2,modAddinMenu
 #
 # Other copy of the add-in:
 #   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All -XlamPath "C:\path\to\ExcelVbaLib.xlam"
@@ -164,9 +164,9 @@ function Assert-RequiredComponents {
 if ($All) {
     $toImport = Get-AllModuleItems
 } else {
-    Write-Warning "Without -All this updates only: $($Modules -join ', '). Matrix modules live in Custom_Menu13_Matrices1 / Custom_Menu13_Matrices2; use -All to refresh the whole add-in."
+    Write-Warning "Without -All this updates only: $($Modules -join ', '). Matrix modules live in modApiMatrices1 / modApiMatrices2; use -All to refresh the whole add-in."
     if ($null -eq $Modules -or $Modules.Count -eq 0) {
-        throw "Pass -All, or at least one module name, e.g. -Modules modInternalMatrices,Custom_Menu13_Matrices1,Custom_Menu13_Matrices2,modAddinMenu"
+        throw "Pass -All, or at least one module name, e.g. -Modules modInternalMatrices,modApiMatrices1,modApiMatrices2,modAddinMenu"
     }
     foreach ($modName in $Modules) {
         if ($modName -eq "ThisWorkbook") {
@@ -248,16 +248,25 @@ Then re-run this script.
         Write-Host "  imported $($item.Name)"
     }
 
-    # Older add-in copies kept a combined API module whose Public names now live in
-    # Custom_Menu13_* / Fn_Matrices*. Leaving it causes duplicate-definition compile errors.
-    if ($All) {
-        foreach ($obsoleteName in @("modApiMatrices")) {
-            $comp = $null
-            try { $comp = $addinWb.VBProject.VBComponents.Item($obsoleteName) } catch { $comp = $null }
-            if ($null -ne $comp) {
-                $addinWb.VBProject.VBComponents.Remove($comp)
-                Write-Host "  removed obsolete $obsoleteName"
-            }
+    # Older add-in copies kept Personal Custom_Menu13_* names and a combined
+    # modApiMatrices module. Leaving them causes duplicate-definition compile errors.
+    $obsoleteNames = @(
+        "modApiMatrices",
+        "Custom_Menu13_CreateMatrices",
+        "Custom_Menu13_Matrices1",
+        "Custom_Menu13_Matrices2",
+        "Custom_Menu13_Cholesky",
+        "Custom_Menu13_EigenDecomp",
+        "custom_Menu13_Unitary",
+        "Custom_Menu13_MatrixUtilities",
+        "Custom_Menu18_Covariance"
+    )
+    foreach ($obsoleteName in $obsoleteNames) {
+        $comp = $null
+        try { $comp = $addinWb.VBProject.VBComponents.Item($obsoleteName) } catch { $comp = $null }
+        if ($null -ne $comp) {
+            $addinWb.VBProject.VBComponents.Remove($comp)
+            Write-Host "  removed obsolete $obsoleteName"
         }
     }
 
@@ -289,12 +298,12 @@ Then re-run this script.
     if (-not $createdExcel) { $excel.DisplayAlerts = $true }
     Write-Host "Saved $($addinWb.FullName)"
 
-    Assert-RequiredComponents -Workbook $addinWb -Names @("modInternalMatrices", "Custom_Menu13_Matrices1", "Custom_Menu13_Matrices2", "modAddinMenu") -Required:$All
+    Assert-RequiredComponents -Workbook $addinWb -Names @("modInternalMatrices", "modApiMatrices1", "modApiMatrices2", "modAddinMenu") -Required:$All
     try {
-        Write-PublicProcs $addinWb.VBProject.VBComponents.Item("Custom_Menu13_Matrices1")
-        Write-PublicProcs $addinWb.VBProject.VBComponents.Item("Custom_Menu13_Matrices2")
+        Write-PublicProcs $addinWb.VBProject.VBComponents.Item("modApiMatrices1")
+        Write-PublicProcs $addinWb.VBProject.VBComponents.Item("modApiMatrices2")
     } catch {
-        Write-Warning "Could not list Custom_Menu13_Matrices1/2 public names: $($_.Exception.Message)"
+        Write-Warning "Could not list modApiMatrices1/2 public names: $($_.Exception.Message)"
     }
 
     if (-not $createdExcel) {

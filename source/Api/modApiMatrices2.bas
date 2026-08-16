@@ -1,4 +1,4 @@
-Attribute VB_Name = "Custom_Menu13_Matrices2"
+Attribute VB_Name = "modApiMatrices2"
 Option Explicit
 
 Sub MtrxMultFormulae()

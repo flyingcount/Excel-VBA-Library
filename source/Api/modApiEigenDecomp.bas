@@ -1,14 +1,14 @@
-Attribute VB_Name = "Custom_Menu13_EigenDecomp"
+Attribute VB_Name = "modApiEigenDecomp"
 Option Explicit
 
-' Personal Custom_Menu13_EigenDecomp. Jacobi method; selection must be symmetric.
+' Symmetric eigen-decomposition (Jacobi). Selection must be symmetric.
 
 ''' @Description: Symmetric eigen-decomposition. Writes eigenvectors then an eigenvalues column.
 Public Sub MatrixEigen()
-    Call Custom_Menu13_MatrixUtilities.UnaryOp("eigen")
+    Call modApiMatrixUtilities.UnaryOp("eigen")
 End Sub
 
-' --- Personal123 Custom_Menu13_EigenDecomp ---
+' --- Personal123 EigenDecomp ---
 
 Sub EigenDecompositionSymmetricMatrix()
 'Performs the eigen decomposition of a symmetric matrix into all its component parts

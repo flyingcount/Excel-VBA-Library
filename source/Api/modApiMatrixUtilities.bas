@@ -1,7 +1,7 @@
-Attribute VB_Name = "Custom_Menu13_MatrixUtilities"
+Attribute VB_Name = "modApiMatrixUtilities"
 Option Explicit
 
-' Personal Custom_Menu13_MatrixUtilities: shared prompts and sheet writes for Menu13.
+' Shared prompts and sheet writes for Matrices menu ops.
 ' Math lives in modInternalMatrices. Internal must not call this module.
 
 Private Sub ShowMatrixError()
@@ -29,7 +29,7 @@ Public Function MatrixSize(ByVal var_Input As Variant) As String
         MatrixSize = CStr(rng.Rows.Count) & " x " & CStr(rng.Columns.Count)
         Exit Function
     End If
-    a = Custom_Menu13_Matrices1.ToMatrix2D(var_Input)
+    a = modApiMatrices1.ToMatrix2D(var_Input)
     MatrixSize = CStr(UBound(a, 1) - LBound(a, 1) + 1) & " x " & CStr(UBound(a, 2) - LBound(a, 2) + 1)
 End Function
 
@@ -521,6 +521,12 @@ Public Sub BinaryOp(ByVal kind As String, Optional ByVal AskOutputBesideSecond A
     If rng Is Nothing Then Exit Sub
     Set other = PromptRange("Select the second matrix")
     If other Is Nothing Then Exit Sub
+    If kind = "hadamard" Then
+        If rng.Rows.Count <> other.Rows.Count Or rng.Columns.Count <> other.Columns.Count Then
+            MsgBox "The matrices must be the same shape to perform Hadamard multiplication.", vbOKOnly, "Hadamard"
+            Exit Sub
+        End If
+    End If
     If AskOutputBesideSecond Then
         Set dest = PromptRange("Select the output location", modInternalMatrices.OutputOrigin(other))
         If dest Is Nothing Then Exit Sub
@@ -557,8 +563,7 @@ EH:
     Call ShowMatrixError
 End Sub
 
-' Excel VBA Lib menu OnAction names (kept here so Personal Custom_Menu13_Matrices1 /
-' Custom_Menu13_Matrices2 can live in the add-in under their original names).
+' Excel VBA Lib menu OnAction names (public Subs called from modAddinMenu).
 
 Public Sub MatrixTranspose()
     Call UnaryOp("transpose")
@@ -808,8 +813,8 @@ Public Function IsMatrixEqual(var_Input1 As Variant, var_Input2 As Variant) As B
     Dim arr_Input2 As Variant
     Dim int_Flag As Integer
     int_Flag = 1
-    arr_Input1 = Custom_Menu13_Matrices1.ToMatrix2D(var_Input1)
-    arr_Input2 = Custom_Menu13_Matrices1.ToMatrix2D(var_Input2)
+    arr_Input1 = modApiMatrices1.ToMatrix2D(var_Input1)
+    arr_Input2 = modApiMatrices1.ToMatrix2D(var_Input2)
     For lng_Row = LBound(arr_Input1, 1) To UBound(arr_Input1, 1)
         For lng_Col = LBound(arr_Input1, 2) To UBound(arr_Input1, 2)
             If arr_Input1(lng_Row, lng_Col) = arr_Input2(lng_Row, lng_Col) Then

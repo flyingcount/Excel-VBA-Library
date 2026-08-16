@@ -1,8 +1,8 @@
 Attribute VB_Name = "modInternalMatrices"
 Option Explicit
 
-' Internal: real matrix algebra for Personal Menu13 (Custom_Menu13_* / Fn_Matrices*).
-' Called from Custom_Menu13_* / Fn_Matrices*. Do not document these as the external API.
+' Internal: real matrix algebra for Matrices menu ops and Fn_Matrices* UDFs.
+' Called from modApiMatrix* / Fn_Matrices*. Do not document these as the external API.
 ' Arrays are 1-based, 2-dimensional Doubles stored in Variant.
 
 Public Const MatrixMaxN As Long = 250

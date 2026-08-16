@@ -1,4 +1,4 @@
-Attribute VB_Name = "Custom_Menu13_Matrices1"
+Attribute VB_Name = "modApiMatrices1"
 'Option Private Module
 Option Base 1
 Option Explicit

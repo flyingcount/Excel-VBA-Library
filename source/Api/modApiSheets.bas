@@ -27,7 +27,7 @@ EH:
     Call modInternalError.RaiseCurrent("ClearSheetData")
 End Sub
 
-' Personal Menu13 names (Custom_Menu13_Matrices1 diagnostic / Cholesky / eigen output sheets).
+' Personal Menu13 names (modApiMatrices1 diagnostic / Cholesky / eigen output sheets).
 
 Public Function WorksheetExists(ByVal str_Name As String) As Boolean
     Dim ws As Object

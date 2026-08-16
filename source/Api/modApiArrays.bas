@@ -32,7 +32,7 @@ EH:
     Call modInternalError.RaiseCurrent("WriteArrayToNewSheet")
 End Sub
 
-' Personal Menu13 names used by Custom_Menu13_Matrices1 / Cholesky / eigen / create.
+' Personal Menu13 names used by modApiMatrices1 / Cholesky / eigen / create.
 
 Public Sub WriteArrayToWorksheet(arr_WorkingArray As Variant, str_OutputSheetName As String, _
                                  ByVal lng_StartRow As Long, ByVal lng_StartColumn As Long)

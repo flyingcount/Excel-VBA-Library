@@ -23,7 +23,7 @@ cd "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library"
 powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
 ```
 
-That writes Internal + Api + Menus (including `Custom_Menu13_Matrices1` / `Matrices2`) into `build\ExcelVbaLib.xlam` and saves. Excel can be open with the add-in loaded. The script lists public names in those two modules and fails if they are missing. Running **without** `-All` only replaces Data modules, which leaves matrix functions missing or stale.
+That writes Internal + Api + Menus (including `modApiMatrices1` / `modApiMatrices2`) into `build\ExcelVbaLib.xlam` and saves. Excel can be open with the add-in loaded. The script lists public names in those two modules and fails if they are missing. Running **without** `-All` only replaces Data modules, which leaves matrix functions missing or stale.
 
 To put the **original Personal** Matrices1/2 VBA into the add-in (not the git snapshot):
 

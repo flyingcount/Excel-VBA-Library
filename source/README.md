@@ -24,4 +24,4 @@ That does **not** update Matrices. Refresh the whole add-in with `-All`:
 powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
 ```
 
-That writes `Custom_Menu13_Matrices1` and `Custom_Menu13_Matrices2` (Personal originals) plus the rest of Menu13. Excel VBA Lib → Matrices holds Create / Operations / Properties / Validation / Decompositions (Personal-only tools mixed in; duplicate Personal identity/zeros/ones/exchange/transpose/dot entries are omitted).
+That writes `modApiMatrices1` and `modApiMatrices2` plus the rest of Menu13 (`modApiMatrixCreate`, `modApiCholesky`, `modApiEigenDecomp`, `modApiUnitary`, `modApiMatrixUtilities`). Excel VBA Lib → Matrices holds Create / Operations / Properties / Validation / Decompositions (Personal-only tools mixed in; duplicate Personal identity/zeros/ones/exchange/transpose/dot entries are omitted).
