@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Hyperlinks (`source/Api/modApiHyperlinks.bas` + `source/Internal/modInternalHyperlinks.bas`) — Personal Menu21 inventory, index, remove-by-display-text, follow selection, and back-links. Menu **Excel VBA Lib → Hyperlinks**.
 - Power Query (`source/Api/modApiPowerQuery.bas` + `source/Internal/modInternalPowerQuery.bas` + `frmPQLibrary`) — Personal Menu29 import/export form, toggle background refresh, Fast Combine, and connect-all-tables. Menu **Excel VBA Lib → Power Query**.
 - Custom lists (`source/Api/modApiCustomLists.bas` + `source/Internal/modInternalCustomLists.bas`) — Personal Menu16 list / create / delete custom lists, plus AutoCorrect inventory and add. Menu **Excel VBA Lib → Custom lists**. Lists are application-wide; delete confirms and removes highest list numbers first.
+- Tables (`source/Api/modApiTables.bas` + `source/Internal/modInternalTables.bas`) — Personal Menu19 `ListTableProperties` inventory sheet (sized to the table count, with working sheet-qualified hyperlinks) and `ShowAllTablesInWorkbook`. Menu **Excel VBA Lib → Tables**.
 
 - Matrices **Validation → Hadamard Proof** prompts for a range, writes sheet **Hadamard Proof** with H, Hᵀ, and H.HT, then n and I when H Hᵀ = n I, otherwise `Not Hadamard: H.HT not equal to nI`.
 

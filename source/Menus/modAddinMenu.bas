@@ -70,6 +70,7 @@ Private Function TryBuildMenu() As Boolean
     Dim dataMenu As CommandBarPopup
     Dim dist As CommandBarPopup
     Dim clMenu As CommandBarPopup
+    Dim tblMenu As CommandBarPopup
     Dim hlMenu As CommandBarPopup
     Dim pqMenu As CommandBarPopup
     Dim mat As CommandBarPopup
@@ -129,6 +130,10 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(clMenu, "&Delete by list number", "DeleteCustomList")
     Call AddButton(clMenu, "&AutoCorrect list", "AutoCorrectEntries_Display", True)
     Call AddButton(clMenu, "&Add AutoCorrect entries", "AutoCorrectEntries_Add")
+
+    Set tblMenu = AddSubmenu(pop, "&Tables")
+    Call AddButton(tblMenu, "&List table properties", "ListTableProperties")
+    Call AddButton(tblMenu, "List tables in a &message box", "ShowAllTablesInWorkbook")
 
     Set samp = AddSubmenu(pop, "&Sampling")
     Call AddButton(samp, "Extract sample of &rows", "ExtractSample")

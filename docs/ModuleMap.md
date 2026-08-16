@@ -18,7 +18,7 @@ source/Api/
 ├── modApiArrays.bas
 ├── modApiSheets.bas
 ├── modApiFiles.bas
-├── modApiTables.bas
+├── modApiTables.bas      ← table inventory (Menu19)
 ├── modApiDates.bas       ← CreateDateTable
 ├── modApiBenford.bas     ← Benford / last-two-digit analyses
 ├── modApiWorksheetTemplates.bas ← Links, Actions, Force Field, Assumptions, Questions, Notes workbook
@@ -52,6 +52,7 @@ source/Internal/
 ├── modInternalData.bas
 ├── modInternalHyperlinks.bas
 ├── modInternalCustomLists.bas
+├── modInternalTables.bas
 ├── modInternalPowerQuery.bas
 └── modInternalMatrices.bas
 
@@ -72,6 +73,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
 | Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
+| Tables | In the add-in (`modApiTables`) — Personal `Custom_Menu19_Tables` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
@@ -167,6 +169,19 @@ Custom lists and AutoCorrect replacements are **application-wide** (Excel Option
 | `AutoCorrectEntries_Display` | `modApiCustomLists` | Sheet **Auto correct List** (Personal spelling kept) |
 | `AutoCorrectEntries_Add` | `modApiCustomLists` | Two-column range (Replace / With). Adds or overwrites; does not remove other entries. Uses the selected range (Personal scanned column A of the sheet) |
 
+### Tables public surface
+
+Personal Menu19 (`Custom_Menu19_Tables`). Menu **Excel VBA Lib → Tables**. Personal OnAction names are kept.
+
+Personal `CreateCalendar` is not on this menu; use `CreateDateTable` for a calendar dimension.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ListTableProperties` | `modApiTables` | Sheet **Table properties**: index, name, sheet, range, hyperlink, rows/columns, filter/header/totals, style, source type, comment, alt text, header range. Sized to the table count (Personal wrote a 1000-row empty block). `ListObject.Active` / Creator / Application are dropped (not useful; `.Active` is not a ListObject property). |
+| `ShowAllTablesInWorkbook` | `modApiTables` | Message box: index, name, sheet (hidden flag), address. Personal menu called this but the Sub was commented out; title was `vbOKOnly`. |
+| `RangeToListObject` | `modApiTables` | Promote a range to a ListObject |
+| `ListObjectToArray` | `modApiTables` | Table body → array |
+
 ### Power Query public surface
 
 Personal Menu29 (`Custom_Menu29_PowerQuery`). Menu **Excel VBA Lib → Power Query**. Personal OnAction names are kept.
@@ -244,6 +259,8 @@ Stabilize these names in the add-in; map old Personal names → new names in a s
 ### `modApiTables`
 | Public procedure | Responsibility |
 |------------------|----------------|
+| `ListTableProperties` | Inventory sheet of all ListObjects with hyperlinks |
+| `ShowAllTablesInWorkbook` | Message box listing table name / sheet / address |
 | `RangeToListObject` | Promote range to table |
 | `ListObjectToArray` | Table body → array |
 
