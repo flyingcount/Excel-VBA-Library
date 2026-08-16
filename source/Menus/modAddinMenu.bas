@@ -69,6 +69,7 @@ Private Function TryBuildMenu() As Boolean
     Dim samp As CommandBarPopup
     Dim dataMenu As CommandBarPopup
     Dim dist As CommandBarPopup
+    Dim clMenu As CommandBarPopup
     Dim hlMenu As CommandBarPopup
     Dim pqMenu As CommandBarPopup
     Dim mat As CommandBarPopup
@@ -119,6 +120,15 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(dist, "&Exponential", "RandomExponentialNumbers")
     Call AddButton(dist, "&Gamma", "RandomGammaNumbers")
     Call AddButton(dist, "&Hypergeometric", "RandomHypergeometricNumbers")
+
+    Set clMenu = AddSubmenu(pop, "&Custom lists")
+    Call AddButton(clMenu, "&Count", "CountCustomLists")
+    Call AddButton(clMenu, "&List on worksheet", "ShowCustomLists")
+    Call AddButton(clMenu, "Create from &columns", "CreateCustomListByColumn")
+    Call AddButton(clMenu, "Create from &rows", "CreateCustomListByRow")
+    Call AddButton(clMenu, "&Delete by list number", "DeleteCustomList")
+    Call AddButton(clMenu, "&AutoCorrect list", "AutoCorrectEntries_Display", True)
+    Call AddButton(clMenu, "&Add AutoCorrect entries", "AutoCorrectEntries_Add")
 
     Set samp = AddSubmenu(pop, "&Sampling")
     Call AddButton(samp, "Extract sample of &rows", "ExtractSample")

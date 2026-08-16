@@ -25,8 +25,9 @@ source/Api/
 ├── modApiSampling.bas    ← ExtractSample (Menu4)
 ├── modApiData.bas        ← random fills, combinations, distributions (Menu6)
 ├── modApiHyperlinks.bas  ← hyperlink inventory / index / follow (Menu21)
-    ├── modApiPowerQuery.bas  ← import/export form, background refresh, Fast Combine, connect all tables (Menu29)
-    ├── frmPQLibrary.frm      ← Import or export queries and functions (Menu29)
+├── modApiCustomLists.bas ← custom lists / AutoCorrect (Menu16)
+├── modApiPowerQuery.bas  ← import/export form, background refresh, Fast Combine, connect all tables (Menu29)
+├── frmPQLibrary.frm      ← Import or export queries and functions (Menu29)
 ├── modApiMatrixCreate.bas
 ├── modApiMatrices1.bas
 ├── modApiMatrices2.bas
@@ -50,6 +51,7 @@ source/Internal/
 ├── modInternalSampling.bas
 ├── modInternalData.bas
 ├── modInternalHyperlinks.bas
+├── modInternalCustomLists.bas
 ├── modInternalPowerQuery.bas
 └── modInternalMatrices.bas
 
@@ -69,6 +71,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
 | Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
+| Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
@@ -146,6 +149,23 @@ Personal Menu21 (`Custom_Menu21_Hyperlinks`, `Custom_Menu21_Index`). Menu **Exce
 | `AddHyperlinksToCurrentSheetA1` | `modApiHyperlinks` | Back-link in the active cell on every other unprotected sheet |
 
 `HyperLinkText` (UDF) already lives on `modApiWorksheetTemplates`. Notes workbook Index (`BuildIndexSheet`) does not insert rows; **Create index** does.
+
+### Custom lists public surface
+
+Personal Menu16 (`Custom_Menu16_CustomLists`, `Custom_Menu16_Autocorrect`). Menu **Excel VBA Lib → Custom lists**. Personal OnAction names are kept.
+
+Custom lists and AutoCorrect replacements are **application-wide** (Excel Options), not stored in the workbook.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `CountCustomLists` | `modApiCustomLists` | Message box: total, built-in (1–4), user-defined |
+| `ShowCustomLists` | `modApiCustomLists` | Sheet **Custom List properties**: number, Type (Built-in/User), item count, elements |
+| `CreateCustomListByColumn` | `modApiCustomLists` | One list per column; blanks skipped; existing lists skipped; ≥2 values required |
+| `CreateCustomListByRow` | `modApiCustomLists` | One list per row (same rules) |
+| `DeleteCustomList` | `modApiCustomLists` | List numbers from a range (column A of the inventory). Built-in 1–4 cannot be deleted. Highest numbers first so remaining numbers stay valid. Confirms because the change is Excel-wide |
+| `NumCustomLists` | `modApiCustomLists` | Volatile UDF: `Application.CustomListCount` |
+| `AutoCorrectEntries_Display` | `modApiCustomLists` | Sheet **Auto correct List** (Personal spelling kept) |
+| `AutoCorrectEntries_Add` | `modApiCustomLists` | Two-column range (Replace / With). Adds or overwrites; does not remove other entries. Uses the selected range (Personal scanned column A of the sheet) |
 
 ### Power Query public surface
 

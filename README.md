@@ -64,6 +64,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    Application.Run "ExtractSample", Range("A1:C20"), 50, False
    Application.Run "RandomIntegers"
    Application.Run "DataCombinations"
+   Application.Run "ShowCustomLists"
    Application.Run "MatrixMultiply"
    ```
 
