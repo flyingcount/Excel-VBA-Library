@@ -1114,6 +1114,50 @@ Public Function IsOrthogonal(ByRef a As Variant, Optional ByVal tol As Double = 
     IsOrthogonal = True
 End Function
 
+' Square H is Hadamard when H H^T = n I (n = order).
+Public Function IsHadamard(ByRef a As Variant, Optional ByVal tol As Double = 0.000000001) As Boolean
+    Dim at As Variant
+    Dim p As Variant
+    Dim n As Long
+    Dim i As Long
+    Dim j As Long
+    Dim expect As Double
+    If RowsOf(a) <> ColsOf(a) Then
+        IsHadamard = False
+        Exit Function
+    End If
+    n = RowsOf(a)
+    at = TransposeMatrix(a)
+    p = MatrixMultDefined(a, at)
+    For i = 1 To n
+        For j = 1 To n
+            If i = j Then expect = CDbl(n) Else expect = 0
+            If Abs(CDbl(p(i, j)) - expect) > tol Then
+                IsHadamard = False
+                Exit Function
+            End If
+        Next j
+    Next i
+    IsHadamard = True
+End Function
+
+' TRUE when every entry is +1 or -1 (within tol).
+Public Function HasPlusMinusOneEntries(ByRef a As Variant, Optional ByVal tol As Double = 0.000000001) As Boolean
+    Dim i As Long
+    Dim j As Long
+    Dim v As Double
+    For i = 1 To RowsOf(a)
+        For j = 1 To ColsOf(a)
+            v = CDbl(a(i, j))
+            If Abs(v - 1) > tol And Abs(v + 1) > tol Then
+                HasPlusMinusOneEntries = False
+                Exit Function
+            End If
+        Next j
+    Next i
+    HasPlusMinusOneEntries = True
+End Function
+
 Private Function AsColumn(ByRef a As Variant) As Variant
     Dim n As Long
     Dim b As Variant

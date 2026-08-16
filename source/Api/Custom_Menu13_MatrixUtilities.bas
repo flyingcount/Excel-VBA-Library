@@ -509,9 +509,10 @@ EH:
     Call ShowMatrixError
 End Sub
 
-Public Sub BinaryOp(ByVal kind As String)
+Public Sub BinaryOp(ByVal kind As String, Optional ByVal AskOutputBesideSecond As Boolean = False)
     Dim rng As Range
     Dim other As Range
+    Dim dest As Range
     Dim a As Variant
     Dim b As Variant
     Dim out As Variant
@@ -520,6 +521,12 @@ Public Sub BinaryOp(ByVal kind As String)
     If rng Is Nothing Then Exit Sub
     Set other = PromptRange("Select the second matrix")
     If other Is Nothing Then Exit Sub
+    If AskOutputBesideSecond Then
+        Set dest = PromptRange("Select the output location", modInternalMatrices.OutputOrigin(other))
+        If dest Is Nothing Then Exit Sub
+    Else
+        Set dest = modInternalMatrices.OutputOrigin(rng)
+    End If
     Call modInternalExcelApp.PushAppState
     a = modInternalMatrices.RangeToMatrix(rng)
     b = modInternalMatrices.RangeToMatrix(other)
@@ -543,7 +550,7 @@ Public Sub BinaryOp(ByVal kind As String)
         Case Else
             Err.Raise 5, "MatrixOp", "Unknown binary op."
     End Select
-    Call modInternalMatrices.PutMatrix(modInternalMatrices.OutputOrigin(rng), out)
+    Call modInternalMatrices.PutMatrix(dest.Cells(1, 1), out)
     Call modInternalExcelApp.PopAppState
     Exit Sub
 EH:
@@ -576,12 +583,22 @@ Public Sub MatrixMultiply()
     Call BinaryOp("mul")
 End Sub
 
+''' @Description: Element-wise product. Writes to the right of B unless the user picks another cell.
+Public Sub MatrixMultiplicationHadamard()
+    Call BinaryOp("hadamard", True)
+End Sub
+
 Public Sub MatrixHadamard()
-    Call BinaryOp("hadamard")
+    Call MatrixMultiplicationHadamard
+End Sub
+
+''' @Description: Kronecker product A ⊗ B.
+Public Sub MatrixMultiplicationKronecker()
+    Call BinaryOp("kron")
 End Sub
 
 Public Sub MatrixKronecker()
-    Call BinaryOp("kron")
+    Call MatrixMultiplicationKronecker
 End Sub
 
 Public Sub MatrixOuter()
@@ -668,6 +685,81 @@ End Sub
 
 Public Sub MatrixIsSymmetric()
     Call WriteValidationBool("sym")
+End Sub
+
+''' @Description: Write H, H^T, and H H^T on a new sheet; if H is Hadamard, also n and I.
+Public Sub MatrixHadamardProof()
+    Const SheetName As String = "Hadamard Proof"
+    Const FailMsg As String = "Not Hadamard: H.HT not equal to nI"
+    Dim rng As Range
+    Dim h As Variant
+    Dim ht As Variant
+    Dim hht As Variant
+    Dim ident As Variant
+    Dim n As Long
+    Dim nr As Long
+    Dim nc As Long
+    Dim colH As Long
+    Dim colHt As Long
+    Dim colHht As Long
+    Dim colN As Long
+    Dim colI As Long
+    Dim ws As Worksheet
+    On Error GoTo EH
+    Set rng = PromptRange("Select the matrix")
+    If rng Is Nothing Then Exit Sub
+    h = modInternalMatrices.RangeToMatrix(rng)
+    If Not modInternalMatrices.HasPlusMinusOneEntries(h) Then
+        MsgBox "The values of a Hadamard matrix can only take the values of 1 or -1, so the input matrix is not a Hadamard matrix.", vbExclamation, "Hadamard Proof"
+        Exit Sub
+    End If
+    Call modInternalExcelApp.PushAppState
+    ht = modInternalMatrices.TransposeMatrix(h)
+    hht = modInternalMatrices.MatrixMultDefined(h, ht)
+    nr = modInternalMatrices.RowsOf(h)
+    nc = modInternalMatrices.ColsOf(h)
+    n = nr
+    colH = 1
+    colHt = nc + 2
+    colHht = colHt + nr + 1
+    colN = colHht + nr + 1
+    colI = colN + 2
+    Call modApiSheets.CreateOutputSheet(SheetName)
+    Set ws = ActiveWorkbook.Worksheets(SheetName)
+    With ws
+        .Range("A1").Value = "Hadamard proof: H H^T = n I"
+        .Range("A1").Font.Bold = True
+        .Cells(4, colH).Value = "Original matrix H"
+        .Cells(4, colH).Font.Bold = True
+        .Cells(4, colHt).Value = "Transpose H^T"
+        .Cells(4, colHt).Font.Bold = True
+        .Cells(4, colHht).Value = "H.HT"
+        .Cells(4, colHht).Font.Bold = True
+    End With
+    Call modApiArrays.WriteArrayToWorksheet(h, SheetName, 5, colH)
+    Call modApiArrays.WriteArrayToWorksheet(ht, SheetName, 5, colHt)
+    Call modApiArrays.WriteArrayToWorksheet(hht, SheetName, 5, colHht)
+    If modInternalMatrices.IsHadamard(h) Then
+        ident = modInternalMatrices.Identity(n)
+        With ws
+            .Cells(4, colN).Value = "n"
+            .Cells(4, colN).Font.Bold = True
+            .Cells(5, colN).Value = n
+            .Cells(4, colI).Value = "Identity"
+            .Cells(4, colI).Font.Bold = True
+        End With
+        Call modApiArrays.WriteArrayToWorksheet(ident, SheetName, 5, colI)
+    Else
+        With ws
+            .Cells(4, colN).Value = "Result"
+            .Cells(4, colN).Font.Bold = True
+            .Cells(5, colN).Value = FailMsg
+        End With
+    End If
+    Call modInternalExcelApp.PopAppState
+    Exit Sub
+EH:
+    Call ShowMatrixError
 End Sub
 
 Public Sub MatrixAdjugate()

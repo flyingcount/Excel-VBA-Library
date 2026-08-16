@@ -153,7 +153,8 @@ Git snapshot math is array-based in `modInternalMatrices` (Personal dumps are gi
 | Public procedure | Module | Notes |
 |------------------|--------|--------|
 | `MatrixCreateIdentity` / `Zeros` / `Ones` / `Diagonal` / `Random` / `Hilbert` / `Exchange` / `Toeplitz` / `Vandermonde` / `Companion` | `Custom_Menu13_CreateMatrices` | Create writes at the active cell; vector-based create writes to the right of the selection |
-| `MatrixTranspose` / `Add` / `Subtract` / `Scale` / `Multiply` / `Hadamard` / `Kronecker` / `Outer` / `Dot` / `Inverse` / `Power` / `Determinant` / `Trace` / `DiagExtract` / `Vec` / `Unvec` | `Custom_Menu13_Matrices1` | Result one column to the right of the selection |
+| `MatrixTranspose` / `Add` / `Subtract` / `Scale` / `Multiply` / `MultiplicationHadamard` / `MultiplicationKronecker` / `Outer` / `Dot` / `Inverse` / `Power` / `Determinant` / `Trace` / `DiagExtract` / `Vec` / `Unvec` | `Custom_Menu13_Matrices1` | Result one column to the right of the selection (Hadamard prompts; default is to the right of B) |
+| `MatrixHadamardProof` | `Custom_Menu13_MatrixUtilities` | Sheet **Hadamard Proof**: H, Hᵀ, H.HT, then n and I or a not-Hadamard message |
 | `MatrixSolve` / `Rank` / `Norm` / `Norm1` / `NormInf` / `IsSymmetric` / `Adjugate` / `PseudoInverse` / `LU` / `Cofactor` / `Minor` | `Custom_Menu13_Matrices2` | Cofactor limited to order 20 |
 | `MatrixCholesky` | `Custom_Menu13_Cholesky` | SPD only |
 | `MatrixEigen` | `Custom_Menu13_EigenDecomp` | Jacobi; symmetric only. Writes vectors then a λ column |

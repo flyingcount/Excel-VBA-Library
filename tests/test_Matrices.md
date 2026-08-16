@@ -48,7 +48,7 @@ Put 1 2 / 3 4 in A1:B2. Select A1:B2.
 | Scale (k=2) | 2 4 / 6 8 |
 | Power (p=2) | 7 10 / 15 22 |
 
-**Multiply / Hadamard / Kronecker / Add** (and other two-matrix ops): first InputBox is matrix A (defaults to the selection), second is matrix B. Multiply A1:B2 by itself → 7 10 / 15 22.
+**Multiply / Multiplication-Hadamard / Multiplication-Kronecker / Add** (and other two-matrix ops): first InputBox is matrix A (defaults to the selection), second is matrix B. Multiply A1:B2 by itself → 7 10 / 15 22. **Multiplication-Hadamard** is the element-wise product; a third InputBox asks for the output cell (default one column to the right of B). **Multiplication-Kronecker** is the Kronecker product (A ⊗ B).
 
 **Dot product** of `{1;2}` and `{3;4}` → 11. **Outer product** of the same → 3 4 / 6 8.
 
@@ -77,6 +77,7 @@ Same A1:B2. **Matrices → Properties**. Each item prompts for the matrix and an
 | Menu | Expected |
 |------|----------|
 | Is symmetric | `Symmetric` and TRUE/FALSE in the cell to its right (prompts for the matrix and an output cell; default is two rows below, same as Size) |
+| Hadamard Proof | Prompts for the matrix. If any entry is not 1 or -1, a message box says the input is not Hadamard and no sheet is written. Otherwise writes **Hadamard Proof**: H, Hᵀ, H.HT. Order-2 Hadamard `1 1 / 1 -1` → n = 2 and I₂. A ±1 matrix that fails H Hᵀ = n I → `Not Hadamard: H.HT not equal to nI` |
 
 ## Decompositions
 

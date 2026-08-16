@@ -19,7 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Matrices — Personal Menu13 module names in the add-in VBE (`Custom_Menu13_Matrices1`, `Custom_Menu13_Matrices2`, create / Cholesky / eigen / unitary / utilities, plus `Fn_Matrices*`). Math is in `modInternalMatrices`. Overlay the original Personal VBA with `scripts/Import-Menu13FromPersonal.ps1` after `-All`. Extra ops: vec/unvec, companion, cofactor, minor. Personal-only Menu13 tools (diagnostic, formulae, rotations, sheet eigen/Cholesky) sit on **Excel VBA Lib → Matrices** Create / Operations / Decompositions; duplicate identity/zeros/ones/exchange/transpose/dot items are not listed twice.
 - Hyperlinks (`source/Api/modApiHyperlinks.bas` + `source/Internal/modInternalHyperlinks.bas`) — Personal Menu21 inventory, index, remove-by-display-text, follow selection, and back-links. Menu **Excel VBA Lib → Hyperlinks**.
 
+- Matrices **Validation → Hadamard Proof** prompts for a range, writes sheet **Hadamard Proof** with H, Hᵀ, and H.HT, then n and I when H Hᵀ = n I, otherwise `Not Hadamard: H.HT not equal to nI`.
+
 ### Changed
+- Matrices **Operations** Hadamard product is now **Multiplication-Hadamard** (`MatrixMultiplicationHadamard`). It prompts for an output cell defaulting to the right of matrix B.
+- Matrices **Operations** Kronecker product is now **Multiplication-Kronecker** (`MatrixMultiplicationKronecker`; `MatrixKronecker` still runs the same op).
 - The library is `ExcelVbaLib.xlam`. Placeholder `source/` folders (`Features/`, `Udf/`, `Forms/`, `Classes/`, `Sandbox/`) were removed; add new modules in the add-in VBE.
 - Add-in menu install no longer calls `Auto_Open` from `Workbook_Open` (Excel skips that name for add-ins). `Workbook_Open` / `Workbook_AddinInstall` schedule `InstallExcelVbaLibMenu` via `Application.OnTime`. Re-inject ThisWorkbook with `scripts/Inject-ThisWorkbook.ps1` or a full rebuild.
 - Matrices **Properties** submenu holds All properties, determinant, trace, rank, the three norms, condition number, spectral radius, eigenvalues, and eigenvectors. Each writes a label with the value in the cell to its right.
