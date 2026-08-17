@@ -259,7 +259,15 @@ Then re-run this script.
         "Custom_Menu13_EigenDecomp",
         "custom_Menu13_Unitary",
         "Custom_Menu13_MatrixUtilities",
-        "Custom_Menu18_Covariance"
+        "Custom_Menu18_Covariance",
+        "Custom_Menu18_Analysis",
+        "Custom_Menu18_ConfusionMatrix",
+        "Custom_Menu18_CnfsnMtrxTmplt",
+        "Custom_Menu18_Residuals",
+        "Custom_Menu18_SVD",
+        "Custom_Menu18_LinearSystem",
+        "Custom_Menu18_LinearSysAXB",
+        "LinearSystemUserForm"
     )
     foreach ($obsoleteName in $obsoleteNames) {
         $comp = $null

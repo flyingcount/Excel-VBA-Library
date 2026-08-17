@@ -37,6 +37,11 @@ source/Api/
 ├── modApiUnitary.bas
 ├── modApiMatrixUtilities.bas
 ├── modApiCovariance.bas
+├── modApiAnalysis.bas
+├── modApiConfusion.bas
+├── modApiResiduals.bas
+├── modApiSvd.bas
+├── modApiLinearSystem.bas
 ├── Fn_MatricesArray.bas / Fn_MatricesRng.bas / Fn_Matrices2.bas
 └── modApiUi.bas
 
@@ -56,7 +61,10 @@ source/Internal/
 ├── modInternalTables.bas
 ├── modInternalFiles.bas
 ├── modInternalPowerQuery.bas
-└── modInternalMatrices.bas
+├── modInternalMatrices.bas
+├── modInternalAnalysis.bas
+├── modInternalConfusion.bas
+└── modInternalSvd.bas
 
 source/Menus/
 ├── modAddinMenu.bas
@@ -78,6 +86,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Tables | In the add-in (`modApiTables`) — Personal `Custom_Menu19_Tables` |
 | Files | In the add-in (`modApiFiles`) — Personal `Custom_Menu24_ListFilesInFolder` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
+| Analysis | In the add-in (`modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem`) — Personal Menu18 |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
 | Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
 | Editing / ranges | Later |
@@ -208,6 +217,32 @@ Personal Menu29 (`Custom_Menu29_PowerQuery`). Menu **Excel VBA Lib → Power Que
 | `BackgroundRefreshToggle` | `modApiPowerQuery` | Flips `BackgroundQuery` on every OLEDB connection; reports how many are on/off |
 | `IgnorePrivacyToggle` | `modApiPowerQuery` | Flips `Queries.FastCombine` (Ignore Privacy Levels); reports the new state |
 | `Add_Connection_All_Tables` | `modApiPowerQuery` | Connection-only query per Excel Table; optional Data Model load. Skips tables that already have a query. One connection per table (Personal added two with the same name when loading to the model) |
+
+### Analysis public surface
+
+Personal Menu18 (`Custom_Menu18_Analysis`, `Covariance`, `ConfusionMatrix`, `CnfsnMtrxTmplt`, `Residuals`, `SVD`, `LinearSystem` / `LinearSysAXB`). Menu **Excel VBA Lib → Analysis**. Personal OnAction names are kept. SVD is also on **Matrices → Decompositions**.
+
+Observations are rows; variables are columns. Vector/matrix tools that take a header use the first row as labels and the rest as numeric data.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `SVD` | `modApiSvd` | Writes singular values, U, and V. Golub-Reinsch; max side 500. Does not grey-fill or require a numeric output cell |
+| `LinearSystem_AXB_v1` / `LinearSystem_AXB_v2` | `modApiLinearSystem` | Solve AX=B via `modInternalMatrices.Solve`. v2 is the Personal menu name; the RefEdit form is not used |
+| `ConfusionMatrix` | `modApiConfusion` | Sheet **Confusion Matrix** from Yes/No (case-insensitive; Y/N). Predicted then Actual |
+| `ConfusionMatrixOnesAndZeros` | `modApiConfusion` | Same sheet; 1 = positive class |
+| `ConfusionMatrixTemplate` | `modApiConfusion` | Sheet **Confusion Matrix Template** with live R1C1 formulae. Personal wrote formula text that never calculated |
+| `CalculateVarianceCovarianceMatrix` | `modApiAnalysis` | Population covariance (divide by n), with headers |
+| `MatrixCovariance` | `modApiCovariance` | Sample covariance (n-1). Range need not be square |
+| `MatrixCovarianceStandardise` | `modApiCovariance` | Sample covariance of standardised columns, with a **Standardised Covariance** label above the matrix |
+| `CorrelationMatrix` | `modApiAnalysis` | Population covariance / products of population SDs |
+| `ProveVarCovarAndCorrel` | `modApiAnalysis` | Sheet **Cov and Correl**: D R D = covariance, plus a Check block |
+| `CalculateMeanVector` | `modApiAnalysis` | 1 × p means under the header |
+| `CalculateStandardDeviationPopulationVector` / `Sample` | `modApiAnalysis` | STDEV.P / STDEV.S row vectors |
+| `CalculateStdDevProductMatrixPopulation` | `modApiAnalysis` | Outer product of population SDs |
+| `ResidualsAnalysis` | `modApiResiduals` | Sheet **Residuals Analysis**; sheet-scoped names `Order` / `Residuals` |
+| `ComparePredictedToActual` / `…OneAndZerosOnly` | `modApiConfusion` | Optional worksheet UDFs |
+
+Personal `GetRange` used `End` on cancel (kills Excel). Prompts now return Nothing. `ExtractBody` / `RangeArea` used unqualified `Cells` and could read the wrong sheet.
 
 ### Matrices public surface
 

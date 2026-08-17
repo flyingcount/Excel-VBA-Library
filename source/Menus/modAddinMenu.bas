@@ -68,6 +68,7 @@ Private Function TryBuildMenu() As Boolean
     Dim ben As CommandBarPopup
     Dim samp As CommandBarPopup
     Dim dataMenu As CommandBarPopup
+    Dim anMenu As CommandBarPopup
     Dim dist As CommandBarPopup
     Dim clMenu As CommandBarPopup
     Dim tblMenu As CommandBarPopup
@@ -234,6 +235,23 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(matDecomp, "Eigenvalue &diagonal", "DiagonalEigenvalueSymmetricMatrix")
     Call AddButton(matDecomp, "&QR", "MatrixQR")
     Call AddButton(matDecomp, "&LU", "MatrixLU")
+    Call AddButton(matDecomp, "&SVD", "SVD")
+
+    Set anMenu = AddSubmenu(pop, "Anal&ysis")
+    Call AddButton(anMenu, "Calculate S&VD", "SVD")
+    Call AddButton(anMenu, "Solve AX=&B", "LinearSystem_AXB_v2")
+    Call AddButton(anMenu, "Confusion matrix (Yes/&No)", "ConfusionMatrix", True)
+    Call AddButton(anMenu, "Confusion matrix (&1s and 0s)", "ConfusionMatrixOnesAndZeros")
+    Call AddButton(anMenu, "Confusion matrix &template", "ConfusionMatrixTemplate")
+    Call AddButton(anMenu, "&Variance-covariance", "CalculateVarianceCovarianceMatrix", True)
+    Call AddButton(anMenu, "&Standardised covariance", "MatrixCovarianceStandardise")
+    Call AddButton(anMenu, "&Correlation matrix", "CorrelationMatrix")
+    Call AddButton(anMenu, "&Prove var-covar and correlation", "ProveVarCovarAndCorrel")
+    Call AddButton(anMenu, "&Mean vector", "CalculateMeanVector", True)
+    Call AddButton(anMenu, "Stdev (&population) vector", "CalculateStandardDeviationPopulationVector")
+    Call AddButton(anMenu, "Stdev (s&ample) vector", "CalculateStandardDeviationSampleVector")
+    Call AddButton(anMenu, "Stdev &product (population)", "CalculateStdDevProductMatrixPopulation")
+    Call AddButton(anMenu, "&Residuals analysis", "ResidualsAnalysis", True)
 
     Set tmpl = AddSubmenu(pop, "&Worksheet templates")
     Call AddButton(tmpl, "Notes workbook (all templates)", "CreateNotesWorkbook")

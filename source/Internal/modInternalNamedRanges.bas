@@ -19,3 +19,11 @@ Public Sub CreateNamedRange(ByVal RangeName As String, ByVal RangeToName As Rang
     ActiveWorkbook.Names.Add Name:=RangeName, RefersTo:=RangeToName, Visible:=True
     ActiveWorkbook.Names(RangeName).Comment = "Created " & Now()
 End Sub
+
+' Sheet-scoped name so Residuals / Order do not collide with other sheets.
+Public Sub CreateSheetNamedRange(ByVal ws As Worksheet, ByVal RangeName As String, ByVal Target As Range)
+    On Error Resume Next
+    ws.Names(RangeName).Delete
+    On Error GoTo 0
+    ws.Names.Add Name:=RangeName, RefersTo:=Target
+End Sub

@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Files (`source/Api/modApiFiles.bas` + `source/Internal/modInternalFiles.bas` + `frmFileListingProgress`) — Personal Menu24 folder listings on sheet **File listing** (this folder, or folder and subfolders). Menu **Excel VBA Lib → Files**. Recursive listing no longer overwrites earlier rows; attributes are decoded as flags. A count-only pass runs first; if there are 1,000 or more files, a prompt shows the count plus an estimated listing time so you can cancel. A modeless Cancel dialog stops the run and writes any files already collected.
 
 - Matrices **Validation → Hadamard Proof** prompts for a range, writes sheet **Hadamard Proof** with H, Hᵀ, and H.HT, then n and I when H Hᵀ = n I, otherwise `Not Hadamard: H.HT not equal to nI`.
+- Analysis (Personal Menu18) on **Excel VBA Lib → Analysis**: SVD, AX=B, confusion matrices (Yes/No, 1/0, template), population covariance/correlation/mean/stdev vectors, residuals plot. Sample covariance stays on **Matrices → Operations** (`MatrixCovariance` / `MatrixCovarianceStandardise`) and no longer requires a square range.
 
 ### Changed
 - Files listings count files first (`Files.Count` per folder, no per-file property reads). Fewer than 1,000 files are listed immediately. At 1,000 or more, a prompt shows the count and a rough listing-time estimate; Cancel skips the detailed walk and does not create **File listing**. Default button is No when there are more than 10,000 files or the high estimate is 30 seconds or more. A modeless **Files** dialog with Cancel stops counting or listing; if any file details were already collected they are written as a partial **File listing**.
@@ -40,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Power Query import/export failed to compile: `PqLibraryTable` and the other library constants sat after procedures, so VBA treated them as undefined. They now live at the top of `modInternalPowerQuery`.
 - `RandomPoissonNumbers` (Data → Probability distributions → Poisson) raised error 438 because Excel has no `WorksheetFunction.Poisson_Inv`. Draws now use Knuth's method, with a rounded normal approximation for large lambda.
 - Matrices **Is symmetric** / **Is orthogonal** raised "You cannot change part of an array" because they wrote a Boolean into the cell to the right of the matrix (often a leftover array formula). They now prompt for output like **Size** and write `Symmetric`/`Orthogonal` with TRUE/FALSE in the cell to the right.
+- Confusion matrix template formulae now calculate (`FormulaR1C1`). Personal dumped formula strings with `WriteArrayToWorksheet`.
+- `MatrixCovariance` no longer requires a square range (observations × variables).
+- Residuals analysis writes to the output sheet only (Personal used unqualified `Range` / workbook-level names) and rejects blanks (`IsNumeric` treats empty as numeric).
 
 ## [0.1.0] - 2026-08-09
 
