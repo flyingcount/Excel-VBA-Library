@@ -29,7 +29,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 │   ├── Internal/
 │   ├── Menus/
 │   └── _export_raw/         ← Local dumps from Personal123 (gitignored)
-├── build/                   ← ExcelVbaLib.xlam (local; gitignored)
+├── build/                   ← ExcelVbaLib.xlam
 └── Data/                    ← Personal123.xlsb (local; gitignored)
 ```
 
@@ -43,7 +43,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    ```
 
 3. Excel → Options → Add-ins → Excel Add-ins → Browse → `build/ExcelVbaLib.xlam`.
-   `build\ExcelVbaLib.xlam` is gitignored, so after `git pull` refresh it **in Windows PowerShell on the PC that has Excel** (not the cloud Linux terminal):
+   After `git pull`, that file is already in the repo. To rebuild from `source/` **in Windows PowerShell on the PC that has Excel** (not the cloud Linux terminal):
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All

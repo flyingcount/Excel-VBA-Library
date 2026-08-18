@@ -16,7 +16,7 @@ Requires **Trust access to the VBA project object model** (see [docs/ExportImpor
 
 **The add-in is the library.** Add new modules in the VBE of `ExcelVbaLib.xlam`, then save the `.xlam`. Do not drop new `.bas` files into `source/` as a substitute for editing the add-in.
 
-Binary `.xlam` files are gitignored. **`git pull` does not change `build\ExcelVbaLib.xlam`.** After pulling source, refresh that file from the **repo folder** (not `C:\Windows\System32`):
+`build/ExcelVbaLib.xlam` is tracked in git. After pulling source, you can load that file as-is, or rebuild it from the **repo folder** (not `C:\Windows\System32`):
 
 ```powershell
 cd "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library"

@@ -49,7 +49,7 @@ If the add-in is not `build\ExcelVbaLib.xlam` under the repo, pass `-XlamPath` t
 
 That is `modInternalData` and `modApiData` only. **Matrix functions are not updated unless you pass `-All` or name those modules.** Other modules: `-Modules modInternalBenford,modApiBenford`.
 
-To write **all** source modules (including Matrices) into `build\ExcelVbaLib.xlam` after a `git pull` (the `.xlam` is gitignored):
+To write **all** source modules (including Matrices) into `build\ExcelVbaLib.xlam` after a `git pull`:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
@@ -137,5 +137,5 @@ Then import chosen modules into **ExcelVbaLib.xlam**, not into a folder tree.
 
 ## Do not commit
 
-- Binary add-ins unless you explicitly want them (`build/*.xlam` is gitignored by default)
+- Excel lock files (`~$*`); `build/ExcelVbaLib.xlam` is tracked
 - Exported junk under `source/_export_raw/` (also ignored)

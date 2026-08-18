@@ -4,7 +4,7 @@ Personal `Custom_Menu29_PowerQuery`, rewritten as `modApiPowerQuery` + `modInter
 
 ## Setup
 
-1. After `git pull`, refresh the gitignored add-in:
+1. After `git pull`, load `build/ExcelVbaLib.xlam`. To rebuild from source:
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All

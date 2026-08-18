@@ -4,7 +4,7 @@ Personal dump (`Custom_Menu13_*`, `Fn_Matrices*`) is gitignored and was not in t
 
 ## Setup
 
-1. After `git pull`, refresh the gitignored add-in **in Windows PowerShell** (not the cloud Linux terminal):
+1. After `git pull`, `build/ExcelVbaLib.xlam` is in the repo. To rebuild from source **in Windows PowerShell** (not the cloud Linux terminal):
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
