@@ -12,30 +12,87 @@ Without this, automation cannot list or export modules from `Personal123.xlsb` (
 
 | Kind | Prefix | Example |
 |------|--------|---------|
-| Public API standard module | `modApi` | `modApiArrays.bas` |
-| Internal helper module | `modInternal` | `modInternalSheetIO.bas` |
-| Class module (optional) | `cls` | `clsTimer.cls` |
+| Public API standard module | `modApi` | `modApiArrays` (in the add-in) |
+| Internal helper module | `modInternal` | `modInternalSheetIO` (in the add-in) |
+| Worksheet UDF module | `Fn_` | `Fn_Ageing` (keep Public Function names) |
+| Class module | `cls` | `clsTimer` |
+| UserForm | form name | `BoxCoxForm` |
 | Public procedure | verb + noun | `WriteArrayToSheet` |
 | Private helper | same module, `Private` | `Private Function LastUsedRow(...)` |
 
 `Attribute VB_Name` inside each file **must** match the file stem (without extension).
 
-## Manual export (from Personal123.xlsb or the .xlam)
+## Add code to the library
 
-1. Open the workbook/add-in → `Alt+F11`
-2. For each module to migrate:
-   - Right-click module → **Export File…**
-   - Save under `source/Api/` or `source/Internal/` per [ModuleMap.md](ModuleMap.md)
-3. Prefer **re-home** code into the target module names in the map (rename on export), rather than keeping legacy names forever
-4. Commit the `.bas` / `.cls` text files
+Open `ExcelVbaLib.xlam` → `Alt+F11` → Insert → Module (or import a `.bas` **into the add-in**). Save the `.xlam`. Caller workbooks only load the add-in.
 
-## Manual import (into the add-in)
+To copy from Personal123: export a module, then **File → Import File…** in the add-in project — not into a caller workbook.
+
+## Build the add-in (one project, full call graph)
+
+Caller workbooks should **load `ExcelVbaLib.xlam`**, not import Benford (or other) modules one by one.
+
+```powershell
+# From repo root; close the add-in in Excel first if it is already loaded
+powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
+```
+
+The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), compiles, and writes `build/ExcelVbaLib.xlam`. After that, grow the library in the add-in itself.
+
+To replace Data modules in an already-loaded add-in (no full rebuild) — Internal first, then Api:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
+```
+
+If the add-in is not `build\ExcelVbaLib.xlam` under the repo, pass `-XlamPath` to that `.xlam`. The script updates that file (by full path), not a different loaded copy with the same name.
+
+That is `modInternalData` and `modApiData` only. **Matrix functions are not updated unless you pass `-All` or name those modules.** Other modules: `-Modules modInternalBenford,modApiBenford`.
+
+To write **all** source modules (including Matrices) into `build\ExcelVbaLib.xlam` after a `git pull`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
+```
+
+That imports `modApiMatrices1` and `modApiMatrices2` from git. To copy the original Personal modules into the `.xlam` (Personal.xlsb must be on that PC; names are rewritten to `modApi*`):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-Menu13FromPersonal.ps1
+```
+
+To refresh ThisWorkbook + the menu module in an already-loaded add-in (no full rebuild):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Inject-ThisWorkbook.ps1
+```
+
+Then restart Excel so `Workbook_Open` runs on a cold start.
+
+### Load and run
+
+1. Excel → Options → Add-ins → Manage **Excel Add-ins** → Go → Browse → `build/ExcelVbaLib.xlam`
+2. Use the **Excel VBA Lib** menu, or from the Immediate window:
+
+```vb
+Application.Run "BenfordAnalysisFirstDigit", Range("A2:A50")
+Application.Run "CreateDateTable", #1/1/2024#, #1/31/2024#
+Application.Run "RandomIntegers"
+Application.Run "DataCombinations"
+Application.Run "MatrixMultiply"
+```
+
+Add-in `Public Sub`s do not appear in Alt+F8. Optional: Tools → References → **ExcelVbaLib** for early-bound `Call`.
+
+### Manual import (into the add-in)
+
+Use this only if you are not running the build script:
 
 1. Create a new workbook → save as **Excel Add-in** (`*.xlam`) under `build/ExcelVbaLib.xlam`
-2. `Alt+F11` → File → **Import File…** for each `source/**/*.bas`
-3. Set project name (VBAProject properties) to e.g. `ExcelVbaLib`
+2. `Alt+F11` → File → **Import File…** for each `source/**/*.bas` (**Internal** first)
+3. Set project name (VBAProject properties) to `ExcelVbaLib`
 4. Save the add-in
-5. Excel → Options → Add-ins → manage Excel Add-ins → browse and load `ExcelVbaLib.xlam`
+5. Load it as an Excel add-in (steps above)
 
 ## Keep links (calls) intact
 
@@ -76,9 +133,9 @@ $wb.Close($false)
 $excel.Quit()
 ```
 
-Then sort exported files into `Api/` vs `Internal/` using the module map.
+Then import chosen modules into **ExcelVbaLib.xlam**, not into a folder tree.
 
 ## Do not commit
 
-- Binary add-ins unless you explicitly want them (`build/*.xlam` is gitignored by default)
+- Excel lock files (`~$*`); `build/ExcelVbaLib.xlam` is tracked
 - Exported junk under `source/_export_raw/` (also ignored)

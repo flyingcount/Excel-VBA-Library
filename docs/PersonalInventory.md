@@ -16,15 +16,18 @@ Raw export: `source/_export_raw/` (gitignored dumps + `inventory.csv`)
 
 ## Natural groupings (keep Call links inside each family first)
 
-| Prefix / area | Role | Suggested long-term home |
-|---------------|------|---------------------------|
-| `Custom_Menu*` | Ribbon/menu-driven tools (stats, XmR, Benford, matrices, editing, output…) | Feature modules under `source/Features/MenuNN_…` later; for now leave as exported units |
-| `Fn_*` | Worksheet-callable UDFs (ageing, tax, flying, z-score…) | `source/Api/modApiUdf*.bas` or keep `Fn_*` names for Excel formula compatibility |
-| `aPublicProcedures` | Likely curated public entry list | Seed for `source/Api/` |
-| `Filehandling`, `JPEGS`, `Sampling`, `Maths` | Shared utilities | `Api` / `Internal` per [ModuleMap.md](ModuleMap.md) |
-| `z_*` / WIP | Incomplete or experiments | Do not import to `.xlam` until reviewed |
-| `Cipher_*`, domain tools | Niche features | Optional feature pack modules |
-| `ThisWorkbook` | `Workbook_Open`, custom menus | Stays in add-in `ThisWorkbook` (not a `.bas` API) |
+Import the next family into **`ExcelVbaLib.xlam`** (same project). Do not re-home into git folders.
+
+| Prefix / area | Role | Home |
+|---------------|------|------|
+| `Custom_Menu*` domain tools | Stats, XmR, matrices, editing, output, … | Add-in VBE |
+| `Fn_*` | Worksheet-callable UDFs | Add-in VBE (keep Public Function names) |
+| `aPublicProcedures` / `aPublic*` | Shared library hubs | Already started in the add-in (`modApi*` / `modInternal*`) |
+| `Filehandling`, `JPEGS`, `Sampling`, `Maths` | Shared utilities | Add-in, per [ModuleMap.md](ModuleMap.md) |
+| UserForms | `.frm` / `.frx` | Add-in VBE |
+| `Custom_Menu_Menus`, `ThisWorkbook` | Ribbon / open handlers | Add-in (`modAddinMenu` already ships) |
+| `z_*` / WIP | Incomplete or snippet templates | Leave out of the add-in until reviewed |
+| `Cipher_*`, niche tools | Domain features | Add-in VBE when wanted |
 
 ## Critical finding: duplicated sheet/array helpers
 
@@ -41,10 +44,10 @@ Highlights:
 ## Recommended next steps
 
 1. **Done:** Trust access + export to `_export_raw`.
-2. Diff several `WriteArrayToWorksheet` copies; pick the best → paste into `source/Internal/modInternalSheetIO.bas`.
-3. In **one pilot feature module** (e.g. `Custom_Menu11_Histogram`), delete the private copy and `Call modInternalSheetIO.DumpArray` (or keep the name `WriteArrayToWorksheet` as a thin Public wrapper in SheetIO).
+2. Diff several `WriteArrayToWorksheet` copies; pick the best → put it in the add-in (`modInternalSheetIO`).
+3. In **one pilot feature module** (e.g. `Custom_Menu11_Histogram`), delete the private copy and `Call` the add-in helper.
 4. Compile; repeat for other features.
-5. Build `ExcelVbaLib.xlam` only after Internal helpers stabilize — do not try to import all 200 modules on day one.
+5. Copy further modules into `ExcelVbaLib.xlam` — do not try to import all 200 modules on day one.
 
 ## Regenerating the export
 

@@ -12,11 +12,10 @@ Desktop.ini
 .idea/
 *.swp
 
-# Personal workbook and compiled add-in
+# Personal workbook
 Data/*.xlsb
 Data/*.xlsx
 Data/*.xlsm
-build/*.xlam
 
 # Raw VBA dumps (keep README only)
 source/_export_raw/*

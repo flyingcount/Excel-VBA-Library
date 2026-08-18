@@ -4,4 +4,4 @@
 |------|------|
 | `Personal.xlsb` | Personal macro workbook (source of VBA export); local only, gitignored |
 
-Keep binaries out of git. Commit curated modules under `source/Api` and `source/Internal`.
+Keep Personal workbooks out of git. The runtime library is `build/ExcelVbaLib.xlam`. `source/` is only a snapshot of modules already in the add-in.
