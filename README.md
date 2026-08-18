@@ -68,6 +68,8 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    Application.Run "ListTableProperties"
    Application.Run "BatchListAllFiles_FolderSubfolders"
    Application.Run "MatrixMultiply"
+   Application.Run "HistogramTableAndPlot"
+   Application.Run "GenerateNormalPlot"
    ```
 
 Grow the library in the add-in (`Alt+F11` on `ExcelVbaLib.xlam`), then save the `.xlam`. Do not import individual `modApi*` / `modInternal*` files into caller workbooks.

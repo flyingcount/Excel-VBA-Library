@@ -81,6 +81,9 @@ Private Function TryBuildMenu() As Boolean
     Dim matProps As CommandBarPopup
     Dim matValid As CommandBarPopup
     Dim matDecomp As CommandBarPopup
+    Dim plots As CommandBarPopup
+    Dim distPlots As CommandBarPopup
+    Dim qqPlots As CommandBarPopup
 
     On Error Resume Next
     Set bar = Application.CommandBars("Worksheet Menu Bar")
@@ -252,6 +255,33 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(anMenu, "Stdev (s&ample) vector", "CalculateStandardDeviationSampleVector")
     Call AddButton(anMenu, "Stdev &product (population)", "CalculateStdDevProductMatrixPopulation")
     Call AddButton(anMenu, "&Residuals analysis", "ResidualsAnalysis", True)
+
+    Set plots = AddSubmenu(pop, "&Plots Charts")
+    Call AddButton(plots, "&Histogram and data table", "HistogramTableAndPlot")
+    Call AddButton(plots, "Histogram with &formulae", "HistogramFormulaeAndPlot")
+    Call AddButton(plots, "&Linear regression", "LinearRegression", True)
+    Call AddButton(plots, "Linear regression &v2", "LinearRegressionV2")
+    Call AddButton(plots, "P&rocess capability", "ProcessCapabilityChart", True)
+    Call AddButton(plots, "&Binomial", "GenerateBinomialPlot", True)
+    Set distPlots = AddSubmenu(plots, "&Parametric data and plots")
+    Call AddButton(distPlots, "&Normal", "GenerateNormalPlot")
+    Call AddButton(distPlots, "&Log-normal", "GenerateLogNormalPlot")
+    Call AddButton(distPlots, "&Poisson", "GeneratePoissonPlot")
+    Call AddButton(distPlots, "&Weibull", "GenerateWeibullPlot")
+    Call AddButton(distPlots, "&Gamma", "GenerateGammaPlot")
+    Call AddButton(distPlots, "B&eta", "GenerateBetaPlot")
+    Call AddButton(distPlots, "&Exponential", "GenerateExponentialPlot")
+    Call AddButton(distPlots, "&Hypergeometric", "GenerateHypergeometricPlot")
+    Call AddButton(distPlots, "L&ogistic curve", "GenerateLogisticCurve")
+    Set qqPlots = AddSubmenu(plots, "&QQ plots")
+    Call AddButton(qqPlots, "&Gaussian / normal", "QQPlotGaussianNormal")
+    Call AddButton(qqPlots, "&Uniform", "QQPlotUniform")
+    Call AddButton(plots, "Lorenz curve and &Gini", "GiniPlot", True)
+    Call AddButton(plots, "&Autocorrelation (ACF)", "GenerateCorrelogram", True)
+    Call AddButton(plots, "&Diebold-Mariano test", "DieboldMarianoTest")
+    Call AddButton(plots, "&XmR chart", "XmR", True)
+    Call AddButton(plots, "XmR &diagnostics", "GenerateXMRDiagnostics")
+    Call AddButton(plots, "Line chart on a chart &sheet", "PlotLineChartSheet", True)
 
     Set tmpl = AddSubmenu(pop, "&Worksheet templates")
     Call AddButton(tmpl, "Notes workbook (all templates)", "CreateNotesWorkbook")

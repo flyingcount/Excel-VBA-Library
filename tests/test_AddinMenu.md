@@ -13,6 +13,6 @@
 ## Expected
 
 - The menu is present within about a second of startup (OnTime waits until Excel is idle).
-- Submenus: Benford, Data (with Probability distributions), **Custom lists**, **Tables**, **Files**, Sampling, **Hyperlinks**, **Power Query**, **Matrices** (Create / Operations / Properties / Validation / Decompositions including **SVD**), **Analysis** (Menu18: SVD, AX=B, confusion, covariance/correlation, vectors, residuals), Worksheet templates.
+- Submenus: Benford, Data (with Probability distributions), **Custom lists**, **Tables**, **Files**, Sampling, **Hyperlinks**, **Power Query**, **Matrices** (Create / Operations / Properties / Validation / Decompositions including **SVD**), **Analysis** (Menu18: SVD, AX=B, confusion, covariance/correlation, vectors, residuals), **Plots Charts** (Menu11: histograms, regression, capability, parametric plots including logistic, QQ, Gini, ACF, Diebold-Mariano, XmR, chart sheet), Worksheet templates.
 - Unchecking the add-in removes the menu. Checking it again restores the menu without a restart (`Workbook_AddinInstall`).
 - `Application.Run "Auto_Open"` still rebuilds the menu if you need it in the current session.

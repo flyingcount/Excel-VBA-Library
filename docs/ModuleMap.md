@@ -42,6 +42,16 @@ source/Api/
 ├── modApiResiduals.bas
 ├── modApiSvd.bas
 ├── modApiLinearSystem.bas
+├── modApiHistogram.bas
+├── modApiDistPlots.bas
+├── modApiQQPlots.bas
+├── modApiLinearRegression.bas
+├── modApiLorenz.bas
+├── modApiAcf.bas
+├── modApiDiebold.bas
+├── modApiXmR.bas
+├── modApiProcessCapability.bas
+├── modApiChartSheet.bas
 ├── Fn_MatricesArray.bas / Fn_MatricesRng.bas / Fn_Matrices2.bas
 └── modApiUi.bas
 
@@ -64,7 +74,8 @@ source/Internal/
 ├── modInternalMatrices.bas
 ├── modInternalAnalysis.bas
 ├── modInternalConfusion.bas
-└── modInternalSvd.bas
+├── modInternalSvd.bas
+└── modInternalPlots.bas
 
 source/Menus/
 ├── modAddinMenu.bas
@@ -87,10 +98,11 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Files | In the add-in (`modApiFiles`) — Personal `Custom_Menu24_ListFilesInFolder` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
 | Analysis | In the add-in (`modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem`) — Personal Menu18 |
+| Plots Charts | In the add-in (`modApiHistogram` / `modApiDistPlots` / `modApiQQPlots` / `modApiLinearRegression` / `modApiLorenz` / `modApiAcf` / `modApiDiebold` / `modApiXmR` / `modApiProcessCapability` / `modApiChartSheet` + `modInternalPlots`) — Personal `Custom_Menu11_*` |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
-| Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
+| Stats / quality | Later — remaining `Custom_Menu5_*` |
 | Editing / ranges | Later |
-| Charts | Later |
+| Charts | Later — Personal Menu3 arrange/list charts (Menu11 plots are on **Plots Charts**) |
 | Output | Later |
 | Workbook | Later |
 | Time series | Later |
@@ -243,6 +255,23 @@ Observations are rows; variables are columns. Vector/matrix tools that take a he
 | `ComparePredictedToActual` / `…OneAndZerosOnly` | `modApiConfusion` | Optional worksheet UDFs |
 
 Personal `GetRange` used `End` on cancel (kills Excel). Prompts now return Nothing. `ExtractBody` / `RangeArea` used unqualified `Cells` and could read the wrong sheet.
+
+### Plots Charts public surface
+
+Personal Menu11 (`Custom_Menu11_*`). Menu **Excel VBA Lib → Plots Charts**. Personal OnAction names are kept.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `HistogramTableAndPlot` / `HistogramFormulaeAndPlot` | `modApiHistogram` | Sheets **Histogram** / **Histogram formulae**. Formulae version uses COUNTIF so bins update. Cancel on range or bin count does nothing. |
+| `LinearRegression` / `LinearRegressionV2` | `modApiLinearRegression` | Two numeric columns (x, y). V2 adds residuals, slope CI, and an integer-x fitted grid. V2 original named range is n×2 (Personal used n×n). |
+| `ProcessCapabilityChart` | `modApiProcessCapability` | Sheet **Process Capability Plot**. Cp/Cpk are worksheet formulae (Personal called `personal.xlsb` UDFs). LSL/USL swap is fixed. |
+| `GenerateBinomialPlot` / `GenerateNormalPlot` / `GenerateLogNormalPlot` / `GeneratePoissonPlot` / `GenerateWeibullPlot` / `GenerateGammaPlot` / `GenerateBetaPlot` / `GenerateExponentialPlot` / `GenerateHypergeometricPlot` / `GenerateLogisticCurve` | `modApiDistPlots` | Formula tables with yellow inputs; PDF+CDF except logistic (one chart). R1C1 via `FormulaR1C1`. Exponential lambda is labelled Lambda (Personal said Alpha). |
+| `QQPlotGaussianNormal` / `QQPlotUniform` | `modApiQQPlots` | Sheets **QQ Normal chart** / **QQ Uniform chart**. Blanks rejected. Intercept/R² are formulae (Personal wrote some as `.Value` text). |
+| `GiniPlot` | `modApiLorenz` | Sheet **Gini**. Single non-negative column. FastExcel Gini algorithm. |
+| `GenerateCorrelogram` / `ACFLower` / `ACFUpper` | `modApiAcf` | Sheet **Correlogram**. PACF Yule-Walker, max 40 lags. The old “stationary?” flag is **Non-decreasing from first obs**. |
+| `DieboldMarianoTest` | `modApiDiebold` | Sheet **DieboldMariano**. 1 column = RAND demo forecasts; 3 columns = actual + two forecasts. Two-sided p-value. |
+| `XmR` / `GenerateXMRDiagnostics` | `modApiXmR` | Sheets **XmR** / **XMR Diagnostics**. X̄ ± 2.66 MR̄, MR UCL 3.267 MR̄. Diagnostics is a 31-column Western Electric table. |
+| `PlotLineChartSheet` | `modApiChartSheet` | Chart sheet named from the header; SE bars + trendline. |
 
 ### Matrices public surface
 
