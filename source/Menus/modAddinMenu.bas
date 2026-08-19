@@ -76,6 +76,7 @@ Private Function TryBuildMenu() As Boolean
     Dim rngAn As CommandBarPopup
     Dim rngCl As CommandBarPopup
     Dim dupMenu As CommandBarPopup
+    Dim protMenu As CommandBarPopup
     Dim tblMenu As CommandBarPopup
     Dim filesMenu As CommandBarPopup
     Dim hlMenu As CommandBarPopup
@@ -187,6 +188,15 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(dupMenu, "Colour duplicates by &column", "ColourDuplicateValuesByColumn")
     Call AddButton(dupMenu, "Colour duplicates in &selection", "ColourDuplicateValuesInSelection")
     Call AddButton(dupMenu, "C&ount duplicates in selection", "DuplicateCountFromSelection", True)
+
+    Set protMenu = AddSubmenu(pop, "P&rotection")
+    Call AddButton(protMenu, "&Limit scroll area to selection", "LimitScrollArea")
+    Call AddButton(protMenu, "&Reset scroll area", "ResetScrollArea")
+    Call AddButton(protMenu, "&Protect worksheet (default password)", "ProtectWorksheet", True)
+    Call AddButton(protMenu, "&Unprotect worksheet (default password)", "UnProtectWorksheet")
+    Call AddButton(protMenu, "&Show default password", "DisplayPassword")
+    Call AddButton(protMenu, "Unhide all &worksheets", "UnHideAllSheets", True)
+    Call AddButton(protMenu, "Unhide all &rows and columns", "UnhideAllRowsAndColumns")
 
     Set tblMenu = AddSubmenu(pop, "&Tables")
     Call AddButton(tblMenu, "&List table properties", "ListTableProperties")

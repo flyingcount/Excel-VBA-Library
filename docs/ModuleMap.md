@@ -28,6 +28,7 @@ source/Api/
 ├── modApiCustomLists.bas ← custom lists / AutoCorrect (Menu16)
 ├── modApiRanges.bas      ← named ranges, analysis, cleanse (Menu14)
 ├── modApiDuplicates.bas  ← flag / colour / count duplicates (Menu15)
+├── modApiProtection.bas  ← scroll area, sheet protect, unhide (Menu7)
 ├── modApiPowerQuery.bas  ← import/export form, background refresh, Fast Combine, connect all tables (Menu29)
 ├── frmPQLibrary.frm      ← Import or export queries and functions (Menu29)
 ├── frmFileListingProgress.frm ← modeless Cancel during Files listing
@@ -65,6 +66,7 @@ source/Internal/
 ├── modInternalNamedRanges.bas
 ├── modInternalRanges.bas
 ├── modInternalDuplicates.bas
+├── modInternalProtection.bas
 ├── modInternalText.bas
 ├── modInternalError.bas
 ├── modInternalWorksheetTemplates.bas
@@ -100,6 +102,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
 | Ranges | In the add-in (`modApiRanges` + `modInternalRanges`) — Personal `Custom_Menu14_*` |
 | Duplicates | In the add-in (`modApiDuplicates` + `modInternalDuplicates`) — Personal `Custom_Menu15_Duplicates` |
+| Protection | In the add-in (`modApiProtection` + `modInternalProtection`) — Personal `Custom_Menu7_Protection` |
 | Tables | In the add-in (`modApiTables`) — Personal `Custom_Menu19_Tables` |
 | Files | In the add-in (`modApiFiles`) — Personal `Custom_Menu24_ListFilesInFolder` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
@@ -245,6 +248,24 @@ Blank and error cells are skipped. Entire-column selections use UsedRange. Flag/
 | `ColourDuplicateValuesByColumn` | `modApiDuplicates` | Green (4) when a value appears more than once in that column. Need ≥2 rows |
 | `ColourDuplicateValuesInSelection` | `modApiDuplicates` | Yellow (6) when a value appears more than once in the selection |
 | `DuplicateCountFromSelection` | `modApiDuplicates` | Message box: count of cells whose value appears more than once |
+
+### Protection public surface
+
+Personal Menu7 (`Custom_Menu7_Protection`). Menu **Excel VBA Lib → Protection**. Personal OnAction names are kept.
+
+The default password is Personal's `WYSIWYG`: a known convenience value (`DisplayPassword` shows it), not a secret.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `LimitScrollArea` | `modApiProtection` | `ScrollArea` = first area of the selection. Requires a worksheet and a range on that sheet |
+| `ResetScrollArea` | `modApiProtection` | Clears `ScrollArea` |
+| `ProtectWorksheet` | `modApiProtection` | Default password, `UserInterfaceOnly:=True` (VBA can edit this session only). Unprotects with the default password first when that works |
+| `UnProtectWorksheet` | `modApiProtection` | Default password. Different password → message, not a raw VBA error |
+| `DisplayPassword` | `modApiProtection` | Message box with the default password |
+| `UnHideAllSheets` | `modApiProtection` | Hidden and very-hidden worksheets become visible; reports the count. Chart sheets unchanged (Worksheets collection) |
+| `UnhideAllRowsAndColumns` | `modApiProtection` | Unhides every row and column without `Cells.Select`. Protected sheet → message |
+
+Chart sheets are rejected. Personal used unqualified `Cells.Select` for unhide-rows/columns.
 
 ### Tables public surface
 
