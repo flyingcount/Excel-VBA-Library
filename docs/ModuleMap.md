@@ -376,7 +376,7 @@ Personal Menu27 (`Custom_Menu27_TimeSeries` / `Custom_Menu27_TS_DateDiff`). Menu
 | `TimeSeriesAnalysis` | `modApiTimeSeries` | Sheet **Time Series**. Values for lag 0..n/3. ACF/ACVF/PACF computed from arrays (Personal re-read the range per lag). Screen updating is not turned off before the InputBox |
 | `TimeSeriesAnalysisFormula` | `modApiTimeSeries` | Same sheet; live UDFs in `Fn_TimeSeries` (Insert Function category **Excel VBA Lib**). Lags 0..n/4. A1 formulas qualified to this add-in (`='ExcelVbaLib.xlam'!ACVF(...)`). Unqualified `=ACVF(...)` is `#NAME?` until the menu has registered the UDFs |
 | `DateDifferencing` | `modApiTimeSeries` | Sheet **Date Diff**. Lag differences (not calendar dates). First difference has n-1 points (Personal wrote n-2). Charts without `.Select` |
-| `DateDifferencingFormulae` | `modApiTimeSeries` | Sheet **Date Diff Formula**. Difference cells as R1C1 formulas |
+| `DateDifferencingFormulae` | `modApiTimeSeries` | Sheet **Date Diff Formula**. Difference cells as R1C1 formulas. ACF table below the data (original + each d); lag-1 ACF < -0.5 is flagged over-differenced |
 | `ACF` / `ACVF` / `PACF` / `Bartlett` / `BoxPierce` / `BoxPiercePVal` / `BoxPierceTest` / `LjungBox` / `LjungBoxPVal` / `LjungBoxTest` | `Fn_TimeSeries` | Worksheet UDFs (same registration as `Mat*`). Bartlett is two-sided (`|ACF|`). Box-Pierce / Ljung-Box reject white noise when p < alpha (Personal messages were inverted) |
 
 ### Matrices public surface

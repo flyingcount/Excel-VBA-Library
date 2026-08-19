@@ -55,7 +55,7 @@ EH:
     Call modInternalError.RaiseCurrent("DateDifferencing")
 End Sub
 
-''' @Description: Same as DateDifferencing on sheet Date Diff Formula, with difference columns as R1C1 formulas.
+''' @Description: Same as DateDifferencing on sheet Date Diff Formula, with difference columns and an ACF table as live formulas. Lag-1 ACF < -0.5 flags over-differencing.
 ''' @Example: DateDifferencingFormulae
 Public Sub DateDifferencingFormulae()
     Dim src As Range
@@ -63,6 +63,7 @@ Public Sub DateDifferencingFormulae()
     If src Is Nothing Then Exit Sub
     On Error GoTo EH
     Call modInternalExcelApp.PushAppState
+    Call Fn_TimeSeries.RegisterTimeSeriesUdfs
     Call modInternalTimeSeries.WriteDateDifferencing(src, True)
     Call modInternalExcelApp.PopAppState
     Exit Sub

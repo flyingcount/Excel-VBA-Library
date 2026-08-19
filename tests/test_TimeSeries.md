@@ -66,4 +66,6 @@ Expected: sheet **Date Diff**. This is ARIMA lag differencing, not calendar date
 
 Expected: sheet **Date Diff Formula**. Difference cells are R1C1 formulas (`=R[1]C[-1]-RC[-1]`). Changing the original series updates the diffs.
 
+Below the data, an **Autocorrelation** table has lag 0..n/4 for the original series and every difference column (`='ExcelVbaLib.xlam'!ACF(...)` on the used cells only). Lag-1 ACF cells are green when ≥ −0.5 and red when < −0.5 (over-differenced). A flag row under the table says `OK` or `Over-differenced`. Use the smallest d whose lag-1 ACF is not below −0.5.
+
 A single-cell column is allowed for differencing (n≥2 required).

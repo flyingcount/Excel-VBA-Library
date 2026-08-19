@@ -138,6 +138,7 @@ Public Sub WriteDateDifferencing(ByVal src As Range, ByVal useFormulas As Boolea
 
     If useFormulas Then
         Call modInternalPlots.WriteBlock(ws, headerRow, 1, arr)
+        Call WriteDiffAcfTable(ws, headerRow, n, nCols)
     Else
         ws.Cells(headerRow, 1).Resize(n + 1, nCols).Value = arr
     End If
@@ -358,6 +359,82 @@ Private Function ValueStatsBlock(ByRef vals As Variant, ByVal nLag As Long) As V
     Next k
     ValueStatsBlock = arr
 End Function
+
+Private Sub WriteDiffAcfTable(ByVal ws As Worksheet, ByVal headerRow As Long, ByVal n As Long, ByVal nCols As Long)
+    Dim firstData As Long
+    Dim lastData As Long
+    Dim acfTitle As Long
+    Dim acfHeader As Long
+    Dim flagRow As Long
+    Dim lag1Row As Long
+    Dim nLag As Long
+    Dim shortest As Long
+    Dim maxLag As Long
+    Dim lag As Long
+    Dim c As Long
+    Dim d As Long
+    Dim lastUsed As Long
+    Dim p As String
+    Dim srcAddr As String
+    Dim lag1Rng As Range
+
+    firstData = headerRow + 1
+    lastData = headerRow + n
+    shortest = n - (nCols - 2)
+    If shortest < 2 Then shortest = 2
+    nLag = n \ 4
+    If nLag < 1 Then nLag = 1
+    maxLag = shortest - 1
+    If maxLag < 1 Then maxLag = 1
+    If nLag > maxLag Then nLag = maxLag
+
+    acfTitle = lastData + 3
+    acfHeader = acfTitle + 2
+    flagRow = acfHeader + nLag + 2
+    lag1Row = acfHeader + 2
+    p = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!"
+
+    ws.Cells(acfTitle, 1).Value = "Autocorrelation of the original series and each differenced series"
+    ws.Cells(acfTitle, 1).Font.Bold = True
+    ws.Cells(acfTitle + 1, 1).Value = "Lag-1 ACF < -0.5 suggests over-differencing. Prefer the smallest d whose lag-1 ACF is not below -0.5."
+    ws.Cells(acfHeader, 1).Value = "Lag"
+    For c = 2 To nCols
+        ws.Cells(acfHeader, c).Value = ws.Cells(headerRow, c).Value
+    Next c
+    ws.Range(ws.Cells(acfHeader, 1), ws.Cells(acfHeader, nCols)).Font.Bold = True
+
+    For lag = 0 To nLag
+        ws.Cells(acfHeader + 1 + lag, 1).Value = lag
+        For c = 2 To nCols
+            d = c - 2
+            lastUsed = lastData - d
+            If lastUsed < firstData Then lastUsed = firstData
+            If lag > lastUsed - firstData Then GoTo NextCol
+            srcAddr = ws.Range(ws.Cells(firstData, c), ws.Cells(lastUsed, c)).Address(True, True, xlA1, False)
+            ws.Cells(acfHeader + 1 + lag, c).Formula = "=" & p & "ACF(" & srcAddr & "," & CStr(lag) & ")"
+NextCol:
+        Next c
+    Next lag
+
+    ws.Cells(flagRow, 1).Value = "Lag-1 ACF < -0.5"
+    ws.Cells(flagRow, 1).Font.Bold = True
+    For c = 2 To nCols
+        ws.Cells(flagRow, c).Formula = "=IF(" & ws.Cells(lag1Row, c).Address(True, True, xlA1, False) & "<-0.5,""Over-differenced"",""OK"")"
+    Next c
+    ws.Range(ws.Cells(acfHeader + 1, 2), ws.Cells(acfHeader + 1 + nLag, nCols)).NumberFormat = "0.000"
+
+    Set lag1Rng = ws.Range(ws.Cells(lag1Row, 2), ws.Cells(lag1Row, nCols))
+    lag1Rng.FormatConditions.Delete
+    With lag1Rng.FormatConditions.Add(Type:=xlCellValue, Operator:=xlLess, Formula1:="-0.5")
+        .Interior.Color = RGB(255, 199, 206)
+        .Font.Color = RGB(156, 0, 6)
+    End With
+    With lag1Rng.FormatConditions.Add(Type:=xlCellValue, Operator:=xlGreaterEqual, Formula1:="-0.5")
+        .Interior.Color = RGB(198, 239, 206)
+        .Font.Color = RGB(0, 97, 0)
+    End With
+    ws.Columns(1).AutoFit
+End Sub
 
 Private Sub WriteFormulaStats(ByVal ws As Worksheet, ByVal nLag As Long)
     Dim k As Long
