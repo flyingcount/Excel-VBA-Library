@@ -39,7 +39,7 @@ EH:
     Call modInternalError.RaiseCurrent("TimeSeriesAnalysisFormula")
 End Sub
 
-''' @Description: Lag-1, lag-2, ... differences of a numeric column on sheet Date Diff, with slope/R² and line charts.
+''' @Description: Lag-1, lag-2, ... differences of a numeric column on sheet Date Diff, with slope/R², line charts, and an ACF value table. Lag-1 ACF < -0.5 flags over-differencing.
 ''' @Example: DateDifferencing
 Public Sub DateDifferencing()
     Dim src As Range

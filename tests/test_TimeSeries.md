@@ -59,6 +59,7 @@ Expected: sheet **Date Diff**. This is ARIMA lag differencing, not calendar date
 - First difference has **9** values for n=10 (Personal wrote n-2 = 8).
 - Charts at A4 / B4 / L4 (original, 1-diff, 2-diff) with a red trendline. No cell is selected to place the chart.
 - Link in D2 to Real Statistics ARIMA differencing.
+- Below the data, an **Autocorrelation** table (values, not formulas) has lag 0..n/4 for the original series and every difference column. Lag-1 ACF is green when ≥ −0.5 and red when < −0.5. A flag row says `OK` or `Over-differenced`.
 
 ## Date differencing with formulae
 

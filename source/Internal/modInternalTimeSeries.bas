@@ -138,11 +138,11 @@ Public Sub WriteDateDifferencing(ByVal src As Range, ByVal useFormulas As Boolea
 
     If useFormulas Then
         Call modInternalPlots.WriteBlock(ws, headerRow, 1, arr)
-        Call WriteDiffAcfTable(ws, headerRow, n, nCols)
     Else
         ws.Cells(headerRow, 1).Resize(n + 1, nCols).Value = arr
     End If
     ws.Range(ws.Cells(headerRow, 1), ws.Cells(headerRow, nCols)).Font.Bold = True
+    Call WriteDiffAcfTable(ws, headerRow, n, nCols, useFormulas)
     Call PlotDateDiffCharts(ws, ws.Cells(headerRow, 1).Resize(n + 1, nCols), nCols)
     ws.Activate
 End Sub
@@ -360,7 +360,7 @@ Private Function ValueStatsBlock(ByRef vals As Variant, ByVal nLag As Long) As V
     ValueStatsBlock = arr
 End Function
 
-Private Sub WriteDiffAcfTable(ByVal ws As Worksheet, ByVal headerRow As Long, ByVal n As Long, ByVal nCols As Long)
+Private Sub WriteDiffAcfTable(ByVal ws As Worksheet, ByVal headerRow As Long, ByVal n As Long, ByVal nCols As Long, ByVal useFormulas As Boolean)
     Dim firstData As Long
     Dim lastData As Long
     Dim acfTitle As Long
@@ -376,6 +376,8 @@ Private Sub WriteDiffAcfTable(ByVal ws As Worksheet, ByVal headerRow As Long, By
     Dim lastUsed As Long
     Dim p As String
     Dim srcAddr As String
+    Dim srcRng As Range
+    Dim acfVal As Variant
     Dim lag1Rng As Range
 
     firstData = headerRow + 1
@@ -410,8 +412,13 @@ Private Sub WriteDiffAcfTable(ByVal ws As Worksheet, ByVal headerRow As Long, By
             lastUsed = lastData - d
             If lastUsed < firstData Then lastUsed = firstData
             If lag > lastUsed - firstData Then GoTo NextCol
-            srcAddr = ws.Range(ws.Cells(firstData, c), ws.Cells(lastUsed, c)).Address(True, True, xlA1, False)
-            ws.Cells(acfHeader + 1 + lag, c).Formula = "=" & p & "ACF(" & srcAddr & "," & CStr(lag) & ")"
+            Set srcRng = ws.Range(ws.Cells(firstData, c), ws.Cells(lastUsed, c))
+            If useFormulas Then
+                srcAddr = srcRng.Address(True, True, xlA1, False)
+                ws.Cells(acfHeader + 1 + lag, c).Formula = "=" & p & "ACF(" & srcAddr & "," & CStr(lag) & ")"
+            Else
+                ws.Cells(acfHeader + 1 + lag, c).Value = TsAcf(srcRng, lag)
+            End If
 NextCol:
         Next c
     Next lag
@@ -419,7 +426,18 @@ NextCol:
     ws.Cells(flagRow, 1).Value = "Lag-1 ACF < -0.5"
     ws.Cells(flagRow, 1).Font.Bold = True
     For c = 2 To nCols
-        ws.Cells(flagRow, c).Formula = "=IF(" & ws.Cells(lag1Row, c).Address(True, True, xlA1, False) & "<-0.5,""Over-differenced"",""OK"")"
+        If useFormulas Then
+            ws.Cells(flagRow, c).Formula = "=IF(" & ws.Cells(lag1Row, c).Address(True, True, xlA1, False) & "<-0.5,""Over-differenced"",""OK"")"
+        Else
+            acfVal = ws.Cells(lag1Row, c).Value
+            If IsNumeric(acfVal) Then
+                If CDbl(acfVal) < -0.5 Then
+                    ws.Cells(flagRow, c).Value = "Over-differenced"
+                Else
+                    ws.Cells(flagRow, c).Value = "OK"
+                End If
+            End If
+        End If
     Next c
     ws.Range(ws.Cells(acfHeader + 1, 2), ws.Cells(acfHeader + 1 + nLag, nCols)).NumberFormat = "0.000"
 
