@@ -27,6 +27,7 @@ source/Api/
 ├── modApiHyperlinks.bas  ← hyperlink inventory / index / follow (Menu21)
 ├── modApiCustomLists.bas ← custom lists / AutoCorrect (Menu16)
 ├── modApiRanges.bas      ← named ranges, analysis, cleanse (Menu14)
+├── modApiDuplicates.bas  ← flag / colour / count duplicates (Menu15)
 ├── modApiPowerQuery.bas  ← import/export form, background refresh, Fast Combine, connect all tables (Menu29)
 ├── frmPQLibrary.frm      ← Import or export queries and functions (Menu29)
 ├── frmFileListingProgress.frm ← modeless Cancel during Files listing
@@ -63,6 +64,7 @@ source/Internal/
 ├── modInternalBenford.bas
 ├── modInternalNamedRanges.bas
 ├── modInternalRanges.bas
+├── modInternalDuplicates.bas
 ├── modInternalText.bas
 ├── modInternalError.bas
 ├── modInternalWorksheetTemplates.bas
@@ -97,6 +99,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
 | Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
 | Ranges | In the add-in (`modApiRanges` + `modInternalRanges`) — Personal `Custom_Menu14_*` |
+| Duplicates | In the add-in (`modApiDuplicates` + `modInternalDuplicates`) — Personal `Custom_Menu15_Duplicates` |
 | Tables | In the add-in (`modApiTables`) — Personal `Custom_Menu19_Tables` |
 | Files | In the add-in (`modApiFiles`) — Personal `Custom_Menu24_ListFilesInFolder` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
@@ -226,6 +229,22 @@ UserForms from that menu (`DataCleansingOptionsForm`, `DataValidationForm`, `Mul
 | `SplitRangeAndNameEachColumn` | `modApiRanges` | Workbook names `BaseAll` and `Base_1..n`. Header optional. Single-column works. Cancel on the header question creates nothing (Personal called `TurnOff` on cancel) |
 
 `ValidRangeName` lives on `modInternalNamedRanges` (spaces to `.`, illegal characters stripped, leading digit or A1-style address prefixed). Entire-column selections are intersected with UsedRange. InputBox cancel returns without `End`.
+
+### Duplicates public surface
+
+Personal Menu15 (`Custom_Menu15_Duplicates`). Menu **Excel VBA Lib → Duplicates**. Personal OnAction names are kept (`ColorDuplicates` vs `ColourDuplicateValues*`).
+
+Blank and error cells are skipped. Entire-column selections use UsedRange. Flag/reference tools insert cells to the right of the selected rows only (Personal inserted the whole worksheet column).
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `FlagDuplicates` | `modApiDuplicates` | Single column. Write `Duplicate` beside later occurrences; first occurrence stays blank |
+| `ReferenceDuplicates` | `modApiDuplicates` | Single column. Letter `A`, `B`, … on every member of a duplicate group (including the first). Unique values stay blank |
+| `ColorDuplicates` | `modApiDuplicates` | Distinct ColorIndex per duplicate group, cycling a palette. Unique cells unfilled. Personal incremented ColorIndex per duplicate cell and could raise “Too many duplicate!” |
+| `ColourDuplicateValuesByRow` | `modApiDuplicates` | Red (3) when a value appears more than once in that row. Need ≥2 columns. Clears fill with `xlColorIndexNone` (Personal used 0) |
+| `ColourDuplicateValuesByColumn` | `modApiDuplicates` | Green (4) when a value appears more than once in that column. Need ≥2 rows |
+| `ColourDuplicateValuesInSelection` | `modApiDuplicates` | Yellow (6) when a value appears more than once in the selection |
+| `DuplicateCountFromSelection` | `modApiDuplicates` | Message box: count of cells whose value appears more than once |
 
 ### Tables public surface
 

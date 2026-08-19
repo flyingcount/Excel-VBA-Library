@@ -75,6 +75,7 @@ Private Function TryBuildMenu() As Boolean
     Dim rngCreate As CommandBarPopup
     Dim rngAn As CommandBarPopup
     Dim rngCl As CommandBarPopup
+    Dim dupMenu As CommandBarPopup
     Dim tblMenu As CommandBarPopup
     Dim filesMenu As CommandBarPopup
     Dim hlMenu As CommandBarPopup
@@ -177,6 +178,15 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(rngCl, "List unique &characters", "ListCharactersAndCodesInRange")
     Call AddButton(rngMenu, "&Transpose to the right", "TransposeARange", True)
     Call AddButton(rngMenu, "S&plit into named columns", "SplitRangeAndNameEachColumn")
+
+    Set dupMenu = AddSubmenu(pop, "D&uplicates")
+    Call AddButton(dupMenu, "&Flag duplicates (single column)", "FlagDuplicates")
+    Call AddButton(dupMenu, "&Unique references for duplicates", "ReferenceDuplicates")
+    Call AddButton(dupMenu, "&Colour duplicate groups", "ColorDuplicates")
+    Call AddButton(dupMenu, "Colour duplicates by &row", "ColourDuplicateValuesByRow", True)
+    Call AddButton(dupMenu, "Colour duplicates by &column", "ColourDuplicateValuesByColumn")
+    Call AddButton(dupMenu, "Colour duplicates in &selection", "ColourDuplicateValuesInSelection")
+    Call AddButton(dupMenu, "C&ount duplicates in selection", "DuplicateCountFromSelection", True)
 
     Set tblMenu = AddSubmenu(pop, "&Tables")
     Call AddButton(tblMenu, "&List table properties", "ListTableProperties")
