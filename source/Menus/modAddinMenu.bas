@@ -71,6 +71,10 @@ Private Function TryBuildMenu() As Boolean
     Dim anMenu As CommandBarPopup
     Dim dist As CommandBarPopup
     Dim clMenu As CommandBarPopup
+    Dim rngMenu As CommandBarPopup
+    Dim rngCreate As CommandBarPopup
+    Dim rngAn As CommandBarPopup
+    Dim rngCl As CommandBarPopup
     Dim tblMenu As CommandBarPopup
     Dim filesMenu As CommandBarPopup
     Dim hlMenu As CommandBarPopup
@@ -135,6 +139,44 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(clMenu, "&Delete by list number", "DeleteCustomList")
     Call AddButton(clMenu, "&AutoCorrect list", "AutoCorrectEntries_Display", True)
     Call AddButton(clMenu, "&Add AutoCorrect entries", "AutoCorrectEntries_Add")
+
+    Set rngMenu = AddSubmenu(pop, "&Ranges")
+    Call AddButton(rngMenu, "&List named range properties", "ListNamedRangeProperties")
+    Call AddButton(rngMenu, "&Paste as picture", "PasteRangeAsPicture")
+    Call AddButton(rngMenu, "&Colour named ranges", "HighlightRanges")
+    Call AddButton(rngMenu, "&Remove named-range colour", "DeHighlightRanges")
+    Call AddButton(rngMenu, "&Delete specified names", "DeleteNamedRanges", True)
+    Set rngCreate = AddSubmenu(rngMenu, "&Create named ranges")
+    Call AddButton(rngCreate, "Hidden workbook-scope &constants", "HiddenMasterDataWorkbookScope")
+    Call AddButton(rngCreate, "Hidden &worksheet-scope constants", "HiddenMasterDataWorksheetScope")
+    Call AddButton(rngCreate, "Name each &column from header", "NamedRangeIntoNamedRangeColumns")
+    Call AddButton(rngCreate, "Hidden named &range", "CreateHiddenNamedRange")
+    Call AddButton(rngCreate, "Hidden named &string", "CreateHiddenNamedString")
+    Call AddButton(rngCreate, "Hidden named &number", "CreateHiddenNamedNumber")
+    Call AddButton(rngCreate, "Common c&onstants (thousand / million)", "NameCreateConstantsAsNamedRanges")
+    Call AddButton(rngCreate, "Local name on &every sheet", "CreateNamedRangeInAllWorksheets")
+    Call AddButton(rngMenu, "&Hide all names (workbook)", "HideAllNamedRanges", True)
+    Call AddButton(rngMenu, "&Unhide all names (workbook)", "UnhideAllNamedRanges")
+    Call AddButton(rngMenu, "Unhide names on active &sheet", "UnhideNamedRangesWorksheet", True)
+    Call AddButton(rngMenu, "Hide names on active s&heet", "HideNamedRangesWorksheet")
+    Call AddButton(rngMenu, "Unhide &specified names", "UnhideSpecifiedNamedRanges", True)
+    Call AddButton(rngMenu, "Hide spec&ified names", "HideSpecifiedNamedRanges")
+    Call AddButton(rngMenu, "List &unique values", "ListUniqueValues")
+    Call AddButton(rngMenu, "Scope: worksheet to &workbook", "ConvertNamedRangeLocalToGlobalScope", True)
+    Call AddButton(rngMenu, "Scope: workbook to work&sheet", "ConvertNamedRangeGlodalToLocalScope")
+    Set rngAn = AddSubmenu(rngMenu, "&Analyse range")
+    Call AddButton(rngAn, "Analyse to a &sheet", "RangeAnalysis")
+    Call AddButton(rngAn, "Analyse in a &message box", "RangeAnalysisMessage")
+    Call AddButton(rngAn, "Character &frequency", "FrequencyAnalysis")
+    Set rngCl = AddSubmenu(rngMenu, "C&leanse range")
+    Call AddButton(rngCl, "Keep &digits", "Remove_AlphaCharactersFromString")
+    Call AddButton(rngCl, "Keep &letters", "Remove_NumbersFromString")
+    Call AddButton(rngCl, "Keep letters, digits, &spaces", "Remove_SpecialCharactersFromString")
+    Call AddButton(rngCl, "&Trim whitespace", "ClearCellsThatOnlyContainWhitespaces")
+    Call AddButton(rngCl, "Trim whitespace (&regex)", "RemoveWhiteSpaces")
+    Call AddButton(rngCl, "List unique &characters", "ListCharactersAndCodesInRange")
+    Call AddButton(rngMenu, "&Transpose to the right", "TransposeARange", True)
+    Call AddButton(rngMenu, "S&plit into named columns", "SplitRangeAndNameEachColumn")
 
     Set tblMenu = AddSubmenu(pop, "&Tables")
     Call AddButton(tblMenu, "&List table properties", "ListTableProperties")

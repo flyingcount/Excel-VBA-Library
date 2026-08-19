@@ -65,6 +65,8 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    Application.Run "RandomIntegers"
    Application.Run "DataCombinations"
    Application.Run "ShowCustomLists"
+   Application.Run "ListNamedRangeProperties"
+   Application.Run "RangeAnalysis"
    Application.Run "ListTableProperties"
    Application.Run "BatchListAllFiles_FolderSubfolders"
    Application.Run "MatrixMultiply"

@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Matrices **Validation → Hadamard Proof** prompts for a range, writes sheet **Hadamard Proof** with H, Hᵀ, and H.HT, then n and I when H Hᵀ = n I, otherwise `Not Hadamard: H.HT not equal to nI`.
 - Analysis (Personal Menu18) on **Excel VBA Lib → Analysis**: SVD, AX=B, confusion matrices (Yes/No, 1/0, template), population covariance/correlation/mean/stdev vectors, residuals plot. Sample covariance stays on **Matrices → Operations** (`MatrixCovariance` / `MatrixCovarianceStandardise`) and no longer requires a square range.
 - Plots Charts (Personal Menu11) on **Excel VBA Lib → Plots Charts**: histograms, linear regression, process capability, parametric PDF/CDF plots (including logistic curve), QQ plots, Lorenz/Gini, ACF/PACF, Diebold-Mariano, XmR, and a line chart sheet (`modInternalPlots` + `modApiHistogram` / `modApiDistPlots` / `modApiQQPlots` / `modApiLinearRegression` / `modApiLorenz` / `modApiAcf` / `modApiDiebold` / `modApiXmR` / `modApiProcessCapability` / `modApiChartSheet`).
+- Ranges (Personal Menu14) on **Excel VBA Lib → Ranges**: named-range inventory / hide / create / scope, unique values, range analysis, character frequency, cleanse, transpose, and split-to-named-columns (`modApiRanges` + `modInternalRanges`, with helpers on `modInternalNamedRanges`). Personal OnAction names are kept. Data-cleanse / validation / multi-replace UserForms are not included.
 
 ### Changed
 - Track `build/ExcelVbaLib.xlam` in git (`build/*.xlam` is no longer gitignored).

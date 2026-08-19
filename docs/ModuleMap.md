@@ -26,6 +26,7 @@ source/Api/
 ├── modApiData.bas        ← random fills, combinations, distributions (Menu6)
 ├── modApiHyperlinks.bas  ← hyperlink inventory / index / follow (Menu21)
 ├── modApiCustomLists.bas ← custom lists / AutoCorrect (Menu16)
+├── modApiRanges.bas      ← named ranges, analysis, cleanse (Menu14)
 ├── modApiPowerQuery.bas  ← import/export form, background refresh, Fast Combine, connect all tables (Menu29)
 ├── frmPQLibrary.frm      ← Import or export queries and functions (Menu29)
 ├── frmFileListingProgress.frm ← modeless Cancel during Files listing
@@ -61,6 +62,7 @@ source/Internal/
 ├── modInternalDateTable.bas
 ├── modInternalBenford.bas
 ├── modInternalNamedRanges.bas
+├── modInternalRanges.bas
 ├── modInternalText.bas
 ├── modInternalError.bas
 ├── modInternalWorksheetTemplates.bas
@@ -94,6 +96,7 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
 | Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
+| Ranges | In the add-in (`modApiRanges` + `modInternalRanges`) — Personal `Custom_Menu14_*` |
 | Tables | In the add-in (`modApiTables`) — Personal `Custom_Menu19_Tables` |
 | Files | In the add-in (`modApiFiles`) — Personal `Custom_Menu24_ListFilesInFolder` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
@@ -101,7 +104,6 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Plots Charts | In the add-in (`modApiHistogram` / `modApiDistPlots` / `modApiQQPlots` / `modApiLinearRegression` / `modApiLorenz` / `modApiAcf` / `modApiDiebold` / `modApiXmR` / `modApiProcessCapability` / `modApiChartSheet` + `modInternalPlots`) — Personal `Custom_Menu11_*` |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
 | Stats / quality | Later — remaining `Custom_Menu5_*` |
-| Editing / ranges | Later |
 | Charts | Later — Personal Menu3 arrange/list charts (Menu11 plots are on **Plots Charts**) |
 | Output | Later |
 | Workbook | Later |
@@ -192,6 +194,38 @@ Custom lists and AutoCorrect replacements are **application-wide** (Excel Option
 | `NumCustomLists` | `modApiCustomLists` | Volatile UDF: `Application.CustomListCount` |
 | `AutoCorrectEntries_Display` | `modApiCustomLists` | Sheet **Auto correct List** (Personal spelling kept) |
 | `AutoCorrectEntries_Add` | `modApiCustomLists` | Two-column range (Replace / With). Adds or overwrites; does not remove other entries. Uses the selected range (Personal scanned column A of the sheet) |
+
+### Ranges public surface
+
+Personal Menu14 (`Custom_Menu14_ColRange`, `Custom_Menu14_FreqAnalysis`, `Custom_Menu14_ManipulateRanges`, `Custom_Menu14_RangeAnalysis`, `Custom_Menu14_SplitRange`). Menu **Excel VBA Lib → Ranges**. Personal OnAction names are kept, including `ConvertNamedRangeGlodalToLocalScope`.
+
+UserForms from that menu (`DataCleansingOptionsForm`, `DataValidationForm`, `MultiSearchAndReplace`) are not included.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ListNamedRangeProperties` | `modApiRanges` | Sheet **Range properties**: index, name, RefersTo, address, visible, comment, workbook parameter, scope. Sequential index (Personal used `Name.Index`, which is not a Name property). No `Range.ListNames` dump. |
+| `PasteRangeAsPicture` | `modApiRanges` | Pictures.Paste of the selection |
+| `HighlightRanges` / `DeHighlightRanges` | `modApiRanges` | Yes = workbook, No = active sheet. Fill ColorIndex 36; clear uses `xlColorIndexNone` (Personal used 0). Constants without `RefersToRange` are skipped |
+| `DeleteNamedRanges` | `modApiRanges` | Names listed in the selection. Confirms. Then rewrites **Range properties** |
+| `HiddenMasterDataWorkbookScope` / `HiddenMasterDataWorksheetScope` | `modApiRanges` | Two columns: name, value. Hidden constants. Worksheet version prompts for a cell on the owner sheet. `ValidRangeName` sanitises names |
+| `NamedRangeIntoNamedRangeColumns` | `modApiRanges` | Hidden sheet-scoped name per column from the header row (header excluded). Header-only / empty header / one cell rejected |
+| `CreateHiddenNamedRange` / `CreateHiddenNamedString` / `CreateHiddenNamedNumber` | `modApiRanges` | Hidden workbook names. Names need not be letters-only |
+| `NameCreateConstantsAsNamedRanges` | `modApiRanges` | `Divisor_Thousand` = 1000, `Divisor_Millions` = 1000000 |
+| `CreateNamedRangeInAllWorksheets` | `modApiRanges` | Same local name on every sheet, same address **on that sheet** (Personal pointed every sheet at the original selection) |
+| `HideAllNamedRanges` / `UnhideAllNamedRanges` | `modApiRanges` | Workbook `Names` collection |
+| `HideNamedRangesWorksheet` / `UnhideNamedRangesWorksheet` | `modApiRanges` | Sheet-scoped names on the active sheet |
+| `HideSpecifiedNamedRanges` / `UnhideSpecifiedNamedRanges` | `modApiRanges` | Names listed in the selection; then **Range properties** |
+| `ListUniqueValues` | `modApiRanges` | Sheet **Unique Values**. `RemoveDuplicates` uses every selected column (Personal passed only the last column index) |
+| `ConvertNamedRangeLocalToGlobalScope` / `ConvertNamedRangeGlodalToLocalScope` | `modApiRanges` | Keeps RefersTo / Visible / Comment. Local→global strips the sheet prefix. Global→local prompts for the owner sheet |
+| `RangeAnalysis` / `RangeAnalysisMessage` | `modApiRanges` | Sheet **Range_Analysis** or a message box. Blanks are not numeric. Even/Odd count integer numbers (Personal’s message box wrote `n/a`) |
+| `FrequencyAnalysis` | `modApiRanges` | Sheet **Frequency Analysis**. One row per used character, O(n), empty range rejected (Personal wrote ASCII 1–255 with an n×255 loop) |
+| `Remove_AlphaCharactersFromString` / `Remove_NumbersFromString` / `Remove_SpecialCharactersFromString` | `modApiRanges` | Keep digits / letters / letters+digits+space+period |
+| `ClearCellsThatOnlyContainWhitespaces` / `RemoveWhiteSpaces` | `modApiRanges` | Trim NBSP/tab/breaks. Regex version is the menu target (Personal OnAction was the Function `RemoveWhiteSpacesFn`) |
+| `ListCharactersAndCodesInRange` | `modApiRanges` | Sheet **Characters and Codes**, sorted by code |
+| `TransposeARange` | `modApiRanges` | Copy transposed one column to the right of the selection; sheet-qualified `Cells` |
+| `SplitRangeAndNameEachColumn` | `modApiRanges` | Workbook names `BaseAll` and `Base_1..n`. Header optional. Single-column works. Cancel on the header question creates nothing (Personal called `TurnOff` on cancel) |
+
+`ValidRangeName` lives on `modInternalNamedRanges` (spaces to `.`, illegal characters stripped, leading digit or A1-style address prefixed). Entire-column selections are intersected with UsedRange. InputBox cancel returns without `End`.
 
 ### Tables public surface
 
