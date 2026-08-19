@@ -57,7 +57,7 @@ Expected: sheet **Date Diff**. This is ARIMA lag differencing, not calendar date
 - Slope / Intercept / R² in rows 21–23.
 - Table from row 25: Index, Time series data, then difference orders 1..`min(Round(n/3),24)`.
 - First difference has **9** values for n=10 (Personal wrote n-2 = 8).
-- Charts at A4 / J4 / S4 (original, 1-diff, 2-diff) with a red trendline. No cell is selected to place the chart.
+- Charts at A4 / B4 / L4 (original, 1-diff, 2-diff) with a red trendline. No cell is selected to place the chart.
 - Link in D2 to Real Statistics ARIMA differencing.
 
 ## Date differencing with formulae

@@ -596,10 +596,10 @@ End Function
 Private Sub PlotDateDiffCharts(ByVal ws As Worksheet, ByVal tbl As Range, ByVal nCols As Long)
     Call AddLineTrendChart(ws, ws.Range("A4"), tbl.Columns(2), "Time series", "Original time series")
     If nCols >= 3 Then
-        Call AddLineTrendChart(ws, ws.Range("J4"), tbl.Columns(3), "1-Differenced time series", "Differenced time series")
+        Call AddLineTrendChart(ws, ws.Range("B4"), tbl.Columns(3), "1-Differenced time series", "Differenced time series")
     End If
     If nCols >= 4 Then
-        Call AddLineTrendChart(ws, ws.Range("S4"), tbl.Columns(4), "2-Differenced time series", "Differenced time series")
+        Call AddLineTrendChart(ws, ws.Range("L4"), tbl.Columns(4), "2-Differenced time series", "Differenced time series")
     End If
 End Sub
 
