@@ -27,6 +27,7 @@ Public Sub InstallExcelVbaLibMenu()
     If Not TryBuildMenu() Then GoTo NeedRetry
     On Error Resume Next
     Call Fn_MatricesRng.RegisterMatrixUdfs
+    Call Fn_TimeSeries.RegisterTimeSeriesUdfs
     On Error GoTo 0
     retryCount = 0
     Exit Sub
@@ -91,6 +92,7 @@ Private Function TryBuildMenu() As Boolean
     Dim plots As CommandBarPopup
     Dim distPlots As CommandBarPopup
     Dim qqPlots As CommandBarPopup
+    Dim tsMenu As CommandBarPopup
 
     On Error Resume Next
     Set bar = Application.CommandBars("Worksheet Menu Bar")
@@ -350,6 +352,12 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(plots, "&XmR chart", "XmR", True)
     Call AddButton(plots, "XmR &diagnostics", "GenerateXMRDiagnostics")
     Call AddButton(plots, "Line chart on a chart &sheet", "PlotLineChartSheet", True)
+
+    Set tsMenu = AddSubmenu(pop, "&Time series")
+    Call AddButton(tsMenu, "Time series &analysis", "TimeSeriesAnalysis")
+    Call AddButton(tsMenu, "Time series analysis with &formulae", "TimeSeriesAnalysisFormula")
+    Call AddButton(tsMenu, "&Date differencing", "DateDifferencing", True)
+    Call AddButton(tsMenu, "Date differencing with f&ormulae", "DateDifferencingFormulae")
 
     Set tmpl = AddSubmenu(pop, "&Worksheet templates")
     Call AddButton(tmpl, "Notes workbook (all templates)", "CreateNotesWorkbook")

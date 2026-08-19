@@ -70,6 +70,7 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    Application.Run "FlagDuplicates"
    Application.Run "ProtectWorksheet"
    Application.Run "ReconcileTwoColumns"
+   Application.Run "TimeSeriesAnalysis"
    Application.Run "ListTableProperties"
    Application.Run "BatchListAllFiles_FolderSubfolders"
    Application.Run "MatrixMultiply"

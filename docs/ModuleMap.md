@@ -52,11 +52,13 @@ source/Api/
 ├── modApiLinearRegression.bas
 ├── modApiLorenz.bas
 ├── modApiAcf.bas
+├── modApiTimeSeries.bas ← analysis / lag differencing (Menu27)
 ├── modApiDiebold.bas
 ├── modApiXmR.bas
 ├── modApiProcessCapability.bas
 ├── modApiChartSheet.bas
 ├── Fn_MatricesArray.bas / Fn_MatricesRng.bas / Fn_Matrices2.bas
+├── Fn_TimeSeries.bas     ← ACF / ACVF / PACF / Bartlett / Box-Pierce / Ljung-Box UDFs (Menu27)
 └── modApiUi.bas
 
 source/Internal/
@@ -83,6 +85,7 @@ source/Internal/
 ├── modInternalAnalysis.bas
 ├── modInternalConfusion.bas
 ├── modInternalSvd.bas
+├── modInternalTimeSeries.bas
 └── modInternalPlots.bas
 
 source/Menus/
@@ -111,12 +114,12 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
 | Analysis | In the add-in (`modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem`) — Personal Menu18 |
 | Plots Charts | In the add-in (`modApiHistogram` / `modApiDistPlots` / `modApiQQPlots` / `modApiLinearRegression` / `modApiLorenz` / `modApiAcf` / `modApiDiebold` / `modApiXmR` / `modApiProcessCapability` / `modApiChartSheet` + `modInternalPlots`) — Personal `Custom_Menu11_*` |
+| Time series | In the add-in (`modApiTimeSeries` + `modInternalTimeSeries` + `Fn_TimeSeries`) — Personal `Custom_Menu27_*` |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
 | Stats / quality | Later — remaining `Custom_Menu5_*` |
 | Charts | Later — Personal Menu3 arrange/list charts (Menu11 plots are on **Plots Charts**) |
 | Output | Later |
 | Workbook | Later |
-| Time series | Later |
 | UDFs | Later — keep `Fn_*` names |
 | Forms | Later |
 | Menus | Add-in menu is `modAddinMenu`; Personal `Custom_Menu_Menus` later |
@@ -361,6 +364,20 @@ Personal Menu11 (`Custom_Menu11_*`). Menu **Excel VBA Lib → Plots Charts**. Pe
 | `DieboldMarianoTest` | `modApiDiebold` | Sheet **DieboldMariano**. 1 column = RAND demo forecasts; 3 columns = actual + two forecasts. Two-sided p-value. |
 | `XmR` / `GenerateXMRDiagnostics` | `modApiXmR` | Sheets **XmR** / **XMR Diagnostics**. X̄ ± 2.66 MR̄, MR UCL 3.267 MR̄. Diagnostics is a 31-column Western Electric table. |
 | `PlotLineChartSheet` | `modApiChartSheet` | Chart sheet named from the header; SE bars + trendline. |
+
+### Time series public surface
+
+Personal Menu27 (`Custom_Menu27_TimeSeries` / `Custom_Menu27_TS_DateDiff`). Menu **Excel VBA Lib → Time series**. Personal OnAction names are kept.
+
+`GeneratePACFList` / `GenerateAVCFList` / `GenerateAutoCovarianceMatrix` are not on this menu (they were private in Personal).
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `TimeSeriesAnalysis` | `modApiTimeSeries` | Sheet **Time Series**. Values for lag 0..n/3. ACF/ACVF/PACF computed from arrays (Personal re-read the range per lag). Screen updating is not turned off before the InputBox |
+| `TimeSeriesAnalysisFormula` | `modApiTimeSeries` | Same sheet; live UDFs in `Fn_TimeSeries` (Insert Function category **Excel VBA Lib**). Lags 0..n/4. A1 formulas qualified to this add-in (`='ExcelVbaLib.xlam'!ACVF(...)`). Unqualified `=ACVF(...)` is `#NAME?` until the menu has registered the UDFs |
+| `DateDifferencing` | `modApiTimeSeries` | Sheet **Date Diff**. Lag differences (not calendar dates). First difference has n-1 points (Personal wrote n-2). Charts without `.Select` |
+| `DateDifferencingFormulae` | `modApiTimeSeries` | Sheet **Date Diff Formula**. Difference cells as R1C1 formulas |
+| `ACF` / `ACVF` / `PACF` / `Bartlett` / `BoxPierce` / `BoxPiercePVal` / `BoxPierceTest` / `LjungBox` / `LjungBoxPVal` / `LjungBoxTest` | `Fn_TimeSeries` | Worksheet UDFs (same registration as `Mat*`). Bartlett is two-sided (`|ACF|`). Box-Pierce / Ljung-Box reject white noise when p < alpha (Personal messages were inverted) |
 
 ### Matrices public surface
 

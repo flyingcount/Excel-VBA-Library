@@ -214,6 +214,16 @@ Open Excel with that add-in loaded, or pass -XlamPath, or build it first:
     $excel.DisplayAlerts = $false
 }
 
+$workbooksOk = $false
+try { $workbooksOk = ($null -ne $excel.Workbooks) } catch { $workbooksOk = $false }
+if (-not $workbooksOk) {
+    Write-Warning "The running Excel COM object has no Workbooks collection; starting a new Excel instance."
+    $excel = New-Object -ComObject Excel.Application
+    $createdExcel = $true
+    $excel.Visible = $false
+    $excel.DisplayAlerts = $false
+}
+
 try {
     $addinWb = Get-OpenWorkbookByPath -Excel $excel -TargetPath $XlamPath
     if ($null -eq $addinWb) {
@@ -222,6 +232,15 @@ try {
         }
         Write-Host "Opening $XlamPath"
         $addinWb = $excel.Workbooks.Open($XlamPath)
+        if ($null -eq $addinWb) {
+            throw "Excel.Workbooks.Open returned nothing for $XlamPath"
+        }
+    }
+
+    $openedLeaf = [IO.Path]::GetFileName([string]$addinWb.FullName)
+    $targetLeaf = [IO.Path]::GetFileName($XlamPath)
+    if (-not [string]::Equals($openedLeaf, $targetLeaf, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Excel opened '$($addinWb.FullName)' instead of '$XlamPath'. Refusing to import into the wrong file."
     }
 
     try {
@@ -326,6 +345,12 @@ Then re-run this script.
             Write-Host "Registered matrix worksheet functions (Insert Function category Excel VBA Lib)."
         } catch {
             Write-Warning "Could not register matrix UDFs: $($_.Exception.Message). Restart Excel with the add-in loaded."
+        }
+        try {
+            $excel.Run("'" + $addinWb.Name + "'!RegisterTimeSeriesUdfs")
+            Write-Host "Registered time-series worksheet functions (Insert Function category Excel VBA Lib)."
+        } catch {
+            Write-Warning "Could not register time-series UDFs: $($_.Exception.Message). Restart Excel with the add-in loaded."
         }
     } else {
         $addinWb.Close($true)
