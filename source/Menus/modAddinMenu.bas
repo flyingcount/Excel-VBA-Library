@@ -77,6 +77,7 @@ Private Function TryBuildMenu() As Boolean
     Dim rngCl As CommandBarPopup
     Dim dupMenu As CommandBarPopup
     Dim protMenu As CommandBarPopup
+    Dim recMenu As CommandBarPopup
     Dim tblMenu As CommandBarPopup
     Dim filesMenu As CommandBarPopup
     Dim hlMenu As CommandBarPopup
@@ -197,6 +198,11 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(protMenu, "&Show default password", "DisplayPassword")
     Call AddButton(protMenu, "Unhide all &worksheets", "UnHideAllSheets", True)
     Call AddButton(protMenu, "Unhide all &rows and columns", "UnhideAllRowsAndColumns")
+
+    Set recMenu = AddSubmenu(pop, "Reconcili&ations")
+    Call AddButton(recMenu, "Reconcile two columns of &numbers", "ReconcileTwoColumns")
+    Call AddButton(recMenu, "Reconcile two columns of &strings", "ReconcileTwoColumnsStrings")
+    Call AddButton(recMenu, "&Compare two ranges", "CompareRanges")
 
     Set tblMenu = AddSubmenu(pop, "&Tables")
     Call AddButton(tblMenu, "&List table properties", "ListTableProperties")
