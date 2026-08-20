@@ -177,6 +177,7 @@ Random sample of input rows (percent of row count), with or without replacement.
 | `RandomTrueFalse` / `RandomYesNo` / `Random1or0` | `modApiData` | Fill the current selection |
 | `CreateYesNoDataset` | `modApiData` | Sheet **Yes No Dataset** (Predicted / Actual) |
 | `RandomTestDataTypes` | `modApiData` | Two-column type/value block |
+| `RandomTimeSeries` | `modApiData` | Date + Gaussian random-walk Value from a prompted start cell (default ActiveCell) |
 | `RandomBinomialNumbers` / `RandomBernoulliNumbers` / `RandomNormalNumbers` / `RandomPoissonNumbers` / `RandomExponentialNumbers` / `RandomGammaNumbers` / `RandomHypergeometricNumbers` | `modApiData` | **Excel VBA Lib → Data → Probability distributions** |
 
 Personal Menu6 **Prime numbers** (`PrimeGenerator` in `Custom_Menu10_Prime`) is not in this pack.

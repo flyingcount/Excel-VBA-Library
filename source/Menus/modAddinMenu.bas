@@ -128,6 +128,7 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(dataMenu, "Random &1 or 0", "Random1or0")
     Call AddButton(dataMenu, "Yes/No &dataset", "CreateYesNoDataset")
     Call AddButton(dataMenu, "Random test data &types", "RandomTestDataTypes")
+    Call AddButton(dataMenu, "Random Time se&ries", "RandomTimeSeries")
     Set dist = AddSubmenu(dataMenu, "&Probability distributions")
     Call AddButton(dist, "&Binomial", "RandomBinomialNumbers")
     Call AddButton(dist, "B&ernoulli", "RandomBernoulliNumbers")

@@ -50,6 +50,21 @@ Expected: sheet **Yes No Dataset**, headers Predicted/Actual, 10 Yes/Yes, 8 No/N
 
 Select `A1:B15`. Menu **Random test data types**. Header row plus Number / Integer / Boolean / Date / String in column A.
 
+## Random Time series
+
+Menu **Excel VBA Lib → Data → Random Time series**.
+
+1. Start-cell InputBox defaults to the active cell. Accept it (or pick another single cell). Cancel leaves the sheet unchanged.
+2. Data-points InputBox defaults to 100. Enter `20` (or another whole number ≥ 1). Cancel after choosing a start cell still leaves the sheet unchanged.
+
+Expected, from the start cell:
+
+- Two columns with headers `Date` and `Value`.
+- 20 data rows (header + 20 points when the count is 20).
+- Dates formatted `yyyy-mm-dd`, consecutive calendar days starting at today.
+- Values are a Gaussian random walk (not iid uniform fills). A second run produces a different series.
+- A count that would run past the last worksheet row is rejected. Non-integers and counts below 1 are rejected.
+
 ## Probability distributions
 
 Select a range (or accept the InputBox range), then **Excel VBA Lib → Data → Probability distributions**:

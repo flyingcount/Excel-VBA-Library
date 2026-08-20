@@ -333,6 +333,31 @@ Public Sub WriteYesNoDataset(ByVal truePos As Long, ByVal trueNeg As Long, ByVal
     ws.Columns.AutoFit
 End Sub
 
+' Header plus n daily dates (from today) and a N(0,1) random walk in the Value column.
+Public Sub WriteRandomTimeSeries(ByVal startCell As Range, ByVal n As Long)
+    Dim dest As Range
+    Dim data As Variant
+    Dim i As Long
+    Dim y As Double
+    Dim startDate As Date
+
+    ReDim data(1 To n + 1, 1 To 2)
+    data(1, 1) = "Date"
+    data(1, 2) = "Value"
+    startDate = Date
+    y = 0#
+    Randomize
+    For i = 1 To n
+        y = y + Application.WorksheetFunction.NormInv(UnitRnd(), 0#, 1#)
+        data(i + 1, 1) = startDate + (i - 1)
+        data(i + 1, 2) = y
+    Next i
+
+    Set dest = startCell.Resize(n + 1, 2)
+    dest.Value = data
+    dest.Columns(1).NumberFormat = "yyyy-mm-dd"
+End Sub
+
 Public Sub WriteTestDataTypes(ByVal rng As Range)
     Dim dest As Range
     Dim arr() As Variant
