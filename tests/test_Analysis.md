@@ -100,4 +100,4 @@ Expected: sheet **BoxCox** with Alpha, λ grid, shifted data formulae `=data+Alp
 
 **Analysis → Logit input template** → sheet **Logit Input Template**.
 
-Expected: yellow coefficient row (0.01) named `b0`..`b4`; data block with x0 = 1 (green) and yellow x1–x4; Logit and Probability columns as live formulae. Re-running replaces the sheet.
+Expected: yellow coefficient row (0.01) named `Logit_b0`..`Logit_b4` (not `b1`, which Excel rejects as a cell address); data block with x0 = 1 (green) and yellow x1–x4; Logit and Probability columns as live formulae. Re-running replaces the sheet.

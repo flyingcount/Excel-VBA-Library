@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Bland-Altman mean and ±1.96 SD lines use two X points at min/max average (Personal used the full mean range as X and a 2-element Y array).
 - Box-Cox transform formulae use shifted data once; Personal added Alpha both in the shifted column and again inside the λ formula.
 - Min-max normalisation no longer `ReDim`s the whole output array when a later column has zero range (Personal wiped earlier columns).
+- Logit input template raised error 5 because Excel rejects named ranges `b1`–`b4` (those are cell addresses). Coefficients are now `Logit_b0`..`Logit_b4`.
 
 ## [0.1.0] - 2026-08-09
 

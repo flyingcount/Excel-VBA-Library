@@ -31,11 +31,11 @@ Public Sub CreateLogitInputTemplate()
         .Range("C7:G7").Value = 0.01
         .Range("C7:G7").Interior.Color = Yellow
         .Range("C7:G7").HorizontalAlignment = xlCenter
-        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "b0", .Range("C7"))
-        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "b1", .Range("D7"))
-        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "b2", .Range("E7"))
-        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "b3", .Range("F7"))
-        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "b4", .Range("G7"))
+        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "Logit_b0", .Range("C7"))
+        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "Logit_b1", .Range("D7"))
+        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "Logit_b2", .Range("E7"))
+        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "Logit_b3", .Range("F7"))
+        Call modInternalNamedRanges.CreateSheetNamedRange(ws, "Logit_b4", .Range("G7"))
         .Range("B9").Value = "Data"
         .Range("C9").Value = "x0"
         .Range("D9").Value = "x1"
@@ -49,11 +49,11 @@ Public Sub CreateLogitInputTemplate()
         .Range("C10:G20").Interior.Color = Yellow
         For i = 10 To 20
             .Cells(i, 3).Value = 1
-            .Cells(i, 8).FormulaR1C1 = "=b0*RC[-5]+b1*RC[-4]+b2*RC[-3]+b3*RC[-2]+b4*RC[-1]"
+            .Cells(i, 8).FormulaR1C1 = "=Logit_b0*RC[-5]+Logit_b1*RC[-4]+Logit_b2*RC[-3]+Logit_b3*RC[-2]+Logit_b4*RC[-1]"
             .Cells(i, 9).FormulaR1C1 = "=1/(1+EXP(-RC[-1]))"
         Next i
         .Range("C10:C20").Interior.Color = RGB(226, 239, 218)
-        .Range("A22").Value = "Yellow cells are inputs. x0 is the intercept column (1). Probability = 1 / (1 + EXP(−logit))."
+        .Range("A22").Value = "Yellow cells are inputs. x0 is the intercept column (1). Probability = 1 / (1 + EXP(-logit))."
         .Columns("A").ColumnWidth = 3
         .Columns("B").ColumnWidth = 12
         .Range("C:I").ColumnWidth = 12
