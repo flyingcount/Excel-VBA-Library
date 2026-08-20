@@ -75,3 +75,33 @@ Application.Run "CreateYesNoDataset"
 ```
 
 These still prompt; there is no argument list (same as Personal).
+
+## Data Preprocessing (Personal Menu5 scaling / dummies)
+
+Use **Excel VBA Lib → Data → Data Preprocessing**. Select numeric columns with **no header**. Output starts two columns to the right of the source.
+
+### Standardise / normalise / robust
+
+On a sheet starting at A2 (so a title can sit on row 1):
+
+```text
+1  10
+3  10
+5  10
+```
+
+**Standardise columns**: left column ≈ −1.2247, 0, 1.2247 (population SD). Right column all 0 (zero SD). Title **Scaled data (standardised)** on row 1.
+
+**Normalise columns**: left column 0, 0.5, 1. Right column all 0 (zero range). The first column must stay filled (Personal `ReDim` inside the column loop wiped earlier columns).
+
+**Robust scale columns**: (x − median) / IQR. For the left column median 3, IQR = 4, values −0.5, 0, 0.5. Zero IQR → 0.
+
+Cancel on the range prompt leaves the sheet unchanged. Blanks and one-row ranges are rejected.
+
+### Dummy variables
+
+Single column `A, B, A` in A2:A4. **Dummy variables**. Yes to headers.
+
+Expected: header row on row 1 (`Value`, `A`, `B`); original values in C2:C4; dummy 1/0 in D2:E4 aligned with the source rows. No to headers writes only the dummy matrix at C2, aligned with A2.
+
+A blank cell is skipped as a category and that row is all zeros. Two columns are rejected.

@@ -71,6 +71,7 @@ Private Function TryBuildMenu() As Boolean
     Dim dataMenu As CommandBarPopup
     Dim anMenu As CommandBarPopup
     Dim dist As CommandBarPopup
+    Dim prep As CommandBarPopup
     Dim clMenu As CommandBarPopup
     Dim rngMenu As CommandBarPopup
     Dim rngCreate As CommandBarPopup
@@ -135,6 +136,11 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(dist, "&Exponential", "RandomExponentialNumbers")
     Call AddButton(dist, "&Gamma", "RandomGammaNumbers")
     Call AddButton(dist, "&Hypergeometric", "RandomHypergeometricNumbers")
+    Set prep = AddSubmenu(dataMenu, "Data &Preprocessing")
+    Call AddButton(prep, "&Standardise columns", "ScalingStandard")
+    Call AddButton(prep, "&Normalise columns", "ScalingNormalise")
+    Call AddButton(prep, "&Robust scale columns", "ScalingRobust")
+    Call AddButton(prep, "&Dummy variables", "DummyVariablesForMachineLearning")
 
     Set clMenu = AddSubmenu(pop, "&Custom lists")
     Call AddButton(clMenu, "&Count", "CountCustomLists")
@@ -325,6 +331,10 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(anMenu, "Stdev (s&ample) vector", "CalculateStandardDeviationSampleVector")
     Call AddButton(anMenu, "Stdev &product (population)", "CalculateStdDevProductMatrixPopulation")
     Call AddButton(anMenu, "&Residuals analysis", "ResidualsAnalysis", True)
+    Call AddButton(anMenu, "&Bland-Altman plot", "BlandAltmanPlot", True)
+    Call AddButton(anMenu, "&Deming regression", "CalculateDemingRegression")
+    Call AddButton(anMenu, "Box-&Cox transformations", "BoxCox", True)
+    Call AddButton(anMenu, "&Logit input template", "CreateLogitInputTemplate")
 
     Set plots = AddSubmenu(pop, "&Plots Charts")
     Call AddButton(plots, "&Histogram and data table", "HistogramTableAndPlot")

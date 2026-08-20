@@ -46,6 +46,11 @@ source/Api/
 ├── modApiResiduals.bas
 ├── modApiSvd.bas
 ├── modApiLinearSystem.bas
+├── modApiBlandAltman.bas
+├── modApiDeming.bas
+├── modApiBoxCox.bas
+├── modApiLogit.bas
+├── modApiPreprocess.bas  ← Data → Data Preprocessing (Menu5 scaling / dummies)
 ├── modApiHistogram.bas
 ├── modApiDistPlots.bas
 ├── modApiQQPlots.bas
@@ -83,6 +88,7 @@ source/Internal/
 ├── modInternalPowerQuery.bas
 ├── modInternalMatrices.bas
 ├── modInternalAnalysis.bas
+├── modInternalPreprocess.bas
 ├── modInternalConfusion.bas
 ├── modInternalSvd.bas
 ├── modInternalTimeSeries.bas
@@ -102,7 +108,8 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Benford | In the add-in (`modApiBenford` + `modInternalBenford`) |
 | Worksheet templates | In the add-in (`modApiWorksheetTemplates`) — Personal `Custom_Menu26_wkshtTmplt` |
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
-| Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
+| Data | In the add-in (`modApiData` + **Data Preprocessing** via `modApiPreprocess` / `modInternalPreprocess`) — Personal Menu6 plus Menu5 scaling / dummy variables |
+| Analysis | In the add-in (`modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem` / `modApiBlandAltman` / `modApiDeming` / `modApiBoxCox` / `modApiLogit`) — Personal Menu18 plus Menu5 Bland-Altman, Deming, Box-Cox, logit template |
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
 | Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
 | Ranges | In the add-in (`modApiRanges` + `modInternalRanges`) — Personal `Custom_Menu14_*` |
@@ -112,11 +119,10 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Tables | In the add-in (`modApiTables`) — Personal `Custom_Menu19_Tables` |
 | Files | In the add-in (`modApiFiles`) — Personal `Custom_Menu24_ListFilesInFolder` |
 | Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
-| Analysis | In the add-in (`modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem`) — Personal Menu18 |
 | Plots Charts | In the add-in (`modApiHistogram` / `modApiDistPlots` / `modApiQQPlots` / `modApiLinearRegression` / `modApiLorenz` / `modApiAcf` / `modApiDiebold` / `modApiXmR` / `modApiProcessCapability` / `modApiChartSheet` + `modInternalPlots`) — Personal `Custom_Menu11_*` |
 | Time series | In the add-in (`modApiTimeSeries` + `modInternalTimeSeries` + `Fn_TimeSeries`) — Personal `Custom_Menu27_*` |
 | Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
-| Stats / quality | Later — remaining `Custom_Menu5_*` |
+| Stats / quality | Later — remaining `Custom_Menu5_*` (tables, binomial tree, FPC; Benford already on **Benford**; Bland-Altman / Deming / Box-Cox / logit / scaling / dummies are in the add-in) |
 | Charts | Later — Personal Menu3 arrange/list charts (Menu11 plots are on **Plots Charts**) |
 | Output | Later |
 | Workbook | Later |
@@ -171,6 +177,10 @@ Random sample of input rows (percent of row count), with or without replacement.
 | `CreateYesNoDataset` | `modApiData` | Sheet **Yes No Dataset** (Predicted / Actual) |
 | `RandomTestDataTypes` | `modApiData` | Two-column type/value block |
 | `RandomBinomialNumbers` / `RandomBernoulliNumbers` / `RandomNormalNumbers` / `RandomPoissonNumbers` / `RandomExponentialNumbers` / `RandomGammaNumbers` / `RandomHypergeometricNumbers` | `modApiData` | **Excel VBA Lib → Data → Probability distributions** |
+| `ScalingStandard` | `modApiPreprocess` | **Data → Data Preprocessing**. (x − mean) / population SD per column. Writes two columns to the right. Zero SD → 0. |
+| `ScalingNormalise` | `modApiPreprocess` | Min-max to [0, 1] per column. Personal wiped earlier columns when a later column had zero range; this version does not. |
+| `ScalingRobust` | `modApiPreprocess` | (x − median) / IQR (`QUARTILE.INC`) per column. Zero IQR → 0. |
+| `DummyVariablesForMachineLearning` | `modApiPreprocess` | One-hot from a single column. Blanks skipped in the category list; unmatched/blank rows are all zeros. Optional header row; if the source starts on row 1 the dummy block starts on row 2. |
 
 Personal Menu6 **Prime numbers** (`PrimeGenerator` in `Custom_Menu10_Prime`) is not in this pack.
 
@@ -324,7 +334,7 @@ Personal Menu29 (`Custom_Menu29_PowerQuery`). Menu **Excel VBA Lib → Power Que
 
 ### Analysis public surface
 
-Personal Menu18 (`Custom_Menu18_Analysis`, `Covariance`, `ConfusionMatrix`, `CnfsnMtrxTmplt`, `Residuals`, `SVD`, `LinearSystem` / `LinearSysAXB`). Menu **Excel VBA Lib → Analysis**. Personal OnAction names are kept. SVD is also on **Matrices → Decompositions**.
+Personal Menu18 (`Custom_Menu18_Analysis`, `Covariance`, `ConfusionMatrix`, `CnfsnMtrxTmplt`, `Residuals`, `SVD`, `LinearSystem` / `LinearSysAXB`) plus Menu5 Bland-Altman, Deming, Box-Cox, and logit template. Menu **Excel VBA Lib → Analysis**. Personal OnAction names are kept. SVD is also on **Matrices → Decompositions**.
 
 Observations are rows; variables are columns. Vector/matrix tools that take a header use the first row as labels and the rest as numeric data.
 
@@ -344,6 +354,10 @@ Observations are rows; variables are columns. Vector/matrix tools that take a he
 | `CalculateStandardDeviationPopulationVector` / `Sample` | `modApiAnalysis` | STDEV.P / STDEV.S row vectors |
 | `CalculateStdDevProductMatrixPopulation` | `modApiAnalysis` | Outer product of population SDs |
 | `ResidualsAnalysis` | `modApiResiduals` | Sheet **Residuals Analysis**; sheet-scoped names `Order` / `Residuals` |
+| `BlandAltmanPlot` | `modApiBlandAltman` | Sheet **BlandAltman**: two paired columns, mean, difference, sample SD, ±1.96 SD limits of agreement. Mean/LoA lines span min–max of the averages (Personal attached a 2-point Y series to the full X range). |
+| `CalculateDemingRegression` | `modApiDeming` | Sheet **Deming Regression**. λ = VAR.S(X)/VAR.S(Y) (`DemingLambda`, not `Lambda`, to avoid Excel 365 `LAMBDA`). Live formulae, residual sums below the data, XY chart with the fit line. Unqualified `Range` / `ApplyNames` from Personal are not used. |
+| `BoxCox` | `modApiBoxCox` | Sheet **BoxCox**. Prompts for λ start/end/step (defaults −5, 5, 0.1). Alpha shifts so the smallest value becomes 1 when any input is ≤ 0. Transform uses shifted data once (Personal added Alpha twice). Highlights the λ with maximum log-likelihood. `BoxCoxForm` is not included. |
+| `CreateLogitInputTemplate` | `modApiLogit` | Sheet **Logit Input Template**. Yellow coefficient and x inputs, intercept column of 1s, live logit and probability formulae. Personal wrote to unqualified `Range` on the active sheet. |
 | `ComparePredictedToActual` / `…OneAndZerosOnly` | `modApiConfusion` | Optional worksheet UDFs |
 
 Personal `GetRange` used `End` on cancel (kills Excel). Prompts now return Nothing. `ExtractBody` / `RangeArea` used unqualified `Cells` and could read the wrong sheet.

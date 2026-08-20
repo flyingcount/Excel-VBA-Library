@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Protection (Personal Menu7) on **Excel VBA Lib → Protection**: scroll-area limit, default-password protect/unprotect (`UserInterfaceOnly`), show password, unhide worksheets, unhide rows/columns (`modApiProtection` + `modInternalProtection`). Personal OnAction names are kept. The default password is the Personal convenience value, not a secret.
 - Reconciliations (Personal Menu20) on **Excel VBA Lib → Reconciliations**: two-column number/string recon and cell-by-cell range compare (`modApiReconciliations` + `modInternalReconciliations`). Personal OnAction names are kept. Compare uses InputBoxes (`CompareTwoRangesForm` is not included). String recon writes sheet **Reconciliation Strings**; numeric recon still uses **Reconciliation**.
 - Time series (Personal Menu27) on **Excel VBA Lib → Time series**: ACF/PACF analysis (values or formulae) and lag differencing with charts (`modApiTimeSeries` + `modInternalTimeSeries` + `Fn_TimeSeries`). Personal OnAction names are kept. `ACF` / `ACVF` / `PACF` and the portmanteau UDFs are registered into Insert Function (category **Excel VBA Lib**) like `Mat*`. Unqualified `=ACVF(...)` is `#NAME?` until that registration runs. **Date differencing** and **Date differencing with formulae** add an autocorrelation table for the original series and every difference order; lag-1 ACF < −0.5 is flagged as over-differenced (values vs live `ACF` formulas).
+- Menu5 analysis on **Excel VBA Lib → Analysis**: Bland-Altman plot, Deming regression, Box-Cox λ grid, and logit input template (`modApiBlandAltman` / `modApiDeming` / `modApiBoxCox` / `modApiLogit`). Personal OnAction names are kept (`BoxCox`, `BlandAltmanPlot`, `CalculateDemingRegression`, `CreateLogitInputTemplate`).
+- Menu5 scaling / dummy variables on **Excel VBA Lib → Data → Data Preprocessing** (`modApiPreprocess` + `modInternalPreprocess`): standardise, min-max normalise, robust scale, and one-hot dummy variables.
 
 ### Changed
 - Track `build/ExcelVbaLib.xlam` in git (`build/*.xlam` is no longer gitignored).
@@ -51,6 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Confusion matrix template formulae now calculate (`FormulaR1C1`). Personal dumped formula strings with `WriteArrayToWorksheet`.
 - `MatrixCovariance` no longer requires a square range (observations × variables).
 - Residuals analysis writes to the output sheet only (Personal used unqualified `Range` / workbook-level names) and rejects blanks (`IsNumeric` treats empty as numeric).
+- Bland-Altman mean and ±1.96 SD lines use two X points at min/max average (Personal used the full mean range as X and a 2-element Y array).
+- Box-Cox transform formulae use shifted data once; Personal added Alpha both in the shifted column and again inside the λ formula.
+- Min-max normalisation no longer `ReDim`s the whole output array when a later column has zero range (Personal wiped earlier columns).
 
 ## [0.1.0] - 2026-08-09
 

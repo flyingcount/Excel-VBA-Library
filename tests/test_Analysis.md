@@ -1,6 +1,6 @@
-# Test: Analysis (Personal Menu18)
+# Test: Analysis (Personal Menu18 + Menu5)
 
-Personal `Custom_Menu18_*` rewritten as `modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem` plus Internal helpers.
+Personal `Custom_Menu18_*` rewritten as `modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem` plus Internal helpers. Menu5 Bland-Altman, Deming, Box-Cox, and logit template are `modApiBlandAltman` / `modApiDeming` / `modApiBoxCox` / `modApiLogit`.
 
 ## Setup
 
@@ -68,3 +68,36 @@ No   No
 ## Residuals
 
 One numeric column, at least 3 cells. **Residuals analysis** → sheet **Residuals Analysis**: Order 1..n, residuals, sum, SLOPE/INTERCEPT/RSQ, scatter with size-3 **x** markers and a trendline. Named ranges `Order` and `Residuals` are sheet-scoped (Personal used workbook names and unqualified `Range`, so writes could land on the wrong sheet). Blanks are rejected (`IsNumeric` treats empty as numeric).
+
+## Bland-Altman
+
+Two columns, no header, at least two numeric pairs:
+
+```text
+10.1  10.4
+11.0  10.8
+9.8   10.0
+12.2  12.0
+```
+
+**Analysis → Bland-Altman plot** → sheet **BlandAltman**.
+
+Expected: Measurement 1/2, Average, Difference; n, mean difference, sample SD, ±1.96 SD; scatter of difference vs mean with three horizontal lines spanning min–max average. Cancel on the range prompt does nothing. One column or a blank cell is rejected.
+
+## Deming regression
+
+Two numeric columns, at least three rows, no header. **Analysis → Deming regression** → sheet **Deming Regression**.
+
+Expected: stats in A4:B14 including Lambda = VAR.S(X)/VAR.S(Y), Alpha, Beta; data from D4 with live predicted/residual formulae; residual sums in the row below the data; an XY chart with a red Deming fit line. Named range is `DemingLambda` (not `Lambda`). Cancel does nothing.
+
+## Box-Cox
+
+Any numeric block, at least two cells. **Analysis → Box-Cox transformations**. Accept defaults −5 / 5 / 0.1.
+
+Expected: sheet **BoxCox** with Alpha, λ grid, shifted data formulae `=data+Alpha`, transform using shifted data only (not `shifted+Alpha` again), log-likelihood row, Maximum LL, and a yellow **Best lambda**. Negative data: Alpha = 1 − min so the smallest shifted value is 1.
+
+## Logit template
+
+**Analysis → Logit input template** → sheet **Logit Input Template**.
+
+Expected: yellow coefficient row (0.01) named `b0`..`b4`; data block with x0 = 1 (green) and yellow x1–x4; Logit and Probability columns as live formulae. Re-running replaces the sheet.

@@ -5,19 +5,49 @@ Option Explicit
 ' Called from modApiAnalysis / modApiCovariance. Do not document as the external API.
 ' Body arrays are 1-based 2D. Covariance uses observations in rows, variables in columns.
 
-Public Function PromptRange(ByVal PromptText As String, Optional ByVal DefaultRng As Range) As Range
+Public Function PromptRange(ByVal PromptText As String, Optional ByVal DefaultRng As Range, Optional ByVal Title As String = "Analysis") As Range
     Dim rng As Range
     If DefaultRng Is Nothing Then
         If TypeName(Selection) = "Range" Then Set DefaultRng = Selection
     End If
     On Error Resume Next
     If DefaultRng Is Nothing Then
-        Set rng = Application.InputBox(Prompt:=PromptText, Title:="Analysis", Type:=8)
+        Set rng = Application.InputBox(Prompt:=PromptText, Title:=Title, Type:=8)
     Else
-        Set rng = Application.InputBox(Prompt:=PromptText, Title:="Analysis", Default:=DefaultRng.Address, Type:=8)
+        Set rng = Application.InputBox(Prompt:=PromptText, Title:=Title, Default:=DefaultRng.Address, Type:=8)
     End If
     On Error GoTo 0
     Set PromptRange = rng
+End Function
+
+' Contiguous numeric block. MaxCols = 0 means no column cap. Nothing if cancelled or invalid.
+Public Function PromptNumericRange(ByVal PromptText As String, Optional ByVal Title As String = "Analysis", _
+                                   Optional ByVal MinCols As Long = 1, Optional ByVal MaxCols As Long = 0, _
+                                   Optional ByVal MinRows As Long = 1) As Range
+    Dim rng As Range
+    Set rng = PromptRange(PromptText, Nothing, Title)
+    If rng Is Nothing Then Exit Function
+    If rng.Areas.Count > 1 Then
+        MsgBox "Select a single contiguous range.", vbExclamation, Title
+        Exit Function
+    End If
+    If rng.Columns.Count < MinCols Then
+        MsgBox "Select at least " & MinCols & " column(s).", vbExclamation, Title
+        Exit Function
+    End If
+    If MaxCols > 0 And rng.Columns.Count > MaxCols Then
+        MsgBox "Select at most " & MaxCols & " column(s).", vbExclamation, Title
+        Exit Function
+    End If
+    If rng.Rows.Count < MinRows Then
+        MsgBox "Need at least " & MinRows & " row(s).", vbExclamation, Title
+        Exit Function
+    End If
+    If Not RangeIsAllNumeric(rng) Then
+        MsgBox "Every cell must be numeric (blanks and text are not allowed).", vbExclamation, Title
+        Exit Function
+    End If
+    Set PromptNumericRange = rng
 End Function
 
 ' Header = first row; body = remaining rows as a 2D array. False = cancel or invalid.
