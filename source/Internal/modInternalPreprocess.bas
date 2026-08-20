@@ -5,10 +5,13 @@ Option Explicit
 ' Called from modApiPreprocess. Do not document as the external API.
 ' Body arrays are 1-based 2D (rows x columns).
 
-Public Function PromptRange(ByVal PromptText As String, Optional ByVal Title As String = "Data Preprocessing") As Range
+Public Function PromptRange(ByVal PromptText As String, Optional ByVal DefaultRng As Range, Optional ByVal Title As String = "Data Preprocessing") As Range
     Dim rng As Range
     Dim def As Range
-    If TypeName(Selection) = "Range" Then Set def = Selection
+    Set def = DefaultRng
+    If def Is Nothing Then
+        If TypeName(Selection) = "Range" Then Set def = Selection
+    End If
     On Error Resume Next
     If def Is Nothing Then
         Set rng = Application.InputBox(Prompt:=PromptText, Title:=Title, Type:=8)

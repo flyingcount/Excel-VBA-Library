@@ -93,7 +93,7 @@ Public Sub BlandAltmanPlot()
     With ch.Chart
         .ChartType = xlXYScatter
         .HasTitle = True
-        .ChartTitle.Text = "Bland-Altman plot — difference vs mean"
+        .ChartTitle.Text = "Bland-Altman plot - difference vs mean"
         .HasLegend = True
         .SeriesCollection.NewSeries
         With .SeriesCollection(1)
@@ -111,7 +111,7 @@ Public Sub BlandAltmanPlot()
         .Axes(xlCategory).HasTitle = True
         .Axes(xlCategory).AxisTitle.Text = "Mean of two measurements"
         .Axes(xlValue).HasTitle = True
-        .Axes(xlValue).AxisTitle.Text = "Difference (method 1 − method 2)"
+        .Axes(xlValue).AxisTitle.Text = "Difference (method 1 - method 2)"
         .Axes(xlCategory).HasMajorGridlines = False
         .Axes(xlValue).HasMajorGridlines = False
     End With

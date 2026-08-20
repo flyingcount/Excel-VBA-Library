@@ -2,21 +2,21 @@ Attribute VB_Name = "modApiPreprocess"
 Option Explicit
 
 ' Public API: Personal Custom_Menu5_Scaling / Custom_menu5_ML.
-' Column scaling and dummy (one-hot) encoding. Writes to the right of the source range.
+' Column scaling and dummy (one-hot) encoding.
 
-''' @Description: Standardise each column: (x − mean) / population SD. Writes two columns to the right of the source.
+''' @Description: Standardise each column: (x − mean) / population SD. Prompts for output; default is two cells to the right of the source.
 ''' @Example: ScalingStandard
 Public Sub ScalingStandard()
     Call ScaleColumns("standard")
 End Sub
 
-''' @Description: Min-max normalise each column to [0, 1]. Writes two columns to the right of the source.
+''' @Description: Min-max normalise each column to [0, 1]. Prompts for output; default is two cells to the right of the source.
 ''' @Example: ScalingNormalise
 Public Sub ScalingNormalise()
     Call ScaleColumns("normalise")
 End Sub
 
-''' @Description: Robust-scale each column: (x − median) / IQR (QUARTILE.INC). Writes two columns to the right of the source.
+''' @Description: Robust-scale each column: (x − median) / IQR (QUARTILE.INC). Prompts for output; default is two cells to the right of the source.
 ''' @Example: ScalingRobust
 Public Sub ScalingRobust()
     Call ScaleColumns("robust")
@@ -95,10 +95,11 @@ End Sub
 
 Private Sub ScaleColumns(ByVal kind As String)
     Dim src As Range
+    Dim dest As Range
     Dim body As Variant
     Dim scaled As Variant
-    Dim dest As Range
     Dim title As String
+    Dim defaultDest As Range
     On Error GoTo EH
     Select Case kind
         Case "standard": title = "Scaled data (standardised)"
@@ -108,6 +109,9 @@ Private Sub ScaleColumns(ByVal kind As String)
     End Select
     Set src = modInternalPreprocess.PromptNumericColumns("Select numeric columns to scale (no header row).")
     If src Is Nothing Then Exit Sub
+    Set defaultDest = src.Cells(1, src.Columns.Count).Offset(0, 2)
+    Set dest = modInternalPreprocess.PromptRange("Select the output cell (default is two cells to the right of the source).", defaultDest)
+    If dest Is Nothing Then Exit Sub
     body = modInternalAnalysis.AsMatrix(src.Value, src.Rows.Count, src.Columns.Count)
     Select Case kind
         Case "standard": scaled = modInternalPreprocess.ScaleStandardise(body)
@@ -115,8 +119,7 @@ Private Sub ScaleColumns(ByVal kind As String)
         Case "robust": scaled = modInternalPreprocess.ScaleRobust(body)
     End Select
     Call modInternalExcelApp.PushAppState
-    Set dest = src.Worksheet.Cells(src.Row, src.Column + src.Columns.Count + 2)
-    Call modInternalPreprocess.WriteBlockToRight(dest, scaled, title)
+    Call modInternalPreprocess.WriteBlockToRight(dest.Cells(1, 1), scaled, title)
     Call modInternalExcelApp.PopAppState
     Exit Sub
 EH:

@@ -136,11 +136,12 @@ Private Function TryBuildMenu() As Boolean
     Call AddButton(dist, "&Exponential", "RandomExponentialNumbers")
     Call AddButton(dist, "&Gamma", "RandomGammaNumbers")
     Call AddButton(dist, "&Hypergeometric", "RandomHypergeometricNumbers")
-    Set prep = AddSubmenu(dataMenu, "Data &Preprocessing")
+
+    Set prep = AddSubmenu(pop, "Data &Preprocessing")
     Call AddButton(prep, "&Standardise columns", "ScalingStandard")
     Call AddButton(prep, "&Normalise columns", "ScalingNormalise")
     Call AddButton(prep, "&Robust scale columns", "ScalingRobust")
-    Call AddButton(prep, "&Dummy variables", "DummyVariablesForMachineLearning")
+    Call AddButton(prep, "Convert categorical data to dummy variable matrix", "DummyVariablesForMachineLearning")
 
     Set clMenu = AddSubmenu(pop, "&Custom lists")
     Call AddButton(clMenu, "&Count", "CountCustomLists")

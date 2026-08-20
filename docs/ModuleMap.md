@@ -50,7 +50,7 @@ source/Api/
 ├── modApiDeming.bas
 ├── modApiBoxCox.bas
 ├── modApiLogit.bas
-├── modApiPreprocess.bas  ← Data → Data Preprocessing (Menu5 scaling / dummies)
+├── modApiPreprocess.bas  ← Data Preprocessing (Menu5 scaling / dummies)
 ├── modApiHistogram.bas
 ├── modApiDistPlots.bas
 ├── modApiQQPlots.bas
@@ -108,7 +108,8 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Benford | In the add-in (`modApiBenford` + `modInternalBenford`) |
 | Worksheet templates | In the add-in (`modApiWorksheetTemplates`) — Personal `Custom_Menu26_wkshtTmplt` |
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
-| Data | In the add-in (`modApiData` + **Data Preprocessing** via `modApiPreprocess` / `modInternalPreprocess`) — Personal Menu6 plus Menu5 scaling / dummy variables |
+| Data | In the add-in (`modApiData`) — Personal Menu6 |
+| Data Preprocessing | In the add-in (`modApiPreprocess` / `modInternalPreprocess`) — Personal Menu5 scaling / dummy variables; menu sits immediately after **Data** |
 | Analysis | In the add-in (`modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem` / `modApiBlandAltman` / `modApiDeming` / `modApiBoxCox` / `modApiLogit`) — Personal Menu18 plus Menu5 Bland-Altman, Deming, Box-Cox, logit template |
 | Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
 | Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
@@ -177,12 +178,19 @@ Random sample of input rows (percent of row count), with or without replacement.
 | `CreateYesNoDataset` | `modApiData` | Sheet **Yes No Dataset** (Predicted / Actual) |
 | `RandomTestDataTypes` | `modApiData` | Two-column type/value block |
 | `RandomBinomialNumbers` / `RandomBernoulliNumbers` / `RandomNormalNumbers` / `RandomPoissonNumbers` / `RandomExponentialNumbers` / `RandomGammaNumbers` / `RandomHypergeometricNumbers` | `modApiData` | **Excel VBA Lib → Data → Probability distributions** |
-| `ScalingStandard` | `modApiPreprocess` | **Data → Data Preprocessing**. (x − mean) / population SD per column. Writes two columns to the right. Zero SD → 0. |
-| `ScalingNormalise` | `modApiPreprocess` | Min-max to [0, 1] per column. Personal wiped earlier columns when a later column had zero range; this version does not. |
-| `ScalingRobust` | `modApiPreprocess` | (x − median) / IQR (`QUARTILE.INC`) per column. Zero IQR → 0. |
-| `DummyVariablesForMachineLearning` | `modApiPreprocess` | One-hot from a single column. Blanks skipped in the category list; unmatched/blank rows are all zeros. Optional header row; if the source starts on row 1 the dummy block starts on row 2. |
 
 Personal Menu6 **Prime numbers** (`PrimeGenerator` in `Custom_Menu10_Prime`) is not in this pack.
+
+### Data Preprocessing public surface
+
+Personal Menu5 scaling / dummy variables (`Custom_Menu5_Scaling`, `Custom_menu5_ML`). Menu **Excel VBA Lib → Data Preprocessing** (immediately after **Data**). Personal OnAction names are kept.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ScalingStandard` | `modApiPreprocess` | (x − mean) / population SD per column. Zero SD → 0. Prompts for output; default is two cells to the right of the last source column. |
+| `ScalingNormalise` | `modApiPreprocess` | Min-max to [0, 1] per column. Personal wiped earlier columns when a later column had zero range; this version does not. Same output prompt. |
+| `ScalingRobust` | `modApiPreprocess` | (x − median) / IQR (`QUARTILE.INC`) per column. Zero IQR → 0. Same output prompt. |
+| `DummyVariablesForMachineLearning` | `modApiPreprocess` | Menu caption **Convert categorical data to dummy variable matrix**. One-hot from a single column. Blanks skipped in the category list; unmatched/blank rows are all zeros. Optional header row; if the source starts on row 1 the dummy block starts on row 2. |
 
 ### Hyperlinks public surface
 
@@ -355,7 +363,7 @@ Observations are rows; variables are columns. Vector/matrix tools that take a he
 | `CalculateStdDevProductMatrixPopulation` | `modApiAnalysis` | Outer product of population SDs |
 | `ResidualsAnalysis` | `modApiResiduals` | Sheet **Residuals Analysis**; sheet-scoped names `Order` / `Residuals` |
 | `BlandAltmanPlot` | `modApiBlandAltman` | Sheet **BlandAltman**: two paired columns, mean, difference, sample SD, ±1.96 SD limits of agreement. Mean/LoA lines span min–max of the averages (Personal attached a 2-point Y series to the full X range). |
-| `CalculateDemingRegression` | `modApiDeming` | Sheet **Deming Regression**. λ = VAR.S(X)/VAR.S(Y) (`DemingLambda`, not `Lambda`, to avoid Excel 365 `LAMBDA`). Live formulae, residual sums below the data, XY chart with the fit line. Unqualified `Range` / `ApplyNames` from Personal are not used. |
+| `CalculateDemingRegression` | `modApiDeming` | Sheet **Deming Regression**. λ = VAR.S(X)/VAR.S(Y) (`DemingLambda`, not `Lambda`, to avoid Excel 365 `LAMBDA`). Live formulae, residual sums below the data, XY chart with the fit line. E1 links to the Real Statistics Deming page. Unqualified `Range` / `ApplyNames` from Personal are not used. |
 | `BoxCox` | `modApiBoxCox` | Sheet **BoxCox**. Prompts for λ start/end/step (defaults −5, 5, 0.1). Alpha shifts so the smallest value becomes 1 when any input is ≤ 0. Transform uses shifted data once (Personal added Alpha twice). Highlights the λ with maximum log-likelihood. `BoxCoxForm` is not included. |
 | `CreateLogitInputTemplate` | `modApiLogit` | Sheet **Logit Input Template**. Yellow coefficient and x inputs, intercept column of 1s, live logit and probability formulae. Personal wrote to unqualified `Range` on the active sheet. |
 | `ComparePredictedToActual` / `…OneAndZerosOnly` | `modApiConfusion` | Optional worksheet UDFs |

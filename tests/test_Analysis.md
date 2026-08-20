@@ -88,7 +88,7 @@ Expected: Measurement 1/2, Average, Difference; n, mean difference, sample SD, �
 
 Two numeric columns, at least three rows, no header. **Analysis → Deming regression** → sheet **Deming Regression**.
 
-Expected: stats in A4:B14 including Lambda = VAR.S(X)/VAR.S(Y), Alpha, Beta; data from D4 with live predicted/residual formulae; residual sums in the row below the data; an XY chart with a red Deming fit line. Named range is `DemingLambda` (not `Lambda`). Cancel does nothing.
+Expected: stats in A4:B14 including Lambda = VAR.S(X)/VAR.S(Y), Alpha, Beta; data from D4 with live predicted/residual formulae; residual sums in the row below the data; an XY chart with a red Deming fit line. Named range is `DemingLambda` (not `Lambda`). E1 is a hyperlink to https://real-statistics.com/regression/deming-regression/deming-regression-basic-concepts/. Cancel does nothing.
 
 ## Box-Cox
 

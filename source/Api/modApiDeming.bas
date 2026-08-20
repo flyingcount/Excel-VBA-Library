@@ -40,6 +40,9 @@ Public Sub CalculateDemingRegression()
     ws.Range("A1").Font.Bold = True
     ws.Range("A1").Font.Size = 12
     ws.Range("A2").Value = "Produced " & Format$(Now, "yyyy-mm-dd hh:nn")
+    ws.Hyperlinks.Add Anchor:=ws.Range("E1"), _
+        Address:="https://real-statistics.com/regression/deming-regression/deming-regression-basic-concepts/", _
+        TextToDisplay:="https://real-statistics.com/regression/deming-regression/deming-regression-basic-concepts/"
     ws.Range("A4").Value = "X bar"
     ws.Range("A5").Value = "Y bar"
     ws.Range("A6").Value = "u (DEVSQ X)"
