@@ -52,21 +52,21 @@ Expected: same sheet layout, lags 0..1 (`n\4` for n=10). ACF/PACF/… cells are 
 
 Same column. **Time series → Date differencing**.
 
-Expected: sheet **Date Diff**. This is ARIMA lag differencing, not calendar date subtraction.
+Expected: sheet **Date Diff**. This is lag-k differencing `y[t]-y[t-k]` of the original series (pandas `Series.diff(lag)`), not calendar date subtraction and not repeated first differences (Δ², Δ³).
 
 - Slope / Intercept / R² in rows 21–23.
-- Table from row 25: Index, Time series data, then difference orders 1..`min(Round(n/3),24)`.
-- First difference has **9** values for n=10 (Personal wrote n-2 = 8).
-- Charts at A4 / B4 / L4 (original, 1-diff, 2-diff) with a red trendline. No cell is selected to place the chart.
+- Table from row 25: Index, Time series data, then lags 1..`min(Round(n/3),24)`.
+- Leading rows that cannot be differenced are blank. Lag 1 has **9** values for n=10 (rows 2–10). Lag 2 is `y[t]-y[t-2]` (eight 1s on this series), not Δ².
+- Charts at A4 / B4 / L4 (original, lag-1, lag-2) with a red trendline. No cell is selected to place the chart.
 - Link in D2 to Real Statistics ARIMA differencing.
-- Below the data, an **Autocorrelation** table (values, not formulas) has lag 0..n/4 for the original series and every difference column. Lag-1 ACF is green when ≥ −0.5 and red when < −0.5. A flag row says `OK` or `Over-differenced`.
+- Below the data, an **Autocorrelation** table (values, not formulas) has lag 0..n/4 for the original series and every difference column (used cells only, skipping leading blanks). Lag-1 ACF is green when ≥ −0.5 and red when < −0.5. A flag row says `OK` or `Over-differenced`.
 
 ## Date differencing with formulae
 
 **Time series → Date differencing with formulae**.
 
-Expected: sheet **Date Diff Formula**. Difference cells are R1C1 formulas (`=R[1]C[-1]-RC[-1]`). Changing the original series updates the diffs.
+Expected: sheet **Date Diff Formula**. Difference cells are R1C1 formulas of the original series: lag k is `=RC[-k]-R[-k]C[-k]` (lag 1 is `=RC[-1]-R[-1]C[-1]`). Changing the original series updates the diffs. Same values as Date differencing / `difference(data, lag=k, order=1)`.
 
-Below the data, an **Autocorrelation** table has lag 0..n/4 for the original series and every difference column (`='ExcelVbaLib.xlam'!ACF(...)` on the used cells only). Lag-1 ACF cells are green when ≥ −0.5 and red when < −0.5 (over-differenced). A flag row under the table says `OK` or `Over-differenced`. Use the smallest d whose lag-1 ACF is not below −0.5.
+Below the data, an **Autocorrelation** table has lag 0..n/4 for the original series and every difference column (`='ExcelVbaLib.xlam'!ACF(...)` on the used cells only). Lag-1 ACF cells are green when ≥ −0.5 and red when < −0.5 (over-differenced). A flag row under the table says `OK` or `Over-differenced`.
 
 A single-cell column is allowed for differencing (n≥2 required).

@@ -39,7 +39,7 @@ EH:
     Call modInternalError.RaiseCurrent("TimeSeriesAnalysisFormula")
 End Sub
 
-''' @Description: Lag-1, lag-2, ... differences of a numeric column on sheet Date Diff, with slope/R², line charts, and an ACF value table. Lag-1 ACF < -0.5 flags over-differencing.
+''' @Description: Lag-1, lag-2, ... differences y[t]-y[t-k] of a numeric column on sheet Date Diff, with slope/R², line charts, and an ACF value table. Not repeated first differences. Lag-1 ACF < -0.5 flags over-differencing.
 ''' @Example: DateDifferencing
 Public Sub DateDifferencing()
     Dim src As Range
@@ -55,7 +55,7 @@ EH:
     Call modInternalError.RaiseCurrent("DateDifferencing")
 End Sub
 
-''' @Description: Same as DateDifferencing on sheet Date Diff Formula, with difference columns and an ACF table as live formulas. Lag-1 ACF < -0.5 flags over-differencing.
+''' @Description: Same as DateDifferencing on sheet Date Diff Formula, with y[t]-y[t-k] cells and an ACF table as live formulas. Lag-1 ACF < -0.5 flags over-differencing.
 ''' @Example: DateDifferencingFormulae
 Public Sub DateDifferencingFormulae()
     Dim src As Range

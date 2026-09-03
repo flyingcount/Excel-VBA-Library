@@ -99,6 +99,7 @@ Public Sub WriteDateDifferencing(ByVal src As Range, ByVal useFormulas As Boolea
     nDiff = CLng(Round(n / 3, 0))
     If nDiff < 1 Then nDiff = 1
     If nDiff > MaxDiffOrders Then nDiff = MaxDiffOrders
+    If nDiff > n - 1 Then nDiff = n - 1
     nCols = nDiff + 2
     vals = ColumnDoubles(src)
 
@@ -112,13 +113,15 @@ Public Sub WriteDateDifferencing(ByVal src As Range, ByVal useFormulas As Boolea
         arr(r + 1, 1) = r
         arr(r + 1, 2) = vals(r)
     Next r
+    ' Column k is y[t] - y[t-k] of the original series (pandas Series.diff(lag=k)),
+    ' not repeated first differences. First k rows are blank.
     For c = 3 To nCols
         d = c - 2
-        For r = 1 To n - d
+        For r = d + 1 To n
             If useFormulas Then
-                arr(r + 1, c) = "=R[1]C[-1]-RC[-1]"
+                arr(r + 1, c) = "=RC[-" & CStr(d) & "]-R[-" & CStr(d) & "]C[-" & CStr(d) & "]"
             Else
-                arr(r + 1, c) = CDbl(arr(r + 2, c - 1)) - CDbl(arr(r + 1, c - 1))
+                arr(r + 1, c) = CDbl(arr(r + 1, 2)) - CDbl(arr(r + 1 - d, 2))
             End If
         Next r
     Next c
@@ -136,11 +139,9 @@ Public Sub WriteDateDifferencing(ByVal src As Range, ByVal useFormulas As Boolea
         ws.Cells(DateDiffStartRow + 2, col).FormulaR1C1 = "=RSQ(R" & (headerRow + 1) & "C" & col & ":R" & lastDataRow & "C" & col & ",R" & (headerRow + 1) & "C1:R" & lastDataRow & "C1)"
     Next col
 
-    If useFormulas Then
-        Call modInternalPlots.WriteBlock(ws, headerRow, 1, arr)
-    Else
-        ws.Cells(headerRow, 1).Resize(n + 1, nCols).Value = arr
-    End If
+    ' WriteBlock skips Empty so leading lag rows stay blank. Range.Value
+    ' would turn those Empty cells into 0.
+    Call modInternalPlots.WriteBlock(ws, headerRow, 1, arr)
     ws.Range(ws.Cells(headerRow, 1), ws.Cells(headerRow, nCols)).Font.Bold = True
     Call WriteDiffAcfTable(ws, headerRow, n, nCols, useFormulas)
     Call PlotDateDiffCharts(ws, ws.Cells(headerRow, 1).Resize(n + 1, nCols), nCols)
@@ -374,6 +375,7 @@ Private Sub WriteDiffAcfTable(ByVal ws As Worksheet, ByVal headerRow As Long, By
     Dim c As Long
     Dim d As Long
     Dim lastUsed As Long
+    Dim firstUsed As Long
     Dim p As String
     Dim srcAddr As String
     Dim srcRng As Range
@@ -398,7 +400,7 @@ Private Sub WriteDiffAcfTable(ByVal ws As Worksheet, ByVal headerRow As Long, By
 
     ws.Cells(acfTitle, 1).Value = "Autocorrelation of the original series and each differenced series"
     ws.Cells(acfTitle, 1).Font.Bold = True
-    ws.Cells(acfTitle + 1, 1).Value = "Lag-1 ACF < -0.5 suggests over-differencing. Prefer the smallest d whose lag-1 ACF is not below -0.5."
+    ws.Cells(acfTitle + 1, 1).Value = "Each column k is y[t]-y[t-k] of the original series. Lag-1 ACF < -0.5 on the lag-1 difference suggests over-differencing."
     ws.Cells(acfHeader, 1).Value = "Lag"
     For c = 2 To nCols
         ws.Cells(acfHeader, c).Value = ws.Cells(headerRow, c).Value
@@ -409,10 +411,15 @@ Private Sub WriteDiffAcfTable(ByVal ws As Worksheet, ByVal headerRow As Long, By
         ws.Cells(acfHeader + 1 + lag, 1).Value = lag
         For c = 2 To nCols
             d = c - 2
-            lastUsed = lastData - d
-            If lastUsed < firstData Then lastUsed = firstData
-            If lag > lastUsed - firstData Then GoTo NextCol
-            Set srcRng = ws.Range(ws.Cells(firstData, c), ws.Cells(lastUsed, c))
+            lastUsed = lastData
+            If d > 0 Then
+                firstUsed = firstData + d
+            Else
+                firstUsed = firstData
+            End If
+            If firstUsed > lastUsed Then firstUsed = lastUsed
+            If lag > lastUsed - firstUsed Then GoTo NextCol
+            Set srcRng = ws.Range(ws.Cells(firstUsed, c), ws.Cells(lastUsed, c))
             If useFormulas Then
                 srcAddr = srcRng.Address(True, True, xlA1, False)
                 ws.Cells(acfHeader + 1 + lag, c).Formula = "=" & p & "ACF(" & srcAddr & "," & CStr(lag) & ")"
@@ -614,10 +621,10 @@ End Function
 Private Sub PlotDateDiffCharts(ByVal ws As Worksheet, ByVal tbl As Range, ByVal nCols As Long)
     Call AddLineTrendChart(ws, ws.Range("A4"), tbl.Columns(2), "Time series", "Original time series")
     If nCols >= 3 Then
-        Call AddLineTrendChart(ws, ws.Range("B4"), tbl.Columns(3), "1-Differenced time series", "Differenced time series")
+        Call AddLineTrendChart(ws, ws.Range("B4"), tbl.Columns(3), "Lag-1 differenced time series", "Differenced time series")
     End If
     If nCols >= 4 Then
-        Call AddLineTrendChart(ws, ws.Range("L4"), tbl.Columns(4), "2-Differenced time series", "Differenced time series")
+        Call AddLineTrendChart(ws, ws.Range("L4"), tbl.Columns(4), "Lag-2 differenced time series", "Differenced time series")
     End If
 End Sub
 
