@@ -2,38 +2,47 @@
 
 `build/ExcelVbaLib.xlam` is the add-in Excel loads. Source-only changes do **not** update it.
 
-## Rebuild the add-in (no Excel)
+## Rebuild the add-in
 
-From the repo root:
-
-```bash
-pip install pyOpenVBA
-python scripts/Build-ExcelVbaLib.py
-```
-
-That writes `build/ExcelVbaLib.xlam` from `source/Internal`, `Api`, and `Menus` (ThisWorkbook is injected, not imported as a second class).
-
-## Rebuild with Excel (optional compile)
-
-With Excel closed (or at least without `ExcelVbaLib.xlam` loaded):
+From the repo root, with Excel closed (or at least without `ExcelVbaLib.xlam` loaded):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
 
+That imports the snapshot under `source/Internal`, `Api`, and `Menus` into **one** project and saves `build/ExcelVbaLib.xlam`.
+
 Requires **Trust access to the VBA project object model** (see [docs/ExportImport.md](../docs/ExportImport.md)).
 
-**Update the existing add-in (PowerShell + Excel, no Python).**  
-Use full paths. `.\scripts\...` only works if your prompt is already the repo folder, not `C:\windows\System32`. Do not use `cd /d` (cmd.exe).
+`scripts/Build-ExcelVbaLib.py` packs `.bas` modules with pyOpenVBA when Excel is not available. It does not import UserForms (`.frm`), so it is not a full rebuild.
+
+**The add-in is the library.** Add new modules in the VBE of `ExcelVbaLib.xlam`, then save the `.xlam`. Do not drop new `.bas` files into `source/` as a substitute for editing the add-in.
+
+`build/ExcelVbaLib.xlam` is tracked in git. After pulling source, you can load that file as-is, or rebuild it from the **repo folder** (not `C:\Windows\System32`). `.\scripts\...` only works when the prompt is already that folder. Use a full path from anywhere else:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-& "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\scripts\Import-AddinModules.ps1" -XlamPath "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\build\ExcelVbaLib.xlam"
+& "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\scripts\Import-AddinModules.ps1" -All -XlamPath "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library\build\ExcelVbaLib.xlam"
 ```
 
-**The add-in is the library.** After a rebuild, grow it in the VBE of `ExcelVbaLib.xlam` or edit `source/` and run `Build-ExcelVbaLib.py` again.
+```powershell
+cd "C:\Users\chanp\OneDrive\Notebooks\Cursor\Excel-VBA-Library"
+powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
+```
 
-## Load it in Excel
+That writes Internal + Api + Menus (including `modApiMatrices1` / `modApiMatrices2`) into `build\ExcelVbaLib.xlam` and saves. Excel can be open with the add-in loaded. The script lists public names in those two modules and fails if they are missing. Running **without** `-All` only replaces Data modules, which leaves matrix functions missing or stale.
+
+To put the **original Personal** Matrices1/2 VBA into the add-in (not the git snapshot):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Import-Menu13FromPersonal.ps1
+```
+
+A full rebuild (add-in **not** loaded) is still:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Build-ExcelVbaLib.ps1
+```
 
 1. File → Options → Add-ins → Manage **Excel Add-ins** → Go
 2. Browse to `build/ExcelVbaLib.xlam` → OK
@@ -47,7 +56,7 @@ If Data macros (e.g. Poisson) are stale after a source change, with Excel open a
 powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
 ```
 
-That removes and re-imports `modInternalData` then `modApiData` into that `.xlam` and saves. Pass `-XlamPath` if the add-in is not `build\ExcelVbaLib.xlam` under the repo. Pass `-Modules` to replace other components (Internal first).
+That removes and re-imports `modInternalData` then `modApiData` into that `.xlam` and saves. Pass `-XlamPath` if the add-in is not `build\ExcelVbaLib.xlam` under the repo. Pass `-Modules` to replace other components (Internal first). `scripts/Update-Existing-Addin.ps1` runs that Data-module refresh. `scripts/Patch-Poisson438.ps1` replaces `Poisson_Inv` in the open add-in without the importer.
 
 If the menu is missing after a source change, with Excel open and the add-in loaded:
 

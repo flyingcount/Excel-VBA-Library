@@ -181,6 +181,43 @@ EH:
     Call modInternalError.RaiseCurrent("CreateYesNoDataset")
 End Sub
 
+''' @Description: Consecutive daily dates and a Gaussian random-walk Value column, from a prompted start cell (default ActiveCell).
+''' @Example: RandomTimeSeries
+Public Sub RandomTimeSeries()
+    Dim startCell As Range
+    Dim def As Range
+    Dim n As Variant
+    Dim lastRow As Double
+    On Error GoTo EH
+    If TypeName(Selection) = "Range" Then Set def = ActiveCell
+    Set startCell = modInternalData.PromptRange("Select the start cell for the time series.", def)
+    If startCell Is Nothing Then Exit Sub
+    Set startCell = startCell.Cells(1, 1)
+    n = modInternalData.PromptNumber("How many data points?", 100)
+    If IsEmpty(n) Then Exit Sub
+    If CDbl(n) <> Int(CDbl(n)) Or CDbl(n) < 1 Then
+        MsgBox "Number of data points must be a whole number of at least 1.", vbExclamation, "Data"
+        Exit Sub
+    End If
+    lastRow = CDbl(startCell.Row) + CDbl(n)
+    If lastRow > startCell.Worksheet.Rows.Count Then
+        MsgBox "That many points will not fit below the start cell.", vbExclamation, "Data"
+        Exit Sub
+    End If
+    If startCell.Column >= startCell.Worksheet.Columns.Count Then
+        MsgBox "Need two columns (Date and Value) from the start cell.", vbExclamation, "Data"
+        Exit Sub
+    End If
+    If Not modInternalData.ConfirmCellCount(CLng(n) * 2) Then Exit Sub
+    Call modInternalExcelApp.PushAppState
+    Call modInternalData.WriteRandomTimeSeries(startCell, CLng(n))
+    Call modInternalExcelApp.PopAppState
+    Exit Sub
+EH:
+    Call modInternalExcelApp.PopAppState
+    Call modInternalError.RaiseCurrent("RandomTimeSeries")
+End Sub
+
 ''' @Description: Two-column test data (type name + value) starting at a prompted two-column range.
 Public Sub RandomTestDataTypes()
     Dim rng As Range

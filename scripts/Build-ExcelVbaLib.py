@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build build/ExcelVbaLib.xlam from source/ without Excel (pyOpenVBA)."""
+"""Pack .bas modules into build/ExcelVbaLib.xlam without Excel (pyOpenVBA).
+
+Does not import UserForms (.frm). Use scripts/Build-ExcelVbaLib.ps1 for a full rebuild.
+"""
 
 from __future__ import annotations
 

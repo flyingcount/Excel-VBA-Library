@@ -32,18 +32,14 @@ To copy from Personal123: export a module, then **File → Import File…** in t
 
 Caller workbooks should **load `ExcelVbaLib.xlam`**, not import Benford (or other) modules one by one.
 
-```bash
-# No Excel required (writes build/ExcelVbaLib.xlam)
-pip install pyOpenVBA
-python scripts/Build-ExcelVbaLib.py
-```
-
 ```powershell
-# Optional: Excel COM import + compile. Close the add-in first if it is loaded.
+# From repo root; close the add-in in Excel first if it is already loaded
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
 
-The Python build packs `source/` (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), and writes `build/ExcelVbaLib.xlam`. That file is tracked so a git pull can replace a stale local add-in. **Quit Excel first** or the copy on disk will not change.
+The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), compiles, and writes `build/ExcelVbaLib.xlam`. That file is tracked, so a git pull can replace a stale copy. **Quit Excel first** or the file on disk will not change. After that, grow the library in the add-in itself.
+
+`scripts/Build-ExcelVbaLib.py` packs `.bas` modules with pyOpenVBA when Excel is not available. It does not import UserForms (`.frm`), so it is not a full rebuild.
 
 To replace Data modules in an already-loaded add-in (no full rebuild) — Internal first, then Api:
 
@@ -53,7 +49,19 @@ powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
 
 If the add-in is not `build\ExcelVbaLib.xlam` under the repo, pass `-XlamPath` to that `.xlam`. The script updates that file (by full path), not a different loaded copy with the same name.
 
-That is `modInternalData` and `modApiData`. Other modules: `-Modules modInternalBenford,modApiBenford`.
+That is `modInternalData` and `modApiData` only. **Matrix functions are not updated unless you pass `-All` or name those modules.** Other modules: `-Modules modInternalBenford,modApiBenford`.
+
+To write **all** source modules (including Matrices) into `build\ExcelVbaLib.xlam` after a `git pull`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All
+```
+
+That imports `modApiMatrices1` and `modApiMatrices2` from git. To copy the original Personal modules into the `.xlam` (Personal.xlsb must be on that PC; names are rewritten to `modApi*`):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Import-Menu13FromPersonal.ps1
+```
 
 To refresh ThisWorkbook + the menu module in an already-loaded add-in (no full rebuild):
 
@@ -73,6 +81,7 @@ Application.Run "BenfordAnalysisFirstDigit", Range("A2:A50")
 Application.Run "CreateDateTable", #1/1/2024#, #1/31/2024#
 Application.Run "RandomIntegers"
 Application.Run "DataCombinations"
+Application.Run "MatrixMultiply"
 ```
 
 Add-in `Public Sub`s do not appear in Alt+F8. Optional: Tools → References → **ExcelVbaLib** for early-bound `Call`.
@@ -130,5 +139,5 @@ Then import chosen modules into **ExcelVbaLib.xlam**, not into a folder tree.
 
 ## Do not commit
 
-- Binary add-ins unless you explicitly want them (`build/*.xlam` is gitignored by default)
+- Excel lock files (`~$*`); `build/ExcelVbaLib.xlam` is tracked
 - Exported junk under `source/_export_raw/` (also ignored)

@@ -17,13 +17,53 @@ Many `Custom_Menu*` modules contain **private copies** of the same helpers (~21�
 source/Api/
 ├── modApiArrays.bas
 ├── modApiSheets.bas
-├── modApiFiles.bas
-├── modApiTables.bas
+├── modApiFiles.bas       ← folder file listings (Menu24)
+├── modApiTables.bas      ← table inventory (Menu19)
 ├── modApiDates.bas       ← CreateDateTable
 ├── modApiBenford.bas     ← Benford / last-two-digit analyses
 ├── modApiWorksheetTemplates.bas ← Links, Actions, Force Field, Assumptions, Questions, Notes workbook
 ├── modApiSampling.bas    ← ExtractSample (Menu4)
 ├── modApiData.bas        ← random fills, combinations, distributions (Menu6)
+├── modApiHyperlinks.bas  ← hyperlink inventory / index / follow (Menu21)
+├── modApiCustomLists.bas ← custom lists / AutoCorrect (Menu16)
+├── modApiRanges.bas      ← named ranges, analysis, cleanse (Menu14)
+├── modApiDuplicates.bas  ← flag / colour / count duplicates (Menu15)
+├── modApiProtection.bas  ← scroll area, sheet protect, unhide (Menu7)
+├── modApiReconciliations.bas ← two-column recon / range compare (Menu20)
+├── modApiPowerQuery.bas  ← import/export form, background refresh, Fast Combine, connect all tables (Menu29)
+├── frmPQLibrary.frm      ← Import or export queries and functions (Menu29)
+├── frmFileListingProgress.frm ← modeless Cancel during Files listing
+├── modApiMatrixCreate.bas
+├── modApiMatrices1.bas
+├── modApiMatrices2.bas
+├── modApiCholesky.bas
+├── modApiEigenDecomp.bas
+├── modApiUnitary.bas
+├── modApiMatrixUtilities.bas
+├── modApiCovariance.bas
+├── modApiAnalysis.bas
+├── modApiConfusion.bas
+├── modApiResiduals.bas
+├── modApiSvd.bas
+├── modApiLinearSystem.bas
+├── modApiBlandAltman.bas
+├── modApiDeming.bas
+├── modApiBoxCox.bas
+├── modApiLogit.bas
+├── modApiPreprocess.bas  ← Data Preprocessing (Menu5 scaling / dummies)
+├── modApiHistogram.bas
+├── modApiDistPlots.bas
+├── modApiQQPlots.bas
+├── modApiLinearRegression.bas
+├── modApiLorenz.bas
+├── modApiAcf.bas
+├── modApiTimeSeries.bas ← analysis / lag differencing (Menu27)
+├── modApiDiebold.bas
+├── modApiXmR.bas
+├── modApiProcessCapability.bas
+├── modApiChartSheet.bas
+├── Fn_MatricesArray.bas / Fn_MatricesRng.bas / Fn_Matrices2.bas
+├── Fn_TimeSeries.bas     ← ACF / ACVF / PACF / Bartlett / Box-Pierce / Ljung-Box UDFs (Menu27)
 └── modApiUi.bas
 
 source/Internal/
@@ -32,11 +72,27 @@ source/Internal/
 ├── modInternalDateTable.bas
 ├── modInternalBenford.bas
 ├── modInternalNamedRanges.bas
+├── modInternalRanges.bas
+├── modInternalDuplicates.bas
+├── modInternalProtection.bas
+├── modInternalReconciliations.bas
 ├── modInternalText.bas
 ├── modInternalError.bas
 ├── modInternalWorksheetTemplates.bas
 ├── modInternalSampling.bas
-└── modInternalData.bas
+├── modInternalData.bas
+├── modInternalHyperlinks.bas
+├── modInternalCustomLists.bas
+├── modInternalTables.bas
+├── modInternalFiles.bas
+├── modInternalPowerQuery.bas
+├── modInternalMatrices.bas
+├── modInternalAnalysis.bas
+├── modInternalPreprocess.bas
+├── modInternalConfusion.bas
+├── modInternalSvd.bas
+├── modInternalTimeSeries.bas
+└── modInternalPlots.bas
 
 source/Menus/
 ├── modAddinMenu.bas
@@ -52,14 +108,25 @@ Copy the next family into **ExcelVbaLib.xlam** (same project so `Call` stays in-
 | Benford | In the add-in (`modApiBenford` + `modInternalBenford`) |
 | Worksheet templates | In the add-in (`modApiWorksheetTemplates`) — Personal `Custom_Menu26_wkshtTmplt` |
 | Sampling | In the add-in (`modApiSampling`) — Personal `Custom_Menu4_Sample` / `ExtractSample` |
-| Data | In the add-in (`modApiData`) — Personal `Custom_Menu6_Data` / `RndFrmRng` / `RndProbDist` |
-| Stats / quality | Later — `Custom_Menu11_*`, remaining `Custom_Menu5_*`, XmR |
-| Matrices | Later — `Custom_Menu13_*`, `Fn_Matrices*` |
-| Editing / ranges | Later |
-| Charts | Later |
+| Data | In the add-in (`modApiData`) — Personal Menu6 |
+| Data Preprocessing | In the add-in (`modApiPreprocess` / `modInternalPreprocess`) — Personal Menu5 scaling / dummy variables; menu sits immediately after **Data** |
+| Analysis | In the add-in (`modApiAnalysis` / `modApiCovariance` / `modApiConfusion` / `modApiResiduals` / `modApiSvd` / `modApiLinearSystem` / `modApiBlandAltman` / `modApiDeming` / `modApiBoxCox` / `modApiLogit`) — Personal Menu18 plus Menu5 Bland-Altman, Deming, Box-Cox, logit template |
+| Hyperlinks | In the add-in (`modApiHyperlinks`) — Personal Menu21 |
+| Custom lists | In the add-in (`modApiCustomLists`) — Personal `Custom_Menu16_CustomLists` / `Custom_Menu16_Autocorrect` |
+| Ranges | In the add-in (`modApiRanges` + `modInternalRanges`) — Personal `Custom_Menu14_*` |
+| Duplicates | In the add-in (`modApiDuplicates` + `modInternalDuplicates`) — Personal `Custom_Menu15_Duplicates` |
+| Protection | In the add-in (`modApiProtection` + `modInternalProtection`) — Personal `Custom_Menu7_Protection` |
+| Reconciliations | In the add-in (`modApiReconciliations` + `modInternalReconciliations`) — Personal `Custom_Menu20_*` |
+| Tables | In the add-in (`modApiTables`) — Personal `Custom_Menu19_Tables` |
+| Files | In the add-in (`modApiFiles`) — Personal `Custom_Menu24_ListFilesInFolder` |
+| Power Query | In the add-in (`modApiPowerQuery` + `modInternalPowerQuery` + `frmPQLibrary`) — Personal Menu29 |
+| Plots Charts | In the add-in (`modApiHistogram` / `modApiDistPlots` / `modApiQQPlots` / `modApiLinearRegression` / `modApiLorenz` / `modApiAcf` / `modApiDiebold` / `modApiXmR` / `modApiProcessCapability` / `modApiChartSheet` + `modInternalPlots`) — Personal `Custom_Menu11_*` |
+| Time series | In the add-in (`modApiTimeSeries` + `modInternalTimeSeries` + `Fn_TimeSeries`) — Personal `Custom_Menu27_*` |
+| Matrices | In the add-in (`modApiMatrices1` / `modApiMatrices2` / rest of Menu13 as `modApi*`). Overlay Personal originals with `Import-Menu13FromPersonal.ps1` (rewrites names to `modApi*`) |
+| Stats / quality | Later — remaining `Custom_Menu5_*` (tables, binomial tree, FPC; Benford already on **Benford**; Bland-Altman / Deming / Box-Cox / logit / scaling / dummies are in the add-in) |
+| Charts | Later — Personal Menu3 arrange/list charts (Menu11 plots are on **Plots Charts**) |
 | Output | Later |
 | Workbook | Later |
-| Time series | Later |
 | UDFs | Later — keep `Fn_*` names |
 | Forms | Later |
 | Menus | Add-in menu is `modAddinMenu`; Personal `Custom_Menu_Menus` later |
@@ -110,9 +177,251 @@ Random sample of input rows (percent of row count), with or without replacement.
 | `RandomTrueFalse` / `RandomYesNo` / `Random1or0` | `modApiData` | Fill the current selection |
 | `CreateYesNoDataset` | `modApiData` | Sheet **Yes No Dataset** (Predicted / Actual) |
 | `RandomTestDataTypes` | `modApiData` | Two-column type/value block |
+| `RandomTimeSeries` | `modApiData` | Date + Gaussian random-walk Value from a prompted start cell (default ActiveCell) |
 | `RandomBinomialNumbers` / `RandomBernoulliNumbers` / `RandomNormalNumbers` / `RandomPoissonNumbers` / `RandomExponentialNumbers` / `RandomGammaNumbers` / `RandomHypergeometricNumbers` | `modApiData` | **Excel VBA Lib → Data → Probability distributions** |
 
 Personal Menu6 **Prime numbers** (`PrimeGenerator` in `Custom_Menu10_Prime`) is not in this pack.
+
+### Data Preprocessing public surface
+
+Personal Menu5 scaling / dummy variables (`Custom_Menu5_Scaling`, `Custom_menu5_ML`). Menu **Excel VBA Lib → Data Preprocessing** (immediately after **Data**). Personal OnAction names are kept.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ScalingStandard` | `modApiPreprocess` | (x − mean) / population SD per column. Zero SD → 0. Prompts for output; default is two cells to the right of the last source column. |
+| `ScalingNormalise` | `modApiPreprocess` | Min-max to [0, 1] per column. Personal wiped earlier columns when a later column had zero range; this version does not. Same output prompt. |
+| `ScalingRobust` | `modApiPreprocess` | (x − median) / IQR (`QUARTILE.INC`) per column. Zero IQR → 0. Same output prompt. |
+| `DummyVariablesForMachineLearning` | `modApiPreprocess` | Menu caption **Convert categorical data to dummy variable matrix**. One-hot from a single column. Blanks skipped in the category list; unmatched/blank rows are all zeros. Optional header row; if the source starts on row 1 the dummy block starts on row 2. |
+
+### Hyperlinks public surface
+
+Personal Menu21 (`Custom_Menu21_Hyperlinks`, `Custom_Menu21_Index`). Menu **Excel VBA Lib → Hyperlinks**. Personal OnAction names are kept.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `HyperlinkInventory` | `modApiHyperlinks` | Sheet **Hyperlinks**: location, text, ScreenTip, address, SubAddress, type |
+| `CreateIndex` | `modApiHyperlinks` | Sheet **Index**; inserts a Back to Index row on unprotected sheets |
+| `UpdateIndex` | `modApiHyperlinks` | Rebuilds Index in place; does not insert rows |
+| `ShowAllWorksheetsInWorkbook` | `modApiHyperlinks` | Message box with hidden / very hidden flags |
+| `RemovingHyperLink` | `modApiHyperlinks` | Deletes workbook links whose Text to display matches the selected cells |
+| `OpenHyperlink` | `modApiHyperlinks` | Follows hyperlinks in the selection (Personal showed RangeForm instead) |
+| `AddHyperlinksToCurrentSheetA1` | `modApiHyperlinks` | Back-link in the active cell on every other unprotected sheet |
+
+`HyperLinkText` (UDF) already lives on `modApiWorksheetTemplates`. Notes workbook Index (`BuildIndexSheet`) does not insert rows; **Create index** does.
+
+### Custom lists public surface
+
+Personal Menu16 (`Custom_Menu16_CustomLists`, `Custom_Menu16_Autocorrect`). Menu **Excel VBA Lib → Custom lists**. Personal OnAction names are kept.
+
+Custom lists and AutoCorrect replacements are **application-wide** (Excel Options), not stored in the workbook.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `CountCustomLists` | `modApiCustomLists` | Message box: total, built-in (1–4), user-defined |
+| `ShowCustomLists` | `modApiCustomLists` | Sheet **Custom List properties**: number, Type (Built-in/User), item count, elements |
+| `CreateCustomListByColumn` | `modApiCustomLists` | One list per column; blanks skipped; existing lists skipped; ≥2 values required |
+| `CreateCustomListByRow` | `modApiCustomLists` | One list per row (same rules) |
+| `DeleteCustomList` | `modApiCustomLists` | List numbers from a range (column A of the inventory). Built-in 1–4 cannot be deleted. Highest numbers first so remaining numbers stay valid. Confirms because the change is Excel-wide |
+| `NumCustomLists` | `modApiCustomLists` | Volatile UDF: `Application.CustomListCount` |
+| `AutoCorrectEntries_Display` | `modApiCustomLists` | Sheet **Auto correct List** (Personal spelling kept) |
+| `AutoCorrectEntries_Add` | `modApiCustomLists` | Two-column range (Replace / With). Adds or overwrites; does not remove other entries. Uses the selected range (Personal scanned column A of the sheet) |
+
+### Ranges public surface
+
+Personal Menu14 (`Custom_Menu14_ColRange`, `Custom_Menu14_FreqAnalysis`, `Custom_Menu14_ManipulateRanges`, `Custom_Menu14_RangeAnalysis`, `Custom_Menu14_SplitRange`). Menu **Excel VBA Lib → Ranges**. Personal OnAction names are kept, including `ConvertNamedRangeGlodalToLocalScope`.
+
+UserForms from that menu (`DataCleansingOptionsForm`, `DataValidationForm`, `MultiSearchAndReplace`) are not included.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ListNamedRangeProperties` | `modApiRanges` | Sheet **Range properties**: index, name, RefersTo, address, visible, comment, workbook parameter, scope. Sequential index (Personal used `Name.Index`, which is not a Name property). No `Range.ListNames` dump. |
+| `PasteRangeAsPicture` | `modApiRanges` | Pictures.Paste of the selection |
+| `HighlightRanges` / `DeHighlightRanges` | `modApiRanges` | Yes = workbook, No = active sheet. Fill ColorIndex 36; clear uses `xlColorIndexNone` (Personal used 0). Constants without `RefersToRange` are skipped |
+| `DeleteNamedRanges` | `modApiRanges` | Names listed in the selection. Confirms. Then rewrites **Range properties** |
+| `HiddenMasterDataWorkbookScope` / `HiddenMasterDataWorksheetScope` | `modApiRanges` | Two columns: name, value. Hidden constants. Worksheet version prompts for a cell on the owner sheet. `ValidRangeName` sanitises names |
+| `NamedRangeIntoNamedRangeColumns` | `modApiRanges` | Hidden sheet-scoped name per column from the header row (header excluded). Header-only / empty header / one cell rejected |
+| `CreateHiddenNamedRange` / `CreateHiddenNamedString` / `CreateHiddenNamedNumber` | `modApiRanges` | Hidden workbook names. Names need not be letters-only |
+| `NameCreateConstantsAsNamedRanges` | `modApiRanges` | `Divisor_Thousand` = 1000, `Divisor_Millions` = 1000000 |
+| `CreateNamedRangeInAllWorksheets` | `modApiRanges` | Same local name on every sheet, same address **on that sheet** (Personal pointed every sheet at the original selection) |
+| `HideAllNamedRanges` / `UnhideAllNamedRanges` | `modApiRanges` | Workbook `Names` collection |
+| `HideNamedRangesWorksheet` / `UnhideNamedRangesWorksheet` | `modApiRanges` | Sheet-scoped names on the active sheet |
+| `HideSpecifiedNamedRanges` / `UnhideSpecifiedNamedRanges` | `modApiRanges` | Names listed in the selection; then **Range properties** |
+| `ListUniqueValues` | `modApiRanges` | Sheet **Unique Values**. `RemoveDuplicates` uses every selected column (Personal passed only the last column index) |
+| `ConvertNamedRangeLocalToGlobalScope` / `ConvertNamedRangeGlodalToLocalScope` | `modApiRanges` | Keeps RefersTo / Visible / Comment. Local→global strips the sheet prefix. Global→local prompts for the owner sheet |
+| `RangeAnalysis` / `RangeAnalysisMessage` | `modApiRanges` | Sheet **Range_Analysis** or a message box. Blanks are not numeric. Even/Odd count integer numbers (Personal’s message box wrote `n/a`) |
+| `FrequencyAnalysis` | `modApiRanges` | Sheet **Frequency Analysis**. One row per used character, O(n), empty range rejected (Personal wrote ASCII 1–255 with an n×255 loop) |
+| `Remove_AlphaCharactersFromString` / `Remove_NumbersFromString` / `Remove_SpecialCharactersFromString` | `modApiRanges` | Keep digits / letters / letters+digits+space+period |
+| `ClearCellsThatOnlyContainWhitespaces` / `RemoveWhiteSpaces` | `modApiRanges` | Trim NBSP/tab/breaks. Regex version is the menu target (Personal OnAction was the Function `RemoveWhiteSpacesFn`) |
+| `ListCharactersAndCodesInRange` | `modApiRanges` | Sheet **Characters and Codes**, sorted by code |
+| `TransposeARange` | `modApiRanges` | Copy transposed one column to the right of the selection; sheet-qualified `Cells` |
+| `SplitRangeAndNameEachColumn` | `modApiRanges` | Workbook names `BaseAll` and `Base_1..n`. Header optional. Single-column works. Cancel on the header question creates nothing (Personal called `TurnOff` on cancel) |
+
+`ValidRangeName` lives on `modInternalNamedRanges` (spaces to `.`, illegal characters stripped, leading digit or A1-style address prefixed). Entire-column selections are intersected with UsedRange. InputBox cancel returns without `End`.
+
+### Duplicates public surface
+
+Personal Menu15 (`Custom_Menu15_Duplicates`). Menu **Excel VBA Lib → Duplicates**. Personal OnAction names are kept (`ColorDuplicates` vs `ColourDuplicateValues*`).
+
+Blank and error cells are skipped. Entire-column selections use UsedRange. Flag/reference tools insert cells to the right of the selected rows only (Personal inserted the whole worksheet column).
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `FlagDuplicates` | `modApiDuplicates` | Single column. Write `Duplicate` beside later occurrences; first occurrence stays blank |
+| `ReferenceDuplicates` | `modApiDuplicates` | Single column. Letter `A`, `B`, … on every member of a duplicate group (including the first). Unique values stay blank |
+| `ColorDuplicates` | `modApiDuplicates` | Distinct ColorIndex per duplicate group, cycling a palette. Unique cells unfilled. Personal incremented ColorIndex per duplicate cell and could raise “Too many duplicate!” |
+| `ColourDuplicateValuesByRow` | `modApiDuplicates` | Red (3) when a value appears more than once in that row. Need ≥2 columns. Clears fill with `xlColorIndexNone` (Personal used 0) |
+| `ColourDuplicateValuesByColumn` | `modApiDuplicates` | Green (4) when a value appears more than once in that column. Need ≥2 rows |
+| `ColourDuplicateValuesInSelection` | `modApiDuplicates` | Yellow (6) when a value appears more than once in the selection |
+| `DuplicateCountFromSelection` | `modApiDuplicates` | Message box: count of cells whose value appears more than once |
+
+### Protection public surface
+
+Personal Menu7 (`Custom_Menu7_Protection`). Menu **Excel VBA Lib → Protection**. Personal OnAction names are kept.
+
+The default password is Personal's `WYSIWYG`: a known convenience value (`DisplayPassword` shows it), not a secret.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `LimitScrollArea` | `modApiProtection` | `ScrollArea` = first area of the selection. Requires a worksheet and a range on that sheet |
+| `ResetScrollArea` | `modApiProtection` | Clears `ScrollArea` |
+| `ProtectWorksheet` | `modApiProtection` | Default password, `UserInterfaceOnly:=True` (VBA can edit this session only). Unprotects with the default password first when that works |
+| `UnProtectWorksheet` | `modApiProtection` | Default password. Different password → message, not a raw VBA error |
+| `DisplayPassword` | `modApiProtection` | Message box with the default password |
+| `UnHideAllSheets` | `modApiProtection` | Hidden and very-hidden worksheets become visible; reports the count. Chart sheets unchanged (Worksheets collection) |
+| `UnhideAllRowsAndColumns` | `modApiProtection` | Unhides every row and column without `Cells.Select`. Protected sheet → message |
+
+Chart sheets are rejected. Personal used unqualified `Cells.Select` for unhide-rows/columns.
+
+### Reconciliations public surface
+
+Personal Menu20 (`Custom_Menu20_Reconciliation` / `Custom_Menu20_RecnStrings` / `Custom_Menu20_CompareRanges`). Menu **Excel VBA Lib → Reconciliations**. Personal OnAction names are kept.
+
+`CompareTwoRangesForm` is not included; **Compare two ranges** uses InputBoxes.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ReconcileTwoColumns` | `modApiReconciliations` | Two numeric columns → sheet **Reconciliation**. 1-for-1 match (Dictionary queues). Statement in A; first dataset in H; second in O. Non-numeric cells skipped for sums. Cancel before `.Columns.Count` |
+| `ReconcileTwoColumnsStrings` | `modApiReconciliations` | Two text columns → sheet **Reconciliation Strings**. Binary match, no trim. Unmatched listed as not in the other set |
+| `CompareRanges` | `modApiReconciliations` | Same-size ranges, every cell (Personal skipped the first). Yellow fill on diffs; sheet **Range Comparison**; table `Comparison` |
+
+### Tables public surface
+
+Personal Menu19 (`Custom_Menu19_Tables`). Menu **Excel VBA Lib → Tables**. Personal OnAction names are kept.
+
+Personal `CreateCalendar` is not on this menu; use `CreateDateTable` for a calendar dimension.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ListTableProperties` | `modApiTables` | Sheet **Table properties**: index, name, sheet, range, hyperlink, rows/columns, filter/header/totals, style, source type, comment, alt text, header range. Sized to the table count (Personal wrote a 1000-row empty block). `ListObject.Active` / Creator / Application are dropped (not useful; `.Active` is not a ListObject property). |
+| `ShowAllTablesInWorkbook` | `modApiTables` | Message box: index, name, sheet (hidden flag), address. Personal menu called this but the Sub was commented out; title was `vbOKOnly`. |
+| `RangeToListObject` | `modApiTables` | Promote a range to a ListObject |
+| `ListObjectToArray` | `modApiTables` | Table body → array |
+
+### Files public surface
+
+Personal Menu24 (`Custom_Menu24_ListFilesInFolder`). Menu **Excel VBA Lib → Files**. Personal OnAction names are kept.
+
+SharePoint download (`Custom_Menu24_ShrpntDownload`) is not included (hard-coded destination path). Workbook-name helpers from that module are not included.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ReturnFilesInSelectedFolder` | `modApiFiles` | Folder picker; sheet **File listing** for that folder only. Count-and-estimate prompt only when there are 1,000 or more files. Modeless **Cancel** during count/list writes any rows already collected (partial sheet). Personal wrote two columns at a selected cell and called missing `SelectFolder` / `GetRange`. Same columns as the recursive listing. |
+| `BatchListAllFiles_FolderSubfolders` | `modApiFiles` | Same sheet, including subfolders. Counts files first (`Files.Count` per folder). Under 1,000 files, lists immediately; otherwise a prompt shows the count and an estimated listing time so you can cancel. Modeless **Cancel** during the run writes a partial **File listing**. Then collects all files and writes once (Personal reset the row counter in each subfolder and overwrote earlier rows). Hidden / system / junction folders are skipped. Attribute flags are decoded as a combination, not a single Case value. |
+| `PickFolder` | `modApiFiles` | Folder picker → path string (starts at Excel's default file path, not `E:\`) |
+| `ListFiles` | `modApiFiles` | Paths in one folder matching an extension filter such as `*.csv` |
+
+### Power Query public surface
+
+Personal Menu29 (`Custom_Menu29_PowerQuery`). Menu **Excel VBA Lib → Power Query**. Personal OnAction names are kept.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `ShowPQLibraryForm` | `modApiPowerQuery` | Form `frmPQLibrary`: import selected `tblPQ_Library` functions (with `fn*` deps) into the active workbook, or export workbook queries to sheet **PQ_Functions**. Looks up `tblPQ_Library` in any open workbook (not only Personal.xlsb). |
+| `BackgroundRefreshToggle` | `modApiPowerQuery` | Flips `BackgroundQuery` on every OLEDB connection; reports how many are on/off |
+| `IgnorePrivacyToggle` | `modApiPowerQuery` | Flips `Queries.FastCombine` (Ignore Privacy Levels); reports the new state |
+| `Add_Connection_All_Tables` | `modApiPowerQuery` | Connection-only query per Excel Table; optional Data Model load. Skips tables that already have a query. One connection per table (Personal added two with the same name when loading to the model) |
+
+### Analysis public surface
+
+Personal Menu18 (`Custom_Menu18_Analysis`, `Covariance`, `ConfusionMatrix`, `CnfsnMtrxTmplt`, `Residuals`, `SVD`, `LinearSystem` / `LinearSysAXB`) plus Menu5 Bland-Altman, Deming, Box-Cox, and logit template. Menu **Excel VBA Lib → Analysis**. Personal OnAction names are kept. SVD is also on **Matrices → Decompositions**.
+
+Observations are rows; variables are columns. Vector/matrix tools that take a header use the first row as labels and the rest as numeric data.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `SVD` | `modApiSvd` | Writes singular values, U, and V. Golub-Reinsch; max side 500. Does not grey-fill or require a numeric output cell |
+| `LinearSystem_AXB_v1` / `LinearSystem_AXB_v2` | `modApiLinearSystem` | Solve AX=B via `modInternalMatrices.Solve`. v2 is the Personal menu name; the RefEdit form is not used |
+| `ConfusionMatrix` | `modApiConfusion` | Sheet **Confusion Matrix** from Yes/No (case-insensitive; Y/N). Predicted then Actual |
+| `ConfusionMatrixOnesAndZeros` | `modApiConfusion` | Same sheet; 1 = positive class |
+| `ConfusionMatrixTemplate` | `modApiConfusion` | Sheet **Confusion Matrix Template** with live R1C1 formulae. Personal wrote formula text that never calculated |
+| `CalculateVarianceCovarianceMatrix` | `modApiAnalysis` | Population covariance (divide by n), with headers |
+| `MatrixCovariance` | `modApiCovariance` | Sample covariance (n-1). Range need not be square |
+| `MatrixCovarianceStandardise` | `modApiCovariance` | Sample covariance of standardised columns, with a **Standardised Covariance** label above the matrix |
+| `CorrelationMatrix` | `modApiAnalysis` | Population covariance / products of population SDs |
+| `ProveVarCovarAndCorrel` | `modApiAnalysis` | Sheet **Cov and Correl**: D R D = covariance, plus a Check block |
+| `CalculateMeanVector` | `modApiAnalysis` | 1 × p means under the header |
+| `CalculateStandardDeviationPopulationVector` / `Sample` | `modApiAnalysis` | STDEV.P / STDEV.S row vectors |
+| `CalculateStdDevProductMatrixPopulation` | `modApiAnalysis` | Outer product of population SDs |
+| `ResidualsAnalysis` | `modApiResiduals` | Sheet **Residuals Analysis**; sheet-scoped names `Order` / `Residuals` |
+| `BlandAltmanPlot` | `modApiBlandAltman` | Sheet **BlandAltman**: two paired columns, mean, difference, sample SD, ±1.96 SD limits of agreement. Mean/LoA lines span min–max of the averages (Personal attached a 2-point Y series to the full X range). |
+| `CalculateDemingRegression` | `modApiDeming` | Sheet **Deming Regression**. λ = VAR.S(X)/VAR.S(Y) (`DemingLambda`, not `Lambda`, to avoid Excel 365 `LAMBDA`). Live formulae, residual sums below the data, XY chart with the fit line. E1 links to the Real Statistics Deming page. Unqualified `Range` / `ApplyNames` from Personal are not used. |
+| `BoxCox` | `modApiBoxCox` | Sheet **BoxCox**. Prompts for λ start/end/step (defaults −5, 5, 0.1). Alpha shifts so the smallest value becomes 1 when any input is ≤ 0. Transform uses shifted data once (Personal added Alpha twice). Highlights the λ with maximum log-likelihood. `BoxCoxForm` is not included. |
+| `CreateLogitInputTemplate` | `modApiLogit` | Sheet **Logit Input Template**. Yellow coefficient and x inputs, intercept column of 1s, live logit and probability formulae. Coefficient names are `Logit_b0`..`Logit_b4` (`b1`–`b4` are illegal names because they are cell addresses). Personal wrote to unqualified `Range` on the active sheet. |
+| `ComparePredictedToActual` / `…OneAndZerosOnly` | `modApiConfusion` | Optional worksheet UDFs |
+
+Personal `GetRange` used `End` on cancel (kills Excel). Prompts now return Nothing. `ExtractBody` / `RangeArea` used unqualified `Cells` and could read the wrong sheet.
+
+### Plots Charts public surface
+
+Personal Menu11 (`Custom_Menu11_*`). Menu **Excel VBA Lib → Plots Charts**. Personal OnAction names are kept.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `HistogramTableAndPlot` / `HistogramFormulaeAndPlot` | `modApiHistogram` | Sheets **Histogram** / **Histogram formulae**. Formulae version uses COUNTIF so bins update. Cancel on range or bin count does nothing. |
+| `LinearRegression` / `LinearRegressionV2` | `modApiLinearRegression` | Two numeric columns (x, y). V2 adds residuals, slope CI, and an integer-x fitted grid. V2 original named range is n×2 (Personal used n×n). |
+| `ProcessCapabilityChart` | `modApiProcessCapability` | Sheet **Process Capability Plot**. Cp/Cpk are worksheet formulae (Personal called `personal.xlsb` UDFs). LSL/USL swap is fixed. |
+| `GenerateBinomialPlot` / `GenerateNormalPlot` / `GenerateLogNormalPlot` / `GeneratePoissonPlot` / `GenerateWeibullPlot` / `GenerateGammaPlot` / `GenerateBetaPlot` / `GenerateExponentialPlot` / `GenerateHypergeometricPlot` / `GenerateLogisticCurve` | `modApiDistPlots` | Formula tables with yellow inputs; PDF+CDF except logistic (one chart). R1C1 via `FormulaR1C1`. Exponential lambda is labelled Lambda (Personal said Alpha). |
+| `QQPlotGaussianNormal` / `QQPlotUniform` | `modApiQQPlots` | Sheets **QQ Normal chart** / **QQ Uniform chart**. Blanks rejected. Intercept/R² are formulae (Personal wrote some as `.Value` text). |
+| `GiniPlot` | `modApiLorenz` | Sheet **Gini**. Single non-negative column. FastExcel Gini algorithm. |
+| `GenerateCorrelogram` / `ACFLower` / `ACFUpper` | `modApiAcf` | Sheet **Correlogram**. PACF Yule-Walker, max 40 lags. The old “stationary?” flag is **Non-decreasing from first obs**. |
+| `DieboldMarianoTest` | `modApiDiebold` | Sheet **DieboldMariano**. 1 column = RAND demo forecasts; 3 columns = actual + two forecasts. Two-sided p-value. |
+| `XmR` / `GenerateXMRDiagnostics` | `modApiXmR` | Sheets **XmR** / **XMR Diagnostics**. X̄ ± 2.66 MR̄, MR UCL 3.267 MR̄. Diagnostics is a 31-column Western Electric table. |
+| `PlotLineChartSheet` | `modApiChartSheet` | Chart sheet named from the header; SE bars + trendline. |
+
+### Time series public surface
+
+Personal Menu27 (`Custom_Menu27_TimeSeries` / `Custom_Menu27_TS_DateDiff`). Menu **Excel VBA Lib → Time series**. Personal OnAction names are kept.
+
+`GeneratePACFList` / `GenerateAVCFList` / `GenerateAutoCovarianceMatrix` are not on this menu (they were private in Personal).
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `TimeSeriesAnalysis` | `modApiTimeSeries` | Sheet **Time Series**. Values for lag 0..n/3. ACF/ACVF/PACF computed from arrays (Personal re-read the range per lag). Screen updating is not turned off before the InputBox |
+| `TimeSeriesAnalysisFormula` | `modApiTimeSeries` | Same sheet; live UDFs in `Fn_TimeSeries` (Insert Function category **Excel VBA Lib**). Lags 0..n/4. A1 formulas qualified to this add-in (`='ExcelVbaLib.xlam'!ACVF(...)`). Unqualified `=ACVF(...)` is `#NAME?` until the menu has registered the UDFs |
+| `DateDifferencing` | `modApiTimeSeries` | Sheet **Date Diff**. Lag-k differences `y[t]-y[t-k]` of the original series (not repeated first differences, not calendar dates). First k rows blank; lag 1 has n-1 points. Charts at A4 / B4 / L4. ACF value table below the data; lag-1 ACF < -0.5 is flagged over-differenced |
+| `DateDifferencingFormulae` | `modApiTimeSeries` | Sheet **Date Diff Formula**. Same lag-k cells as R1C1 (`=RC[-k]-R[-k]C[-k]`). ACF table below the data (original + each lag); lag-1 ACF < -0.5 is flagged over-differenced |
+| `ACF` / `ACVF` / `PACF` / `Bartlett` / `BoxPierce` / `BoxPiercePVal` / `BoxPierceTest` / `LjungBox` / `LjungBoxPVal` / `LjungBoxTest` | `Fn_TimeSeries` | Worksheet UDFs (same registration as `Mat*`). Bartlett is two-sided (`|ACF|`). Box-Pierce / Ljung-Box reject white noise when p < alpha (Personal messages were inverted) |
+
+### Matrices public surface
+
+Api modules (VBE names): `modApiMatrixCreate`, `modApiMatrices1`, `modApiMatrices2`, `modApiCholesky`, `modApiEigenDecomp`, `modApiUnitary`, `modApiMatrixUtilities`, `modApiCovariance`, plus `Fn_MatricesArray`, `Fn_MatricesRng`, `Fn_Matrices2`.
+
+Git snapshot math is array-based in `modInternalMatrices` (Personal dumps are gitignored). After `Import-AddinModules.ps1 -All`, overlay the original Personal modules into the `.xlam` with `scripts/Import-Menu13FromPersonal.ps1` (Windows, Personal.xlsb present). `-AllMenu13` copies the whole family. Do that **after** `-All`; running `-All` again replaces them with the git snapshot.
+
+`git pull` updates `build\ExcelVbaLib.xlam`. Add-in macros never appear in Alt+F8; worksheet `Mat*` names are registered into Insert Function (category **Excel VBA Lib**) by `RegisterMatrixUdfs` (`Fn_MatricesRng`) when the menu installs.
+
+| Public procedure | Module | Notes |
+|------------------|--------|--------|
+| `MatrixCreateIdentity` / `Zeros` / `Ones` / `Diagonal` / `Random` / `Hilbert` / `Exchange` / `Toeplitz` / `Vandermonde` / `Companion` | `modApiMatrixCreate` | Create writes at the active cell; vector-based create writes to the right of the selection |
+| `MatrixTranspose` / `Add` / `Subtract` / `Scale` / `Multiply` / `MultiplicationHadamard` / `MultiplicationKronecker` / `Outer` / `Dot` / `Inverse` / `Power` / `Determinant` / `Trace` / `DiagExtract` / `Vec` / `Unvec` | `modApiMatrixUtilities` | Result one column to the right of the selection (Hadamard prompts; default is to the right of B) |
+| `MatrixHadamardProof` | `modApiMatrixUtilities` | Sheet **Hadamard Proof**: H, Hᵀ, H.HT, then n and I or a not-Hadamard message |
+| `MatrixSolve` / `Rank` / `Norm` / `Norm1` / `NormInf` / `IsSymmetric` / `Adjugate` / `PseudoInverse` / `LU` / `Cofactor` / `Minor` | `modApiMatrices2` | Cofactor limited to order 20 |
+| `MatrixCholesky` | `modApiCholesky` | SPD only |
+| `MatrixEigen` | `modApiEigenDecomp` | Jacobi; symmetric only. Writes vectors then a λ column |
+| `MatrixQR` / `MatrixIsOrthogonal` | `modApiUnitary` | QR stacks R below Q. Complex unitary from Personal is not included |
+| `Mat*` / `MatrixMultDefined` | `Fn_MatricesArray` / `Fn_MatricesRng` / `Fn_Matrices2` | Worksheet UDFs (`RegisterMatrixUdfs`) |
+
+Numeric arrays only; max side 250. Inverse uses Gauss-Jordan; determinant and rank use LU; eigen is Jacobi (symmetric); QR is modified Gram-Schmidt; pseudoinverse uses normal equations (needs full column or row rank). `vec`/`unvec` are column-major.
 
 ## Dependency direction (keep this)
 
@@ -153,12 +462,16 @@ Stabilize these names in the add-in; map old Personal names → new names in a s
 ### `modApiFiles`
 | Public procedure | Responsibility |
 |------------------|----------------|
+| `ReturnFilesInSelectedFolder` | List files in one folder on **File listing** |
+| `BatchListAllFiles_FolderSubfolders` | List files in a folder tree on **File listing** |
 | `PickFolder` | Folder picker → path string |
-| `ListFiles` | Extensions filter → path array/collection |
+| `ListFiles` | Extensions filter → path array |
 
 ### `modApiTables`
 | Public procedure | Responsibility |
 |------------------|----------------|
+| `ListTableProperties` | Inventory sheet of all ListObjects with hyperlinks |
+| `ShowAllTablesInWorkbook` | Message box listing table name / sheet / address |
 | `RangeToListObject` | Promote range to table |
 | `ListObjectToArray` | Table body → array |
 
@@ -228,7 +541,7 @@ End Sub
 | Related PQ library | VBA touchpoint |
 |------------------|----------------|
 | [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library) `src/Files/` | `modApiFiles` + sheet dump of results |
-| PQ Cleanse\* / profiling | Rarely needed in VBA; if macros orchestrate PQ, keep orchestration in `modApiUi` / a future `modApiPowerQuery` |
+| PQ Cleanse\* / profiling | Rarely needed in VBA; workbook PQ connections are `modApiPowerQuery` |
 | Output of any macro | Always via `modInternalSheetIO` |
 
 ## After Trust access is enabled

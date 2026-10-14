@@ -12,7 +12,8 @@ Desktop.ini
 .idea/
 *.swp
 
-# Personal workbook and compiled add-in scratch copies
+# Personal workbook and other add-in copies.
+# build/ExcelVbaLib.xlam stays tracked.
 Data/*.xlsb
 Data/*.xlsx
 Data/*.xlsm

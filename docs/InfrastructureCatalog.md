@@ -1,4 +1,4 @@
-# Infrastructure catalog (Personal123.xlsb)
+# Infrastructure catalog (Personal.xlsb)
 
 Scan of `_export_raw` (1,308 procedures). Goal: separate **infrastructure** (shared plumbing) from **feature** code (Benford, XmR, menus) and **`z*` templates** (snippet libraries).
 

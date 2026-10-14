@@ -19,10 +19,14 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 │   ├── PersonalInventory.md
 │   └── InfrastructureCatalog.md
 ├── scripts/
-│   ├── Build-ExcelVbaLib.py       ← rebuild build/ExcelVbaLib.xlam from source (no Excel)
-│   ├── Build-ExcelVbaLib.ps1      ← optional Excel COM rebuild
-│   ├── Import-AddinModules.ps1    ← replace Data modules in a specific .xlam (default: build\)
-│   └── Inject-ThisWorkbook.ps1    ← write Workbook_Open into a loaded add-in (no full rebuild)
+│   ├── Build-ExcelVbaLib.ps1      ← rebuild build/ExcelVbaLib.xlam from the source snapshot
+│   ├── Build-ExcelVbaLib.py       ← pack .bas modules without Excel (skips UserForms)
+│   ├── Import-AddinModules.ps1    ← replace modules in a specific .xlam (default: build\)
+│   ├── Import-Menu13FromPersonal.ps1 ← copy Personal Matrices1/2 into the .xlam
+│   ├── Inject-ThisWorkbook.ps1    ← write Workbook_Open into a loaded add-in (no full rebuild)
+│   ├── Export-PersonalModules.ps1 ← dump Menu13 (and other) modules from Personal.xlsb
+│   ├── Update-Existing-Addin.ps1  ← refresh Data modules in the existing add-in
+│   └── Patch-Poisson438.ps1       ← replace Poisson_Inv in an already-open add-in
 ├── source/                  ← snapshot of modules already in the add-in (see source/README.md)
 │   ├── Api/
 │   ├── Internal/
@@ -35,16 +39,21 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 ## Quick start
 
 1. Enable **Trust access to the VBA project object model** — see [docs/ExportImport.md](docs/ExportImport.md).
-2. The add-in is `build/ExcelVbaLib.xlam` (tracked). Rebuild without Excel:
+2. Build the add-in if you do not already have it (Excel must not have `ExcelVbaLib.xlam` loaded):
 
-   ```bash
-   pip install pyOpenVBA
-   python scripts/Build-ExcelVbaLib.py
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
    ```
 
-   Quit Excel before replacing a loaded `.xlam`. Optional Excel COM rebuild: `scripts/Build-ExcelVbaLib.ps1`.
+   `build/ExcelVbaLib.xlam` is tracked. Quit Excel before a pull replaces that file. `scripts/Build-ExcelVbaLib.py` packs `.bas` modules when Excel is unavailable; it does not import UserForms.
 
 3. Excel → Options → Add-ins → Excel Add-ins → Browse → `build/ExcelVbaLib.xlam`.
+   After `git pull`, that file is already in the repo. To rebuild from `source/` **in Windows PowerShell on the PC that has Excel** (not the cloud Linux terminal):
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\scripts\Import-AddinModules.ps1 -All
+   powershell -ExecutionPolicy Bypass -File .\scripts\Import-Menu13FromPersonal.ps1
+   ```
 4. Restart Excel. **Excel VBA Lib** should appear on the **Add-ins** ribbon tab without running `Auto_Open`. If it does not, with Excel open:
 
    ```powershell
@@ -60,6 +69,18 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    Application.Run "ExtractSample", Range("A1:C20"), 50, False
    Application.Run "RandomIntegers"
    Application.Run "DataCombinations"
+   Application.Run "ShowCustomLists"
+   Application.Run "ListNamedRangeProperties"
+   Application.Run "RangeAnalysis"
+   Application.Run "FlagDuplicates"
+   Application.Run "ProtectWorksheet"
+   Application.Run "ReconcileTwoColumns"
+   Application.Run "TimeSeriesAnalysis"
+   Application.Run "ListTableProperties"
+   Application.Run "BatchListAllFiles_FolderSubfolders"
+   Application.Run "MatrixMultiply"
+   Application.Run "HistogramTableAndPlot"
+   Application.Run "GenerateNormalPlot"
    ```
 
 Grow the library in the add-in (`Alt+F11` on `ExcelVbaLib.xlam`), then save the `.xlam`. Do not import individual `modApi*` / `modInternal*` files into caller workbooks.
