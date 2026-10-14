@@ -20,16 +20,19 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
 │   └── InfrastructureCatalog.md
 ├── scripts/
 │   ├── Build-ExcelVbaLib.ps1      ← rebuild build/ExcelVbaLib.xlam from the source snapshot
+│   ├── Build-ExcelVbaLib.py       ← pack .bas modules without Excel (skips UserForms)
 │   ├── Import-AddinModules.ps1    ← replace modules in a specific .xlam (default: build\)
 │   ├── Import-Menu13FromPersonal.ps1 ← copy Personal Matrices1/2 into the .xlam
 │   ├── Inject-ThisWorkbook.ps1    ← write Workbook_Open into a loaded add-in (no full rebuild)
-│   └── Export-PersonalModules.ps1 ← dump Menu13 (and other) modules from Personal.xlsb
+│   ├── Export-PersonalModules.ps1 ← dump Menu13 (and other) modules from Personal.xlsb
+│   ├── Update-Existing-Addin.ps1  ← refresh Data modules in the existing add-in
+│   └── Patch-Poisson438.ps1       ← replace Poisson_Inv in an already-open add-in
 ├── source/                  ← snapshot of modules already in the add-in (see source/README.md)
 │   ├── Api/
 │   ├── Internal/
 │   ├── Menus/
 │   └── _export_raw/         ← Local dumps from Personal123 (gitignored)
-├── build/                   ← ExcelVbaLib.xlam
+├── build/                   ← ExcelVbaLib.xlam (tracked)
 └── Data/                    ← Personal123.xlsb (local; gitignored)
 ```
 
@@ -41,6 +44,8 @@ Related: [PowerQuery-Library](https://github.com/flyingcount/PowerQuery-Library)
    ```powershell
    powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
    ```
+
+   `build/ExcelVbaLib.xlam` is tracked. Quit Excel before a pull replaces that file. `scripts/Build-ExcelVbaLib.py` packs `.bas` modules when Excel is unavailable; it does not import UserForms.
 
 3. Excel → Options → Add-ins → Excel Add-ins → Browse → `build/ExcelVbaLib.xlam`.
    After `git pull`, that file is already in the repo. To rebuild from `source/` **in Windows PowerShell on the PC that has Excel** (not the cloud Linux terminal):

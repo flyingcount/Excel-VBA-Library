@@ -1,6 +1,6 @@
 # Replace modules in ExcelVbaLib.xlam from the source snapshot.
 # Targets the add-in *file* (default: <repo>\build\ExcelVbaLib.xlam).
-# git pull does not update that .xlam — it is gitignored.
+# build\ExcelVbaLib.xlam is tracked. Quit Excel before a pull replaces it.
 #
 # Refresh the whole add-in in place (Internal, Api, Menus + ThisWorkbook events):
 #   powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1 -All

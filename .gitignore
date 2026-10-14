@@ -12,10 +12,13 @@ Desktop.ini
 .idea/
 *.swp
 
-# Personal workbook
+# Personal workbook and other add-in copies.
+# build/ExcelVbaLib.xlam stays tracked.
 Data/*.xlsb
 Data/*.xlsx
 Data/*.xlsm
+build/*.xlam
+!build/ExcelVbaLib.xlam
 
 # Raw VBA dumps (keep README only)
 source/_export_raw/*

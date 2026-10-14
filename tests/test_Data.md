@@ -2,16 +2,16 @@
 
 ## Setup
 
-1. Load `ExcelVbaLib.xlam`.
+1. Load `ExcelVbaLib.xlam` from this repo's `build/` folder (the tracked binary).
 2. Do not import `modApiData` / `modInternalData` into the test workbook.
 3. Use **Excel VBA Lib → Data** (and **Data → Probability distributions**). Add-in macros do not appear in Alt+F8.
-4. If Poisson still raises 438, the loaded add-in is stale. With Excel open and the add-in loaded:
+4. If Poisson still raises 438, the loaded add-in is stale. **Quit Excel fully** (all windows, including hidden) so a pull can replace the locked `build\ExcelVbaLib.xlam`, then start Excel again. Or, with Excel open and the add-in loaded:
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File scripts/Import-AddinModules.ps1
    ```
 
-   Use `-XlamPath` if the loaded add-in is not `build\ExcelVbaLib.xlam` under the repo. Then retry Poisson (no Excel restart required).
+   Use `-XlamPath` if the loaded add-in is not `build\ExcelVbaLib.xlam` under the repo. Then retry Poisson (no Excel restart required). `scripts/Patch-Poisson438.ps1` does the same Poisson replacement without that importer.
 
 ## Combinations
 

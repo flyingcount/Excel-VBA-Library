@@ -2,8 +2,10 @@
 # Packs curated source into one add-in so caller workbooks load a single library.
 # Requires: Excel, and Trust access to the VBA project object model.
 #
-# From repo root:
+# From repo root, with the add-in unloaded:
 #   powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
+#
+# scripts/Build-ExcelVbaLib.py packs .bas modules without Excel. It does not import UserForms.
 
 [CmdletBinding()]
 param(

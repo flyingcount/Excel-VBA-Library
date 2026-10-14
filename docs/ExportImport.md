@@ -37,7 +37,9 @@ Caller workbooks should **load `ExcelVbaLib.xlam`**, not import Benford (or othe
 powershell -ExecutionPolicy Bypass -File scripts/Build-ExcelVbaLib.ps1
 ```
 
-The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), compiles, and writes `build/ExcelVbaLib.xlam`. After that, grow the library in the add-in itself.
+The script imports the `source/` snapshot (`Internal`, then `Api`, then `Menus`; skips `_export_raw/`), injects `ThisWorkbook` events (not as a second class), compiles, and writes `build/ExcelVbaLib.xlam`. That file is tracked, so a git pull can replace a stale copy. **Quit Excel first** or the file on disk will not change. After that, grow the library in the add-in itself.
+
+`scripts/Build-ExcelVbaLib.py` packs `.bas` modules with pyOpenVBA when Excel is not available. It does not import UserForms (`.frm`), so it is not a full rebuild.
 
 To replace Data modules in an already-loaded add-in (no full rebuild) — Internal first, then Api:
 
